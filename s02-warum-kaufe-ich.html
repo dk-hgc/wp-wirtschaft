@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Warum kaufe ich das? · WPK Wirtschaft 9 · Sitzung 2</title>
+<style>
+  :root{
+    --navy:#12172B; --navy2:#1B2340; --navy3:#242E52;
+    --mint:#3DE8A0; --coral:#FF6B5D; --gold:#FFC94D;
+    --sand:#F5F1E8; --muted:#8A93B2;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--navy);color:var(--sand);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;}
+  body{min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);}
+  .wrap{max-width:860px;margin:0 auto;padding:20px 18px 40px;}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+
+  header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding-bottom:14px;border-bottom:1px solid #2A3358;margin-bottom:22px;flex-wrap:wrap;}
+  .kicker{font-size:11px;letter-spacing:.13em;font-weight:700;color:var(--mint);text-transform:uppercase;}
+  .sub{font-size:11px;color:var(--muted);}
+
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;font-weight:800;letter-spacing:-.01em;}
+  h2{font-size:20px;margin:0 0 6px;font-weight:700;}
+  p.lead{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 22px;}
+
+  .card{background:var(--navy2);border:1px solid #2A3358;border-radius:16px;padding:20px;}
+
+  .btn{display:block;width:100%;text-align:left;background:var(--navy3);color:var(--sand);
+    border:1px solid #35406B;border-radius:14px;padding:15px 17px;font-size:16px;font-weight:600;
+    cursor:pointer;transition:.12s;font-family:inherit;line-height:1.35;}
+  .btn:active{transform:scale(.985);}
+  .btn:hover{border-color:var(--mint);}
+  .btn .desc{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .btn.primary{background:var(--mint);color:#0A2018;border-color:var(--mint);text-align:center;}
+  .btn.ghost{background:transparent;border-color:#35406B;color:var(--muted);text-align:center;font-weight:600;}
+  .grid{display:grid;gap:10px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  @media(max-width:560px){.g2{grid-template-columns:1fr;}}
+
+  .stage{min-height:112px;background:var(--navy3);border-radius:14px;padding:20px 22px;margin-bottom:18px;
+    border:1px solid #35406B;}
+  .stage .no{font-size:11px;letter-spacing:.1em;color:var(--mint);font-weight:700;margin-bottom:8px;}
+  .stage .txt{font-size:19px;line-height:1.42;font-weight:600;}
+
+  .bar{height:5px;background:#242E52;border-radius:3px;overflow:hidden;margin:0 0 20px;}
+  .bar i{display:block;height:100%;background:var(--mint);width:0;transition:width .3s;}
+
+  .fb{border-radius:14px;padding:16px 18px;margin-top:16px;font-size:14.5px;line-height:1.5;display:none;}
+  .fb.ok{background:rgba(61,232,160,.10);border:1px solid rgba(61,232,160,.45);}
+  .fb.no{background:rgba(255,107,93,.10);border:1px solid rgba(255,107,93,.45);}
+  .fb.mid{background:rgba(255,201,77,.10);border:1px solid rgba(255,201,77,.45);}
+  .fb b{display:block;margin-bottom:5px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;}
+  .fb.ok b{color:var(--mint);} .fb.no b{color:var(--coral);} .fb.mid b{color:var(--gold);}
+
+  .res{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #2A3358;}
+  .res:last-child{border-bottom:0;}
+  .res .n{font-size:26px;font-weight:800;color:var(--mint);min-width:44px;}
+  .res .lbl{font-size:15px;font-weight:600;}
+  .res .meter{flex:1;height:8px;background:#242E52;border-radius:4px;overflow:hidden;}
+  .res .meter i{display:block;height:100%;background:var(--mint);}
+
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:4px 9px;border-radius:6px;margin-right:6px;}
+  .t-e{background:rgba(61,232,160,.16);color:var(--mint);}
+  .t-k{background:rgba(255,201,77,.16);color:var(--gold);}
+  .t-l{background:rgba(255,107,93,.16);color:var(--coral);}
+
+  .note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:18px;}
+  .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+  .row .btn{flex:1;min-width:150px;}
+  .hide{display:none!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="kicker">WPK Wirtschaft 9 · Sitzung 2</div>
+      <div class="sub" style="margin-top:4px">Bedürfnisse und Wünsche</div>
+    </div>
+    <div class="sub mono" id="crumb"></div>
+  </header>
+
+  <!-- ============ START ============ -->
+  <section id="start">
+    <h1>Warum kaufe ich das?</h1>
+    <p class="lead">Zwei kurze Runden. Erst ordnest du Dinge nach ihrer Dringlichkeit ein,
+      dann findest du heraus, was einen Kauf eigentlich auslöst.</p>
+
+    <div class="card" style="margin-bottom:14px">
+      <h2>Runde 1 · Wie dringend ist das?</h2>
+      <p class="lead" style="margin-bottom:16px">Selbstkontrolle zu Aufgabe A3. Zwölf Dinge, drei Stufen.
+        Bei manchen gibt es keine eindeutige Antwort – das ist Absicht.</p>
+      <button class="btn primary" onclick="startSort()">Runde 1 starten</button>
+    </div>
+
+    <div class="card">
+      <h2>Runde 2 · Was löst den Kauf aus?</h2>
+      <p class="lead" style="margin-bottom:16px">Der Kaufimpuls-Check aus dem Unterricht. Acht Situationen
+        aus dem Alltag – findet zu zweit heraus, was hier wirklich den Anstoß gibt.</p>
+      <div class="grid g2">
+        <button class="btn primary" onclick="startImp(8)">Runde 2 starten</button>
+        <button class="btn ghost" onclick="startImp(6)">Kurzmodus (6 Fälle)</button>
+      </div>
+    </div>
+
+    <p class="note">Dieses Tool läuft vollständig auf deinem Gerät. Es werden keine Daten
+      gespeichert oder gesendet. Wenn du die Seite neu lädst, fängst du von vorn an.</p>
+  </section>
+
+  <!-- ============ RUNDE 1 ============ -->
+  <section id="sort" class="hide">
+    <div class="bar"><i id="sbar"></i></div>
+    <div class="stage">
+      <div class="no mono" id="sno"></div>
+      <div class="txt" id="sitem"></div>
+    </div>
+    <div class="grid" id="sbtns"></div>
+    <div class="fb" id="sfb"></div>
+    <div class="row"><button class="btn ghost hide" id="snext" onclick="nextSort()">Weiter</button></div>
+  </section>
+
+  <!-- ============ RUNDE 2 ============ -->
+  <section id="imp" class="hide">
+    <div class="bar"><i id="ibar"></i></div>
+    <div class="stage">
+      <div class="no mono" id="ino"></div>
+      <div class="txt" id="iitem"></div>
+    </div>
+    <div class="grid g2" id="ibtns"></div>
+    <div class="fb" id="ifb"></div>
+    <div class="row"><button class="btn ghost hide" id="inext" onclick="nextImp()">Weiter</button></div>
+  </section>
+
+  <!-- ============ AUSWERTUNG ============ -->
+  <section id="done" class="hide">
+    <h1 id="dtitle"></h1>
+    <p class="lead" id="dlead"></p>
+    <div class="card" id="dbody"></div>
+    <div class="row">
+      <button class="btn ghost" onclick="home()">Zurück zum Start</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------------- Daten */
+var CATS = [
+  {k:"E", name:"Existenzbedürfnis", desc:"Ohne das ist Leben nicht möglich."},
+  {k:"K", name:"Kulturbedürfnis",  desc:"Gehört in unserer Gesellschaft dazu."},
+  {k:"L", name:"Luxusbedürfnis",   desc:"Geht deutlich über das Übliche hinaus."}
+];
+
+/* ok: als richtig gewertete Stufen · why: Begründung */
+var ITEMS = [
+  {t:"Trinkwasser", ok:["E"],
+   why:"Eindeutig. Ohne Wasser überlebt kein Mensch – dringender geht es nicht."},
+  {t:"Ein Arztbesuch, wenn du krank bist", ok:["E"],
+   why:"Eindeutig. Gesundheit ist Voraussetzung dafür, dass alles andere überhaupt zählt."},
+  {t:"Eine Winterjacke", ok:["E","K"],
+   why:"Irgendeine warme Jacke: Existenzbedürfnis. Eine bestimmte Jacke von einer bestimmten Marke: schon nicht mehr."},
+  {t:"Eine eigene Wohnung", ok:["E"],
+   why:"Ein Dach über dem Kopf ist Existenzbedürfnis. Wie groß und wo – das ist eine andere Frage."},
+  {t:"Schulmaterial (Hefte, Stifte)", ok:["K"],
+   why:"Zum Überleben brauchst du es nicht. In unserer Gesellschaft kommst du ohne aber nicht weit."},
+  {t:"WLAN zu Hause", ok:["K","E"],
+   why:"Vor 25 Jahren wäre das purer Luxus gewesen. Heute laufen Schule, Behörden und Bewerbungen darüber. Die Einordnung hat sich verschoben – nicht das Internet."},
+  {t:"Ein Smartphone", ok:["K","L"],
+   why:"Ein Telefon: heute üblich. Das neueste Modell: deutlich darüber hinaus. Beides ist mit Begründung vertretbar."},
+  {t:"Kino mit Freunden", ok:["K","L"],
+   why:"Teil zu haben am gesellschaftlichen Leben ist ein Kulturbedürfnis. Ob genau dieser Abend dazugehört, kann man bestreiten."},
+  {t:"Ein Streaming-Abo", ok:["L","K"],
+   why:"Ohne geht es. Aber wenn alle über dieselbe Serie reden, ist es mehr als reiner Luxus. Grenzfall."},
+  {t:"Ein Energydrink", ok:["L"],
+   why:"Trinken ist ein Existenzbedürfnis – dieses Getränk ist es nicht. Wasser hätte es auch getan."},
+  {t:"Markensneaker für 150 €", ok:["L"],
+   why:"Schuhe brauchst du. Diese Schuhe zu diesem Preis nicht. Der Aufpreis ist Luxus."},
+  {t:"Ein In-Game-Skin", ok:["L"],
+   why:"Er verändert am Spiel nichts außer dem Aussehen. Klarer Fall."}
+];
+
+var TRIGS = [
+  {k:"bed", n:"Echter Mangel",    d:"Etwas fehlt wirklich."},
+  {k:"wer", n:"Werbung",          d:"Anzeige, Influencer, Feed."},
+  {k:"gru", n:"Die Gruppe",       d:"Alle anderen haben es."},
+  {k:"kna", n:"Knappheit",        d:"„Nur noch heute“, „nur noch 2 da“."},
+  {k:"rab", n:"Rabatt",           d:"Der durchgestrichene Preis."},
+  {k:"sti", n:"Stimmung",         d:"Trost oder Belohnung."},
+  {k:"beq", n:"Bequemlichkeit",   d:"Ein Klick, schon bestellt."},
+  {k:"gew", n:"Gewohnheit",       d:"Läuft einfach so ab."}
+];
+
+var CASES = [
+  {t:"Deine Schuhe sind durchgelaufen. Seit drei Tagen regnet es, und du kommst mit nassen Socken in der Schule an.",
+   a:"bed", why:"Hier fehlt wirklich etwas. Kein Werbetrick, kein Rabatt – ein echter Mangel. Genau das ist ein Bedürfnis im ökonomischen Sinn."},
+  {t:"Es ist 21 Uhr. Beim Scrollen zeigt dir zum dritten Mal an diesem Abend jemand dieselbe Trinkflasche. Am nächsten Morgen liegt sie in deinem Warenkorb.",
+   a:"wer", why:"Vor drei Tagen kanntest du diese Flasche nicht. Der Wunsch ist nicht in dir entstanden, er wurde platziert – durch Wiederholung."},
+  {t:"Im Shop steht: „Nur noch 2 Stück auf Lager – 14 Personen sehen sich das gerade an.“ Du bestellst sofort, damit es nicht weg ist.",
+   a:"kna", why:"Der Zeitdruck ist gemacht, nicht echt. Er soll verhindern, dass du in Ruhe nachdenkst – denn Nachdenken kostet Käufe."},
+  {t:"189 € durchgestrichen, jetzt 99 €. Die Kopfhörer wolltest du eigentlich nie. Aber 90 € gespart sind 90 € gespart.",
+   a:"rab", why:"Gespart hättest du 99 €, wenn du sie nicht kaufst. Der hohe Ausgangspreis dient als Anker, an dem der neue Preis günstig wirkt."},
+  {t:"Drei aus deiner Klasse haben seit Montag denselben neuen Skin. Am Wochenende kaufst du ihn auch.",
+   a:"gru", why:"Dazuzugehören ist ein echtes Bedürfnis. Nur befriedigt der Skin es bloß so lange, wie er selten bleibt."},
+  {t:"Die Mathearbeit ist verhauen. Auf dem Heimweg gehst du in den Laden und kaufst dir etwas Süßes.",
+   a:"sti", why:"Gekauft wird nicht die Sache, sondern die kurze Erleichterung. Das Gefühl kommt zuverlässig wieder – der Griff zum Portemonnaie auch."},
+  {t:"Deine Zahlungsdaten sind gespeichert. Zwischen zwei Videos bestellst du in zwanzig Sekunden, ohne aufzustehen.",
+   a:"beq", why:"Je weniger Hürden zwischen Impuls und Kauf liegen, desto seltener kommt der zweite Gedanke. Genau dafür ist der Ein-Klick-Kauf gebaut."},
+  {t:"Jeden Morgen derselbe Bäcker, dasselbe Teilchen. Du hast dich seit Monaten nicht mehr gefragt, ob du es überhaupt willst.",
+   a:"gew", why:"Zwei Euro am Tag sind rund 40 € im Monat. Gewohnheiten fallen im Einzelnen nicht auf – in der Summe schon."}
+];
+
+/* ---------------------------------------------------------------- Helfer */
+function $(id){return document.getElementById(id);}
+function show(id){["start","sort","imp","done"].forEach(function(s){
+  $(s).classList.toggle("hide", s!==id);});window.scrollTo(0,0);}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));
+  var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+function home(){show("start");$("crumb").textContent="";}
+
+/* ---------------------------------------------------------------- Runde 1 */
+var sQ=[], sI=0, sHit=0, sMid=0;
+
+function startSort(){
+  sQ=shuffle(ITEMS); sI=0; sHit=0; sMid=0;
+  $("sbtns").innerHTML = CATS.map(function(c){
+    return '<button class="btn" onclick="ansSort(\''+c.k+'\')">'+c.name+
+           '<span class="desc">'+c.desc+'</span></button>';}).join("");
+  show("sort"); drawSort();
+}
+function drawSort(){
+  var it=sQ[sI];
+  $("sno").textContent="AUFGABE "+(sI+1)+" VON "+sQ.length;
+  $("sitem").textContent=it.t;
+  $("sbar").style.width=(sI/sQ.length*100)+"%";
+  $("crumb").textContent="Runde 1 · "+(sI+1)+"/"+sQ.length;
+  $("sfb").style.display="none";
+  $("snext").classList.add("hide");
+  $("sbtns").classList.remove("hide");
+}
+function ansSort(k){
+  var it=sQ[sI], pos=it.ok.indexOf(k);
+  var fb=$("sfb"), tags=it.ok.map(function(x){
+    var cl=x==="E"?"t-e":(x==="K"?"t-k":"t-l");
+    var nm=CATS.filter(function(c){return c.k===x;})[0].name;
+    return '<span class="tag '+cl+'">'+nm+'</span>';}).join("");
+  var head, cls;
+  if(pos===0){head="Das passt.";cls="ok";sHit++;}
+  else if(pos>0){head="Auch vertretbar.";cls="mid";sMid++;}
+  else {head="Das lässt sich schwer begründen.";cls="no";}
+  fb.className="fb "+cls;
+  fb.innerHTML="<b>"+head+"</b>"+(it.ok.length>1?"<div style='margin-bottom:8px'>Gut begründbar: "+tags+"</div>":"")+it.why;
+  fb.style.display="block";
+  $("sbtns").classList.add("hide");
+  $("snext").classList.remove("hide");
+  $("snext").textContent = (sI+1<sQ.length) ? "Weiter" : "Zur Auswertung";
+}
+function nextSort(){
+  sI++;
+  if(sI<sQ.length){drawSort();return;}
+  show("done");$("crumb").textContent="";
+  $("dtitle").textContent="Runde 1 ausgewertet";
+  $("dlead").textContent="Fünf der zwölf Beispiele lassen sich auf zwei Arten einordnen – und zwar beide Male mit guten Gründen.";
+  $("dbody").innerHTML =
+    '<div class="res"><div class="n mono">'+sHit+'</div><div class="lbl">naheliegend eingeordnet</div></div>'+
+    '<div class="res"><div class="n mono">'+sMid+'</div><div class="lbl">vertretbare Alternative gewählt</div></div>'+
+    '<div class="res"><div class="n mono">'+(sQ.length-sHit-sMid)+'</div><div class="lbl">schwer zu begründen</div></div>'+
+    '<p class="note" style="margin-top:18px">Die entscheidende Frage lautet nicht, welche Stufe stimmt, sondern '+
+    'wovon die Einordnung abhängt: von der Zeit, in der wir leben, von der Gesellschaft und von der eigenen Lage. '+
+    'Notiere dir dazu eine Beobachtung auf dem Arbeitsblatt (A4).</p>'+
+    '<div style="margin-top:18px"><button class="btn primary" onclick="startImp(8)">Weiter zu Runde 2</button></div>';
+}
+
+/* ---------------------------------------------------------------- Runde 2 */
+var iQ=[], iI=0, iHit=0, iCount={};
+
+function startImp(n){
+  iQ=shuffle(CASES).slice(0,n); iI=0; iHit=0; iCount={};
+  $("ibtns").innerHTML = TRIGS.map(function(t){
+    return '<button class="btn" onclick="ansImp(\''+t.k+'\')">'+t.n+
+           '<span class="desc">'+t.d+'</span></button>';}).join("");
+  show("imp"); drawImp();
+}
+function drawImp(){
+  var q=iQ[iI];
+  $("ino").textContent="FALL "+(iI+1)+" VON "+iQ.length;
+  $("iitem").textContent=q.t;
+  $("ibar").style.width=(iI/iQ.length*100)+"%";
+  $("crumb").textContent="Runde 2 · "+(iI+1)+"/"+iQ.length;
+  $("ifb").style.display="none";
+  $("inext").classList.add("hide");
+  $("ibtns").classList.remove("hide");
+}
+function ansImp(k){
+  var q=iQ[iI], right=(k===q.a);
+  var nm=TRIGS.filter(function(t){return t.k===q.a;})[0].n;
+  iCount[q.a]=(iCount[q.a]||0)+1;
+  if(right)iHit++;
+  var fb=$("ifb");
+  fb.className="fb "+(right?"ok":"no");
+  fb.innerHTML="<b>"+(right?"Genau.":"Hier wirkt vor allem: "+nm)+"</b>"+q.why;
+  fb.style.display="block";
+  $("ibtns").classList.add("hide");
+  $("inext").classList.remove("hide");
+  $("inext").textContent = (iI+1<iQ.length) ? "Weiter" : "Zur Auswertung";
+}
+function nextImp(){
+  iI++;
+  if(iI<iQ.length){drawImp();return;}
+  show("done");$("crumb").textContent="";
+  var quote = iHit/iQ.length;
+  $("dtitle").textContent="Runde 2 ausgewertet";
+  $("dlead").textContent = quote>=.75
+    ? "Du erkennst die Muster schon ziemlich sicher."
+    : "Die Auslöser sind so gebaut, dass man sie im Moment selbst nicht bemerkt. Genau darum geht es.";
+  var rows = iQ.map(function(q,idx){
+    var t=TRIGS.filter(function(x){return x.k===q.a;})[0];
+    return '<div class="res"><div class="n mono" style="font-size:15px;min-width:32px">'+(idx+1)+
+           '</div><div class="lbl" style="flex:1">'+t.n+'<span class="desc" style="display:block;font-weight:400;font-size:12.5px;color:var(--muted)">'+t.d+'</span></div></div>';
+  }).join("");
+  $("dbody").innerHTML =
+    '<div class="res" style="border-bottom:1px solid #2A3358;padding-bottom:14px;margin-bottom:6px">'+
+      '<div class="n mono">'+iHit+'/'+iQ.length+'</div>'+
+      '<div class="lbl" style="flex:1">auf Anhieb richtig zugeordnet</div>'+
+      '<div class="meter" style="max-width:120px"><i style="width:'+Math.round(quote*100)+'%"></i></div></div>'+
+    '<p class="note" style="margin:14px 0 6px">Diese Auslöser kamen in deinem Durchgang vor:</p>'+
+    rows +
+    '<p class="note" style="margin-top:16px">Tragt die drei Auslöser, die in eurer Klasse am häufigsten '+
+    'genannt wurden, auf dem Arbeitsblatt ein (A9). Nur für dich – und ohne dass es jemand sieht: '+
+    'Welcher wirkt bei dir selbst am stärksten? (A10)</p>'+
+    '<div style="margin-top:18px"><button class="btn primary" onclick="startSort()">Runde 1 spielen</button></div>';
+}
+</script>
+</body>
+</html>
