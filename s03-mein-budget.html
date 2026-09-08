@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mein Budget · WPK Wirtschaft 9</title>
+<style>
+  :root{
+    --nacht:#12172B; --nacht-hell:#1B2340; --nacht-tief:#0C1020;
+    --mint:#3DE8A0; --coral:#FF6B5D; --gold:#FFC94D;
+    --sand:#F5F1E8; --gedaempft:#8A93B2;
+    --linie:#2A3357;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:var(--sans); background:var(--nacht); color:var(--sand);
+    font-size:17px; line-height:1.45; padding-bottom:40px;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 16px;}
+
+  /* ---------- Kopf ---------- */
+  header{padding:22px 0 16px 0; border-bottom:1px solid var(--linie); margin-bottom:20px;}
+  .kicker{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--gedaempft); font-weight:700;}
+  h1{font-size:30px; margin:6px 0 4px 0; letter-spacing:-.02em; line-height:1.1;}
+  h1 em{font-style:normal; color:var(--mint);}
+  .sub{color:var(--gedaempft); font-size:15px;}
+
+  /* ---------- Schritte ---------- */
+  .step{margin-bottom:22px; background:var(--nacht-hell); border-radius:16px; padding:18px 16px 16px 16px;}
+  .step-head{display:flex; align-items:center; gap:11px; margin-bottom:4px;}
+  .step-nr{
+    font-family:var(--mono); font-weight:700; font-size:14px; color:var(--nacht);
+    background:var(--mint); width:26px; height:26px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .step h2{font-size:19px; margin:0; letter-spacing:-.01em;}
+  .step .note{color:var(--gedaempft); font-size:14px; margin:2px 0 14px 37px;}
+
+  /* ---------- Eingabezeilen ---------- */
+  .row{display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--linie);}
+  .row:last-of-type{border-bottom:none;}
+  .row label{flex:1; font-size:15.5px; color:#D8DCEA;}
+  .stepper{display:flex; align-items:center; gap:6px; flex:none;}
+  .stepper button{
+    width:34px; height:34px; border-radius:9px; border:1px solid var(--linie);
+    background:var(--nacht); color:var(--sand); font-size:19px; font-weight:600;
+    cursor:pointer; line-height:1; padding:0; font-family:var(--sans);
+  }
+  .stepper button:active{background:var(--mint); color:var(--nacht);}
+  input[type=number]{
+    width:74px; height:38px; border-radius:9px; border:1px solid var(--linie);
+    background:var(--nacht); color:var(--sand); font-family:var(--mono);
+    font-size:16px; font-weight:600; text-align:right; padding:0 8px;
+    -moz-appearance:textfield;
+  }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0;}
+  input[type=number]:focus{outline:2px solid var(--mint); outline-offset:1px;}
+  .cur{font-family:var(--mono); color:var(--gedaempft); font-size:15px; width:14px;}
+
+  .subtotal{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:12px; padding-top:11px; border-top:2px solid var(--linie);
+    font-weight:700; font-size:16px;
+  }
+  .subtotal .v{font-family:var(--mono); font-size:20px;}
+
+  /* ---------- Buttons ---------- */
+  .btnbar{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:20px;}
+  .btn{
+    border:1px solid var(--linie); background:var(--nacht-hell); color:var(--sand);
+    border-radius:11px; padding:11px 15px; font-size:15px; font-weight:600;
+    cursor:pointer; font-family:var(--sans);
+  }
+  .btn:active{transform:scale(.97);}
+  .btn.primary{background:var(--mint); color:var(--nacht); border-color:var(--mint);}
+  .btn.ghost{background:transparent;}
+
+  /* ---------- Ergebnis ---------- */
+  .result{
+    background:linear-gradient(160deg,#1B2340 0%,#161C34 100%);
+    border:1px solid var(--linie); border-radius:18px; padding:20px 18px; margin-bottom:22px;
+  }
+  .bigrow{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:18px;}
+  .big{flex:1; min-width:140px;}
+  .big .lab{font-size:11.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--gedaempft); font-weight:700;}
+  .big .val{font-family:var(--mono); font-size:33px; font-weight:800; letter-spacing:-.02em; line-height:1.15; margin-top:3px;}
+  .big .hint{font-size:13px; color:var(--gedaempft); margin-top:1px;}
+  .val.pos{color:var(--mint);} .val.neg{color:var(--coral);} .val.gold{color:var(--gold);}
+
+  /* ---------- Balken ---------- */
+  .barwrap{margin-top:6px;}
+  .barlabel{display:flex; justify-content:space-between; font-size:12.5px; color:var(--gedaempft); margin-bottom:6px;}
+  .bar{display:flex; height:30px; border-radius:9px; overflow:hidden; background:var(--nacht-tief);}
+  .seg{height:100%; display:flex; align-items:center; justify-content:center;
+       font-family:var(--mono); font-size:12px; font-weight:700; color:var(--nacht);
+       transition:width .35s ease; overflow:hidden; white-space:nowrap;}
+  .seg.fix{background:#7C86AE;}
+  .seg.frei{background:var(--gold);}
+  .seg.spar{background:var(--mint);}
+  .seg.minus{background:var(--coral);}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:13px; color:var(--gedaempft);}
+  .legend i{width:11px; height:11px; border-radius:3px; display:inline-block; margin-right:6px;}
+
+  /* ---------- Sparziel ---------- */
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px 0;}
+  .chip{
+    border:1px solid var(--linie); background:var(--nacht); color:#D8DCEA;
+    border-radius:20px; padding:8px 13px; font-size:14px; cursor:pointer; font-family:var(--sans);
+  }
+  .chip:active,.chip.on{background:var(--mint); color:var(--nacht); border-color:var(--mint);}
+  .slider{width:100%; margin:10px 0 4px 0; accent-color:var(--mint); height:28px;}
+  .zielbox{
+    border:1px dashed var(--linie); border-radius:13px; padding:15px; margin-top:14px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .zielbox .m{font-family:var(--mono); font-size:31px; font-weight:800; color:var(--mint); line-height:1;}
+  .zielbox .m.warn{color:var(--coral);}
+  .zielbox .t{flex:1; min-width:180px; font-size:14.5px; color:#D8DCEA;}
+
+  .compare{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  .cbox{flex:1; min-width:150px; background:var(--nacht); border-radius:12px; padding:12px 14px;}
+  .cbox .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gedaempft); font-weight:700;}
+  .cbox .v{font-family:var(--mono); font-size:26px; font-weight:800; margin-top:2px;}
+
+  footer{
+    margin-top:26px; padding-top:16px; border-top:1px solid var(--linie);
+    font-size:12.5px; color:var(--gedaempft); line-height:1.6;
+  }
+  .privat{color:var(--mint); font-weight:600;}
+  @media (max-width:520px){
+    h1{font-size:25px;} .big .val{font-size:28px;} input[type=number]{width:66px;}
+    .row label{font-size:14.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">WPK Wirtschaft 9 · Sitzung 3</div>
+    <h1>Mein <em>Budget</em></h1>
+    <div class="sub">Einnahmen, Ausgaben, Sparquote und Sparziel – rechne live mit.</div>
+  </header>
+
+  <div class="btnbar">
+    <button class="btn primary" onclick="ladeBen()">Bens Beispiel laden</button>
+    <button class="btn" onclick="ladeMia()">Mias Beispiel laden</button>
+    <button class="btn ghost" onclick="leeren()">Alles leeren</button>
+  </div>
+
+  <!-- 1 EINNAHMEN -->
+  <section class="step">
+    <div class="step-head"><span class="step-nr">1</span><h2>Was kommt herein?</h2></div>
+    <div class="note">Alles, was dir in einem typischen Monat zufließt. Geldgeschenke rechnest du auf den Monat um.</div>
+    <div id="einnahmen"></div>
+    <div class="subtotal"><span>Summe der Einnahmen</span><span class="v" id="sumEin">0 €</span></div>
+  </section>
+
+  <!-- 2 FESTE AUSGABEN -->
+  <section class="step">
+    <div class="step-head"><span class="step-nr">2</span><h2>Feste Ausgaben</h2></div>
+    <div class="note">Kommen jeden Monat, die Höhe kannst du kurzfristig kaum ändern – meist steckt ein Vertrag dahinter.</div>
+    <div id="fix"></div>
+    <div class="subtotal"><span>Summe der festen Ausgaben</span><span class="v" id="sumFix">0 €</span></div>
+  </section>
+
+  <!-- 3 FREIE AUSGABEN -->
+  <section class="step">
+    <div class="step-head"><span class="step-nr">3</span><h2>Freie Ausgaben</h2></div>
+    <div class="note">Höhe und Zeitpunkt entscheidest du selbst. Genau hier liegt dein Spielraum.</div>
+    <div id="frei"></div>
+    <div class="subtotal"><span>Summe der freien Ausgaben</span><span class="v" id="sumFrei">0 €</span></div>
+  </section>
+
+  <!-- ERGEBNIS -->
+  <section class="result">
+    <div class="bigrow">
+      <div class="big">
+        <div class="lab">Saldo im Monat</div>
+        <div class="val" id="saldo">0 €</div>
+        <div class="hint" id="saldoHint">Einnahmen − alle Ausgaben</div>
+      </div>
+      <div class="big">
+        <div class="lab">Frei verfügbar</div>
+        <div class="val gold" id="verfuegbar">0 €</div>
+        <div class="hint">Einnahmen − feste Ausgaben</div>
+      </div>
+      <div class="big">
+        <div class="lab">Sparquote</div>
+        <div class="val" id="quote">0 %</div>
+        <div class="hint" id="quoteHint">Anteil, der übrig bleibt</div>
+      </div>
+    </div>
+
+    <div class="barwrap">
+      <div class="barlabel"><span>So teilt sich dein Geld auf</span><span id="barSum">0 €</span></div>
+      <div class="bar" id="bar"></div>
+      <div class="legend">
+        <span><i style="background:#7C86AE"></i>fest</span>
+        <span><i style="background:var(--gold)"></i>frei</span>
+        <span><i style="background:var(--mint)"></i>bleibt übrig</span>
+        <span id="legMinus" hidden><i style="background:var(--coral)"></i>fehlt</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 SPARZIEL -->
+  <section class="step">
+    <div class="step-head"><span class="step-nr">4</span><h2>Mein Sparziel</h2></div>
+    <div class="note">Wähle ein Ziel oder trage einen eigenen Betrag ein.</div>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <label for="ziel">Zielbetrag</label>
+      <div class="stepper">
+        <button onclick="stepZiel(-10)" aria-label="minus 10">−</button>
+        <input type="number" id="ziel" inputmode="decimal" value="129" min="0" step="1" oninput="rechne()">
+        <button onclick="stepZiel(10)" aria-label="plus 10">+</button>
+      </div>
+      <span class="cur">€</span>
+    </div>
+    <div class="row">
+      <label for="start">Schon gespart</label>
+      <div class="stepper">
+        <button onclick="stepStart(-5)" aria-label="minus 5">−</button>
+        <input type="number" id="start" inputmode="decimal" value="0" min="0" step="1" oninput="rechne()">
+        <button onclick="stepStart(5)" aria-label="plus 5">+</button>
+      </div>
+      <span class="cur">€</span>
+    </div>
+
+    <div class="zielbox">
+      <div class="m" id="monate">–</div>
+      <div class="t" id="zielText">Trage oben deine Zahlen ein.</div>
+    </div>
+  </section>
+
+  <!-- 5 STELLSCHRAUBE -->
+  <section class="step">
+    <div class="step-head"><span class="step-nr">5</span><h2>Was wäre, wenn …?</h2></div>
+    <div class="note">Ziehe den Regler: So viel Euro sparst du im Monat bei den <b>freien</b> Ausgaben ein.</div>
+    <input type="range" class="slider" id="regler" min="0" max="40" value="0" step="1" oninput="rechne()">
+    <div style="display:flex; justify-content:space-between; font-family:var(--mono); font-size:13px; color:var(--gedaempft);">
+      <span>0 €</span><span id="reglerWert" style="color:var(--mint); font-weight:700;">0 € weniger</span><span>40 €</span>
+    </div>
+    <div class="compare">
+      <div class="cbox">
+        <div class="lab">Neuer Saldo</div>
+        <div class="v" id="neuSaldo">0 €</div>
+      </div>
+      <div class="cbox">
+        <div class="lab">Neue Sparquote</div>
+        <div class="v" id="neuQuote">0 %</div>
+      </div>
+      <div class="cbox">
+        <div class="lab">Ziel erreicht in</div>
+        <div class="v" id="neuMonate">–</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="privat">Deine Zahlen bleiben auf diesem Gerät.</span>
+    Das Tool rechnet vollständig im Browser. Es werden keine Daten gespeichert, gesendet oder ausgewertet.
+    Beim Schließen der Seite sind alle Eingaben weg.<br>
+    Humboldt-Gymnasium Cottbus · Wahlpflichtkurs Wirtschaft, Jahrgangsstufe 9 · Sitzung 3
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const FELDER = {
+  einnahmen: [
+    {id:"e1", name:"Taschengeld",                 ben:40, mia:40},
+    {id:"e2", name:"Geldgeschenke (umgelegt)",    ben:10, mia:8},
+    {id:"e3", name:"selbst verdientes Geld",      ben:25, mia:12},
+    {id:"e4", name:"Sonstiges",                   ben:0,  mia:0}
+  ],
+  fix: [
+    {id:"f1", name:"Handyvertrag",                ben:12, mia:10},
+    {id:"f2", name:"Streaming-Abo (mein Anteil)", ben:5,  mia:0},
+    {id:"f3", name:"Verein, Musikschule, Kurs",   ben:8,  mia:12},
+    {id:"f4", name:"Sonstiges Festes",            ben:0,  mia:0}
+  ],
+  frei: [
+    {id:"v1", name:"Essen und Trinken unterwegs", ben:18, mia:16},
+    {id:"v2", name:"Kino, Freizeit, Ausgehen",    ben:12, mia:14},
+    {id:"v3", name:"Kleidung und Kosmetik",       ben:10, mia:12},
+    {id:"v4", name:"Games, Apps, In-App-Käufe",   ben:6,  mia:0}
+  ]
+};
+
+const ZIELE = [
+  {name:"Skateboard",      betrag:129},
+  {name:"Kopfhörer",       betrag:79},
+  {name:"Konzertticket",   betrag:65},
+  {name:"gebrauchtes Rad", betrag:180},
+  {name:"Handy",           betrag:249}
+];
+
+/* ---------- Aufbau ---------- */
+function zeile(f){
+  return '<div class="row">'
+    + '<label for="'+f.id+'">'+f.name+'</label>'
+    + '<div class="stepper">'
+    +   '<button onclick="step(\''+f.id+'\',-5)" aria-label="minus 5">−</button>'
+    +   '<input type="number" id="'+f.id+'" inputmode="decimal" value="0" min="0" step="1" oninput="rechne()">'
+    +   '<button onclick="step(\''+f.id+'\',5)" aria-label="plus 5">+</button>'
+    + '</div>'
+    + '<span class="cur">€</span>'
+    + '</div>';
+}
+function aufbauen(){
+  document.getElementById("einnahmen").innerHTML = FELDER.einnahmen.map(zeile).join("");
+  document.getElementById("fix").innerHTML       = FELDER.fix.map(zeile).join("");
+  document.getElementById("frei").innerHTML      = FELDER.frei.map(zeile).join("");
+  document.getElementById("chips").innerHTML = ZIELE.map(function(z,i){
+    return '<button class="chip" data-b="'+z.betrag+'" onclick="setZiel(this,'+z.betrag+')">'
+      + z.name + ' · ' + z.betrag + ' €</button>';
+  }).join("");
+}
+
+/* ---------- Hilfen ---------- */
+function v(id){
+  const el = document.getElementById(id);
+  if(!el) return 0;
+  const n = parseFloat(String(el.value).replace(",", "."));
+  return (isNaN(n) || n < 0) ? 0 : n;
+}
+function summe(gruppe){ return FELDER[gruppe].reduce(function(s,f){ return s + v(f.id); }, 0); }
+function eur(n){
+  const g = Math.round(n * 100) / 100;
+  return g.toLocaleString("de-DE", {minimumFractionDigits:0, maximumFractionDigits:2})
+           .replace("-", "−") + " €";
+}
+function step(id, d){
+  const el = document.getElementById(id);
+  el.value = Math.max(0, v(id) + d);
+  rechne();
+}
+function stepZiel(d){ const el=document.getElementById("ziel"); el.value=Math.max(0, v("ziel")+d); rechne(); }
+function stepStart(d){ const el=document.getElementById("start"); el.value=Math.max(0, v("start")+d); rechne(); }
+function setZiel(btn, betrag){
+  document.getElementById("ziel").value = betrag;
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(c){ c.classList.remove("on"); });
+  btn.classList.add("on");
+  rechne();
+}
+
+/* ---------- Vorlagen ---------- */
+function fuellen(quelle){
+  ["einnahmen","fix","frei"].forEach(function(g){
+    FELDER[g].forEach(function(f){ document.getElementById(f.id).value = f[quelle]; });
+  });
+  document.getElementById("regler").value = 0;
+  rechne();
+}
+function ladeBen(){ fuellen("ben"); }
+function ladeMia(){ fuellen("mia"); }
+function leeren(){
+  ["einnahmen","fix","frei"].forEach(function(g){
+    FELDER[g].forEach(function(f){ document.getElementById(f.id).value = 0; });
+  });
+  document.getElementById("start").value = 0;
+  document.getElementById("regler").value = 0;
+  rechne();
+}
+
+/* ---------- Monate bis zum Ziel ---------- */
+function monateBis(ziel, schon, rate){
+  const rest = ziel - schon;
+  if(rest <= 0) return 0;
+  if(rate <= 0) return Infinity;
+  return Math.ceil(rest / rate);
+}
+function monateText(m){
+  if(m === 0) return "geschafft";
+  if(!isFinite(m)) return "nie";
+  return m + (m === 1 ? " Monat" : " Monate");
+}
+
+/* ---------- Hauptrechnung ---------- */
+function rechne(){
+  const ein  = summe("einnahmen");
+  const fix  = summe("fix");
+  const frei = summe("frei");
+  const saldo = ein - fix - frei;
+  const verf  = ein - fix;
+  const quote = ein > 0 ? (saldo / ein) * 100 : 0;
+
+  document.getElementById("sumEin").textContent  = eur(ein);
+  document.getElementById("sumFix").textContent  = eur(fix);
+  document.getElementById("sumFrei").textContent = eur(frei);
+
+  const sEl = document.getElementById("saldo");
+  sEl.textContent = (saldo > 0 ? "+" : "") + eur(saldo);
+  sEl.className = "val " + (saldo > 0 ? "pos" : (saldo < 0 ? "neg" : ""));
+  document.getElementById("saldoHint").textContent =
+    saldo < 0 ? "Du gibst mehr aus, als hereinkommt." :
+    saldo === 0 ? "Punktlandung – aber ohne Rücklage." : "Das bleibt am Monatsende übrig.";
+
+  document.getElementById("verfuegbar").textContent = eur(verf);
+
+  const qEl = document.getElementById("quote");
+  qEl.textContent = (ein > 0 ? quote.toFixed(1).replace(".", ",") : "0") + " %";
+  qEl.className = "val " + (quote > 0 ? "pos" : (quote < 0 ? "neg" : ""));
+  document.getElementById("quoteHint").textContent =
+    ein === 0 ? "Trage zuerst deine Einnahmen ein." :
+    quote < 0 ? "Negative Sparquote: Es fehlt Geld." :
+    quote < 10 ? "Anteil der Einnahmen, der übrig bleibt." :
+    "Solide – mehr als jeder zehnte Euro bleibt liegen.";
+
+  /* Balken */
+  const basis = Math.max(ein, fix + frei);
+  const bar = document.getElementById("bar");
+  bar.innerHTML = "";
+  document.getElementById("barSum").textContent = eur(basis);
+  if(basis > 0){
+    const teile = [
+      {k:"fix",  w:fix,  t:"fest"},
+      {k:"frei", w:frei, t:"frei"},
+      (saldo >= 0 ? {k:"spar", w:saldo, t:"übrig"} : {k:"minus", w:-saldo, t:"fehlt"})
+    ];
+    teile.forEach(function(p){
+      if(p.w <= 0) return;
+      const d = document.createElement("div");
+      d.className = "seg " + p.k;
+      const proz = (p.w / basis) * 100;
+      d.style.width = proz + "%";
+      d.textContent = proz >= 13 ? eur(p.w) : "";
+      d.title = p.t + ": " + eur(p.w);
+      bar.appendChild(d);
+    });
+  }
+  document.getElementById("legMinus").hidden = saldo >= 0;
+
+  /* Sparziel */
+  const ziel  = v("ziel");
+  const schon = v("start");
+  const m = monateBis(ziel, schon, saldo);
+  const mEl = document.getElementById("monate");
+  mEl.textContent = isFinite(m) ? (m === 0 ? "0" : m) : "∞";
+  mEl.className = "m" + ((!isFinite(m) || m > 12) ? " warn" : "");
+
+  const zt = document.getElementById("zielText");
+  if(ziel <= 0){
+    zt.textContent = "Wähle oben ein Ziel oder trage einen Betrag ein.";
+  } else if(m === 0){
+    zt.textContent = "Du hast schon genug gespart – das Ziel ist erreicht.";
+  } else if(!isFinite(m)){
+    zt.innerHTML = "Mit einem Saldo von <b>" + eur(saldo) + "</b> kommst du nie an dein Ziel. Probiere Schritt 5.";
+  } else {
+    zt.innerHTML = "Bei <b>" + eur(saldo) + "</b> im Monat brauchst du <b>" + monateText(m)
+      + "</b> für " + eur(ziel) + (schon > 0 ? " (davon " + eur(schon) + " schon gespart)" : "") + ".";
+  }
+
+  /* Stellschraube */
+  const kuerzung = Math.min(v("regler"), frei);
+  document.getElementById("regler").max = 40;
+  document.getElementById("reglerWert").textContent = eur(kuerzung) + " weniger";
+  const nSaldo = saldo + kuerzung;
+  const nQuote = ein > 0 ? (nSaldo / ein) * 100 : 0;
+  const nM = monateBis(ziel, schon, nSaldo);
+
+  const nsEl = document.getElementById("neuSaldo");
+  nsEl.textContent = (nSaldo > 0 ? "+" : "") + eur(nSaldo);
+  nsEl.style.color = nSaldo < 0 ? "var(--coral)" : "var(--mint)";
+  document.getElementById("neuQuote").textContent =
+    (ein > 0 ? nQuote.toFixed(1).replace(".", ",") : "0") + " %";
+  document.getElementById("neuMonate").textContent = monateText(nM);
+}
+
+/* ---------- Start ---------- */
+aufbauen();
+ladeBen();
+</script>
+</body>
+</html>
