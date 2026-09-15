@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vertrags-Check · WPK Wirtschaft 9</title>
+<style>
+:root{
+  --nacht:#12172B; --nacht-hell:#1B2340; --nacht-tief:#0C1020;
+  --mint:#3DE8A0; --coral:#FF6B5D; --gold:#FFC94D;
+  --sand:#F5F1E8; --gedaempft:#8A93B2; --linie:#2A3355;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--nacht); color:var(--sand); font-family:var(--sans);
+  font-size:16px; line-height:1.5; padding:0 0 48px;
+  padding-top:env(safe-area-inset-top,0px);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+header{padding:26px 0 18px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);margin:0 0 6px}
+h1{font-size:clamp(24px,5.4vw,34px);line-height:1.15;margin:0 0 6px;font-weight:800}
+.sub{color:var(--gedaempft);font-size:15px;margin:0}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin:20px 0 18px;flex-wrap:wrap}
+.tab{
+  flex:1 1 180px; min-width:150px; cursor:pointer; border:1px solid var(--linie);
+  background:var(--nacht-hell); color:var(--gedaempft); border-radius:14px;
+  padding:12px 14px; font-size:14px; font-weight:700; text-align:left;
+  font-family:var(--sans); transition:transform .15s ease, border-color .15s, color .15s;
+}
+.tab .num{font-family:var(--mono);font-size:11px;display:block;color:var(--gedaempft);margin-bottom:3px;letter-spacing:.12em}
+.tab[aria-selected="true"]{border-color:var(--mint);color:var(--sand);background:#1E2848}
+.tab[aria-selected="true"] .num{color:var(--mint)}
+.tab:active{transform:scale(.98)}
+
+.card{background:var(--nacht-hell);border:1px solid var(--linie);border-radius:18px;padding:18px;margin:0 0 16px}
+.card h2{font-size:18px;margin:0 0 4px}
+.card .hint{color:var(--gedaempft);font-size:14px;margin:0 0 16px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}}
+
+label{display:block;font-size:13px;color:var(--gedaempft);margin:0 0 5px;font-weight:600}
+input[type=number],input[type=text],input[type=date],select{
+  width:100%;background:var(--nacht-tief);border:1px solid var(--linie);color:var(--sand);
+  border-radius:11px;padding:11px 12px;font-family:var(--mono);font-size:16px;
+}
+input:focus,select:focus{outline:2px solid var(--mint);outline-offset:1px}
+.feld{margin:0 0 13px}
+
+input[type=range]{width:100%;accent-color:var(--mint);height:28px}
+.slider-kopf{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.slider-wert{font-family:var(--mono);font-size:20px;color:var(--mint);font-weight:700}
+
+.ergebnis{background:var(--nacht-tief);border:1px solid var(--linie);border-radius:14px;padding:14px;margin-top:6px}
+.zeile{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--linie)}
+.zeile:last-child{border-bottom:none}
+.zeile .lab{font-size:14px;color:var(--gedaempft)}
+.zeile .val{font-family:var(--mono);font-size:17px;font-weight:700;white-space:nowrap}
+.gross{font-family:var(--mono);font-size:clamp(28px,7vw,40px);font-weight:800;line-height:1.1;display:block}
+.mint{color:var(--mint)} .coral{color:var(--coral)} .gold{color:var(--gold)}
+
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;border:1px solid currentColor;margin-bottom:8px}
+
+.bar-block{margin:14px 0 0}
+.bar-kopf{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.bar-kopf b{font-family:var(--mono);font-size:15px}
+.bar{height:16px;border-radius:999px;background:#0C1020;overflow:hidden;border:1px solid var(--linie)}
+.bar>span{display:block;height:100%;border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.fazit{margin-top:16px;border-radius:14px;padding:14px 16px;border:1px solid;font-size:15px;line-height:1.55}
+.fazit b{display:block;font-size:16px;margin-bottom:3px}
+.fazit.gut{border-color:var(--mint);background:rgba(61,232,160,.09);color:var(--sand)}
+.fazit.warn{border-color:var(--coral);background:rgba(255,107,93,.09);color:var(--sand)}
+.fazit.neutral{border-color:var(--gold);background:rgba(255,201,77,.09);color:var(--sand)}
+
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.preset{cursor:pointer;background:transparent;border:1px dashed var(--linie);color:var(--gedaempft);
+  border-radius:999px;padding:7px 13px;font-size:13px;font-family:var(--sans);font-weight:600}
+.preset:active{border-color:var(--mint);color:var(--mint)}
+
+.recht{font-size:13.5px;color:var(--gedaempft);line-height:1.6}
+.recht b{color:var(--sand)}
+.recht ul{margin:8px 0 0;padding-left:18px}
+.recht li{margin-bottom:7px}
+.para{font-family:var(--mono);font-size:12px;color:var(--mint)}
+
+footer{color:var(--gedaempft);font-size:12.5px;line-height:1.6;margin-top:24px;border-top:1px solid var(--linie);padding-top:14px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kicker">Sitzung 4 · Meine ersten Verträge</p>
+  <h1>Vertrags-Check</h1>
+  <p class="sub">Was kostet ein Abo wirklich – und bis wann kommst du wieder raus?</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-1" aria-selected="true" aria-controls="p1"><span class="num">01</span>Abo-Rechner</button>
+  <button class="tab" role="tab" id="tab-2" aria-selected="false" aria-controls="p2"><span class="num">02</span>Tarif-Duell</button>
+  <button class="tab" role="tab" id="tab-3" aria-selected="false" aria-controls="p3"><span class="num">03</span>Kündigungs-Countdown</button>
+</div>
+
+<!-- ============ PANEL 1 ============ -->
+<section id="p1" role="tabpanel" aria-labelledby="tab-1">
+  <div class="card">
+    <h2>Was kostet dein Abo wirklich?</h2>
+    <p class="hint">Der Monatspreis ist nur die halbe Wahrheit. Trage alles ein, was der Vertrag kostet.</p>
+
+    <div class="presets">
+      <button class="preset" data-p1="24.90|24|29|19.90">Beispiel: FitCube Flex24</button>
+      <button class="preset" data-p1="12.99|12|0|0">Beispiel: StreamMax Jahr</button>
+      <button class="preset" data-p1="19.99|24|39.99|0">Beispiel: MobilGo Handytarif</button>
+    </div>
+
+    <div class="grid2">
+      <div class="feld"><label for="i-preis">Monatspreis in €</label>
+        <input type="number" id="i-preis" value="24.90" min="0" step="0.01" inputmode="decimal"></div>
+      <div class="feld"><label for="i-laufzeit">Mindestlaufzeit in Monaten</label>
+        <input type="number" id="i-laufzeit" value="24" min="1" max="24" step="1" inputmode="numeric"></div>
+      <div class="feld"><label for="i-einmal">Einmalige Gebühren in € (Anmeldung, Aktivierung …)</label>
+        <input type="number" id="i-einmal" value="29" min="0" step="0.01" inputmode="decimal"></div>
+      <div class="feld"><label for="i-jahr">Zusatzgebühr pro Vertragsjahr in € (Servicepauschale …)</label>
+        <input type="number" id="i-jahr" value="19.90" min="0" step="0.01" inputmode="decimal"></div>
+    </div>
+
+    <div class="feld" style="margin-top:6px">
+      <div class="slider-kopf">
+        <label for="i-nutzung" style="margin:0">Wie viele Monate nutzt du es wirklich?</label>
+        <span class="slider-wert" id="o-nutzung-lab">24</span>
+      </div>
+      <input type="range" id="i-nutzung" min="1" max="24" value="24" step="1">
+    </div>
+
+    <div class="ergebnis">
+      <div style="text-align:center;padding:6px 0 12px">
+        <span class="badge mint">Gesamtkosten über die Laufzeit</span>
+        <span class="gross mint" id="o-gesamt">666,40 €</span>
+      </div>
+      <div class="zeile"><span class="lab">Monatspreis × Laufzeit</span><span class="val" id="o-teil1">597,60 €</span></div>
+      <div class="zeile"><span class="lab">einmalige Gebühren</span><span class="val" id="o-teil2">29,00 €</span></div>
+      <div class="zeile"><span class="lab">Zusatzgebühren (<span id="o-jahre">2</span> Vertragsjahre)</span><span class="val" id="o-teil3">39,80 €</span></div>
+      <div class="zeile"><span class="lab">Kosten pro <b style="color:var(--sand)">genutztem</b> Monat</span><span class="val gold" id="o-projahr">27,77 €</span></div>
+    </div>
+
+    <div class="fazit neutral" id="o-fazit1"><b>Voll genutzt</b>Wenn du wirklich alle Monate nutzt, zahlst du pro genutztem Monat ungefähr den Preis, der auf dem Vertrag steht.</div>
+  </div>
+</section>
+
+<!-- ============ PANEL 2 ============ -->
+<section id="p2" role="tabpanel" aria-labelledby="tab-2" hidden>
+  <div class="card">
+    <h2>Tarif-Duell</h2>
+    <p class="hint">Langer Vertrag mit kleinem Monatspreis gegen monatlich kündbar mit höherem Preis. Wer gewinnt, hängt davon ab, wie lange du durchhältst.</p>
+
+    <div class="grid2">
+      <div>
+        <p class="badge mint" style="margin-bottom:10px">Tarif A · mit Laufzeit</p>
+        <div class="feld"><label for="a-preis">Monatspreis in €</label>
+          <input type="number" id="a-preis" value="24.90" min="0" step="0.01" inputmode="decimal"></div>
+        <div class="feld"><label for="a-laufzeit">Mindestlaufzeit in Monaten</label>
+          <input type="number" id="a-laufzeit" value="24" min="1" max="24" step="1" inputmode="numeric"></div>
+        <div class="feld"><label for="a-extra">Einmal- und Jahresgebühren gesamt in €</label>
+          <input type="number" id="a-extra" value="68.80" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div>
+        <p class="badge gold" style="margin-bottom:10px">Tarif B · monatlich kündbar</p>
+        <div class="feld"><label for="b-preis">Monatspreis in €</label>
+          <input type="number" id="b-preis" value="34.90" min="0" step="0.01" inputmode="decimal"></div>
+        <div class="feld"><label for="b-extra">Einmalgebühren in €</label>
+          <input type="number" id="b-extra" value="0" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+    </div>
+
+    <div class="feld" style="margin-top:6px">
+      <div class="slider-kopf">
+        <label for="d-nutzung" style="margin:0">So viele Monate nutzt du es wirklich</label>
+        <span class="slider-wert" id="d-nutzung-lab">7</span>
+      </div>
+      <input type="range" id="d-nutzung" min="1" max="24" value="7" step="1">
+    </div>
+
+    <div class="bar-block">
+      <div class="bar-kopf"><span>Tarif A · mit Laufzeit</span><b class="mint" id="d-a">666,40 €</b></div>
+      <div class="bar"><span id="d-bar-a" style="width:100%;background:var(--mint)"></span></div>
+    </div>
+    <div class="bar-block">
+      <div class="bar-kopf"><span>Tarif B · monatlich kündbar</span><b class="gold" id="d-b">244,30 €</b></div>
+      <div class="bar"><span id="d-bar-b" style="width:37%;background:var(--gold)"></span></div>
+    </div>
+
+    <div class="ergebnis" style="margin-top:16px">
+      <div class="zeile"><span class="lab">Tarif A pro genutztem Monat</span><span class="val mint" id="d-a-pm">95,20 €</span></div>
+      <div class="zeile"><span class="lab">Tarif B pro genutztem Monat</span><span class="val gold" id="d-b-pm">34,90 €</span></div>
+      <div class="zeile"><span class="lab">Ab so vielen genutzten Monaten lohnt Tarif A</span><span class="val" id="d-break">20 Monate</span></div>
+    </div>
+
+    <div class="fazit warn" id="d-fazit"><b>Tarif B ist hier günstiger</b>Du sparst 422,10 €. Tarif A bindet dich – du zahlst ihn auch dann weiter, wenn du nicht mehr hingehst.</div>
+  </div>
+</section>
+
+<!-- ============ PANEL 3 ============ -->
+<section id="p3" role="tabpanel" aria-labelledby="tab-3" hidden>
+  <div class="card">
+    <h2>Wann musst du kündigen?</h2>
+    <p class="hint">Ein Dauervertrag endet nicht von selbst. Rechne aus, wann dein letzter Kündigungstag ist.</p>
+
+    <div class="grid2">
+      <div class="feld"><label for="k-start">Vertragsbeginn</label>
+        <input type="date" id="k-start" value="2026-10-01"></div>
+      <div class="feld"><label for="k-laufzeit">Mindestlaufzeit in Monaten</label>
+        <input type="number" id="k-laufzeit" value="24" min="1" max="24" step="1" inputmode="numeric"></div>
+      <div class="feld"><label for="k-frist">Kündigungsfrist in Monaten</label>
+        <input type="number" id="k-frist" value="1" min="0" max="3" step="1" inputmode="numeric"></div>
+      <div class="feld"><label for="k-heute">Heute ist</label>
+        <input type="date" id="k-heute"></div>
+    </div>
+
+    <div class="ergebnis">
+      <div style="text-align:center;padding:6px 0 12px">
+        <span class="badge coral">Spätester Kündigungstag</span>
+        <span class="gross coral" id="k-stichtag">30.08.2028</span>
+      </div>
+      <div class="zeile"><span class="lab">Mindestlaufzeit endet am</span><span class="val" id="k-ende">30.09.2028</span></div>
+      <div class="zeile"><span class="lab">Bis zum Stichtag bleiben</span><span class="val gold" id="k-tage">715 Tage</span></div>
+      <div class="zeile"><span class="lab">Kosten, wenn du die Kündigung verpasst</span><span class="val coral" id="k-risiko">je nach Vertrag</span></div>
+    </div>
+
+    <div class="fazit neutral" id="k-fazit"><b>Trag dir den Stichtag ein</b>Setz dir eine Erinnerung zwei Wochen vorher in den Kalender. Verpasst du den Tag, läuft der Vertrag weiter.</div>
+  </div>
+
+  <div class="card">
+    <h2>Deine Rechte – die gesetzlichen Leitplanken</h2>
+    <div class="recht">
+      <ul>
+        <li><b>Höchstens 24 Monate.</b> Ein Verbrauchervertrag mit fester Laufzeit darf dich zu Beginn nicht länger als 24 Monate binden. <span class="para">§ 309 Nr. 9 a BGB</span></li>
+        <li><b>Beim Handyvertrag gilt dasselbe</b> – und der Anbieter muss dir zusätzlich einen Tarif mit höchstens 12 Monaten Laufzeit anbieten. <span class="para">§ 56 Abs. 1 TKG</span></li>
+        <li><b>Automatische Verlängerung nur auf unbestimmte Zeit.</b> Danach kannst du jederzeit mit höchstens einem Monat Frist kündigen – keine neue Zwei-Jahres-Bindung. <span class="para">§ 309 Nr. 9 b BGB · § 56 Abs. 3 TKG</span></li>
+        <li><b>Kündigungsfrist höchstens ein Monat</b> vor Ablauf der Mindestlaufzeit. <span class="para">§ 309 Nr. 9 c BGB</span></li>
+        <li><b>Kündigungsbutton.</b> Was du online abschließen kannst, musst du online auch kündigen können: über eine Schaltfläche „Verträge hier kündigen“. Fehlt sie, kannst du jederzeit ohne Frist kündigen. <span class="para">§ 312k BGB</span></li>
+      </ul>
+      <p style="margin-top:14px">Stand der Angaben: September 2026. Im Einzelfall entscheidet immer dein Vertragstext.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Alle Beträge sind Beispielwerte für den Unterricht, keine echten Anbieterpreise.<br>
+  Das Tool rechnet ausschließlich in deinem Browser. Es speichert nichts und sendet nichts.<br>
+  WPK Wirtschaft · Jahrgangsstufe 9 · Humboldt-Gymnasium Cottbus
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var euro = function(n){
+    if(!isFinite(n)) n = 0;
+    return n.toFixed(2).replace(".", ",") + " €";
+  };
+  var num = function(id){
+    var v = parseFloat(document.getElementById(id).value.replace(",", "."));
+    return isFinite(v) && v >= 0 ? v : 0;
+  };
+  var intv = function(id, min, max){
+    var v = parseInt(document.getElementById(id).value, 10);
+    if(!isFinite(v)) v = min;
+    return Math.min(max, Math.max(min, v));
+  };
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Tabs ---------- */
+  var tabs = [].slice.call(document.querySelectorAll(".tab"));
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){
+      tabs.forEach(function(o){
+        var sel = (o === t);
+        o.setAttribute("aria-selected", sel ? "true" : "false");
+        $(o.getAttribute("aria-controls")).hidden = !sel;
+      });
+    });
+  });
+
+  /* ---------- Panel 1: Abo-Rechner ---------- */
+  function rechne1(){
+    var preis = num("i-preis");
+    var lauf  = intv("i-laufzeit", 1, 24);
+    var einm  = num("i-einmal");
+    var jahr  = num("i-jahr");
+
+    var slider = $("i-nutzung");
+    slider.max = lauf;
+    if(parseInt(slider.value,10) > lauf) slider.value = lauf;
+    var nutzung = parseInt(slider.value, 10);
+
+    var jahre   = Math.ceil(lauf / 12);
+    var teil1   = preis * lauf;
+    var teil3   = jahr * jahre;
+    var gesamt  = teil1 + einm + teil3;
+    var proMon  = nutzung > 0 ? gesamt / nutzung : 0;
+
+    $("o-nutzung-lab").textContent = nutzung;
+    $("o-gesamt").textContent  = euro(gesamt);
+    $("o-teil1").textContent   = euro(teil1);
+    $("o-teil2").textContent   = euro(einm);
+    $("o-teil3").textContent   = euro(teil3);
+    $("o-jahre").textContent   = jahre;
+    $("o-projahr").textContent = euro(proMon);
+
+    var f = $("o-fazit1");
+    var aufschlag = preis > 0 ? (proMon / preis - 1) * 100 : 0;
+    if(nutzung >= lauf){
+      f.className = "fazit gut";
+      f.innerHTML = "<b>Voll genutzt</b>Du nutzt den Vertrag über die ganze Laufzeit. Pro genutztem Monat zahlst du " +
+        euro(proMon) + " – das sind " + Math.round(aufschlag) + " % mehr als der beworbene Monatspreis, weil die Einmal- und Jahresgebühren dazukommen.";
+    } else if(aufschlag >= 50){
+      f.className = "fazit warn";
+      f.innerHTML = "<b>Teurer Leerlauf</b>Du zahlst " + euro(gesamt) + " für " + nutzung +
+        " genutzte Monate. Pro genutztem Monat sind das " + euro(proMon) + " statt " + euro(preis) +
+        " – also gut " + Math.round(aufschlag) + " % mehr. Die restlichen " + (lauf - nutzung) + " Monate zahlst du mit, ohne etwas davon zu haben.";
+    } else {
+      f.className = "fazit neutral";
+      f.innerHTML = "<b>Aufpassen</b>Pro genutztem Monat zahlst du " + euro(proMon) + " statt " + euro(preis) +
+        ". Je kürzer du den Vertrag wirklich nutzt, desto stärker steigt dieser Wert.";
+    }
+  }
+
+  ["i-preis","i-laufzeit","i-einmal","i-jahr","i-nutzung"].forEach(function(id){
+    $(id).addEventListener("input", rechne1);
+  });
+  [].slice.call(document.querySelectorAll("[data-p1]")).forEach(function(b){
+    b.addEventListener("click", function(){
+      var p = b.getAttribute("data-p1").split("|");
+      $("i-preis").value = p[0]; $("i-laufzeit").value = p[1];
+      $("i-einmal").value = p[2]; $("i-jahr").value = p[3];
+      $("i-nutzung").max = p[1]; $("i-nutzung").value = p[1];
+      rechne1();
+    });
+  });
+
+  /* ---------- Panel 2: Tarif-Duell ---------- */
+  function rechne2(){
+    var ap = num("a-preis"), al = intv("a-laufzeit",1,24), ax = num("a-extra");
+    var bp = num("b-preis"), bx = num("b-extra");
+
+    var slider = $("d-nutzung");
+    slider.max = al;
+    if(parseInt(slider.value,10) > al) slider.value = al;
+    var n = parseInt(slider.value, 10);
+
+    /* Tarif A bindet: es wird die volle Laufzeit gezahlt, egal wie lange genutzt wird. */
+    var kostenA = ap * al + ax;
+    var kostenB = bp * n + bx;
+
+    var maxK = Math.max(kostenA, kostenB, 1);
+    $("d-nutzung-lab").textContent = n;
+    $("d-a").textContent = euro(kostenA);
+    $("d-b").textContent = euro(kostenB);
+    $("d-bar-a").style.width = (kostenA / maxK * 100) + "%";
+    $("d-bar-b").style.width = (kostenB / maxK * 100) + "%";
+    $("d-a-pm").textContent = euro(n > 0 ? kostenA / n : 0);
+    $("d-b-pm").textContent = euro(n > 0 ? kostenB / n : 0);
+
+    /* Break-even: ab wie vielen genutzten Monaten ist A guenstiger als B? */
+    var be = null;
+    for(var m = 1; m <= al; m++){
+      if(kostenA < bp * m + bx){ be = m; break; }
+    }
+    $("d-break").textContent = be === null
+      ? "in dieser Laufzeit nie"
+      : be + (be === 1 ? " Monat" : " Monate");
+
+    var f = $("d-fazit");
+    var diff = Math.abs(kostenA - kostenB);
+    if(kostenA < kostenB){
+      f.className = "fazit gut";
+      f.innerHTML = "<b>Tarif A ist hier günstiger</b>Du sparst " + euro(diff) +
+        ". Bei dieser Nutzungsdauer lohnt sich die lange Bindung – vorausgesetzt, du hältst wirklich durch.";
+    } else if(kostenA > kostenB){
+      f.className = "fazit warn";
+      f.innerHTML = "<b>Tarif B ist hier günstiger</b>Du sparst " + euro(diff) +
+        ". Tarif A bindet dich: Du zahlst ihn auch dann weiter, wenn du ihn nicht mehr nutzt." +
+        (be === null ? "" : " Erst ab " + be + " genutzten Monaten dreht sich das um.");
+    } else {
+      f.className = "fazit neutral";
+      f.innerHTML = "<b>Gleichstand</b>Beide Tarife kosten dich hier genau gleich viel. Jetzt entscheiden andere Dinge – zum Beispiel, wie sicher du dir bist.";
+    }
+  }
+  ["a-preis","a-laufzeit","a-extra","b-preis","b-extra","d-nutzung"].forEach(function(id){
+    $(id).addEventListener("input", rechne2);
+  });
+
+  /* ---------- Panel 3: Kuendigungs-Countdown ---------- */
+  function fmt(d){
+    var p = function(x){ return (x < 10 ? "0" : "") + x; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+  function addMonate(d, m){
+    var j = d.getFullYear(), mo = d.getMonth() + m, t = d.getDate();
+    var letzter = new Date(j, mo + 1, 0).getDate();
+    return new Date(j, mo, Math.min(t, letzter));
+  }
+  function rechne3(){
+    var sv = $("k-start").value;
+    if(!sv){ return; }
+    var teile = sv.split("-");
+    var start = new Date(+teile[0], +teile[1] - 1, +teile[2]);
+    var lauf  = intv("k-laufzeit", 1, 24);
+    var frist = intv("k-frist", 0, 3);
+
+    /* Laufzeitende: Vertragsbeginn + Laufzeit, minus einen Tag */
+    var ende = addMonate(start, lauf);
+    ende.setDate(ende.getDate() - 1);
+    var stichtag = addMonate(ende, -frist);
+
+    $("k-ende").textContent = fmt(ende);
+    $("k-stichtag").textContent = fmt(stichtag);
+
+    var hv = $("k-heute").value;
+    if(hv){
+      var ht = hv.split("-");
+      var heute = new Date(+ht[0], +ht[1] - 1, +ht[2]);
+      var tage = Math.round((stichtag - heute) / 86400000);
+      $("k-tage").textContent = tage >= 0
+        ? tage + (tage === 1 ? " Tag" : " Tage")
+        : "Stichtag vorbei";
+      var f = $("k-fazit");
+      if(tage < 0){
+        f.className = "fazit warn";
+        f.innerHTML = "<b>Der Stichtag ist vorbei</b>Der Vertrag verlängert sich. Immerhin: Nach der Verlängerung darfst du jederzeit mit höchstens einem Monat Frist kündigen (§ 309 Nr. 9 b BGB).";
+      } else if(tage <= 30){
+        f.className = "fazit warn";
+        f.innerHTML = "<b>Jetzt handeln</b>Nur noch " + tage + " Tage bis zum Stichtag. Kündige schriftlich oder über den Kündigungsbutton – und lass dir den Eingang bestätigen.";
+      } else {
+        f.className = "fazit neutral";
+        f.innerHTML = "<b>Trag dir den Stichtag ein</b>Setz dir eine Erinnerung zwei Wochen vor dem " + fmt(stichtag) + " in den Kalender. Verpasst du den Tag, läuft der Vertrag weiter.";
+      }
+    }
+    $("k-risiko").textContent = "je nach Vertrag";
+  }
+  ["k-start","k-laufzeit","k-frist","k-heute"].forEach(function(id){
+    $(id).addEventListener("input", rechne3);
+  });
+
+  /* Heute vorbelegen */
+  (function(){
+    var h = new Date();
+    var p = function(x){ return (x < 10 ? "0" : "") + x; };
+    $("k-heute").value = h.getFullYear() + "-" + p(h.getMonth() + 1) + "-" + p(h.getDate());
+  })();
+
+  rechne1(); rechne2(); rechne3();
+})();
+</script>
+</body>
+</html>
