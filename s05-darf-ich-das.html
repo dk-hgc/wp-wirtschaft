@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Darf ich das? · WPK Wirtschaft 9</title>
+<style>
+:root{
+  --nacht:#12172B; --nacht-hell:#1B2340; --nacht-tief:#0C1020;
+  --mint:#3DE8A0; --coral:#FF6B5D; --gold:#FFC94D;
+  --sand:#F5F1E8; --gedaempft:#8A93B2; --linie:#2A3355;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--nacht);color:var(--sand);font-family:var(--sans);font-size:16px;
+  line-height:1.5;padding:0 0 48px;padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+header{padding:26px 0 18px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);margin:0 0 6px}
+h1{font-size:clamp(24px,5.4vw,34px);line-height:1.15;margin:0 0 6px;font-weight:800}
+.sub{color:var(--gedaempft);font-size:15px;margin:0}
+
+.tabs{display:flex;gap:8px;margin:20px 0 18px;flex-wrap:wrap}
+.tab{flex:1 1 180px;min-width:150px;cursor:pointer;border:1px solid var(--linie);
+  background:var(--nacht-hell);color:var(--gedaempft);border-radius:14px;padding:12px 14px;
+  font-size:14px;font-weight:700;text-align:left;font-family:var(--sans);transition:transform .15s ease,border-color .15s,color .15s}
+.tab .num{font-family:var(--mono);font-size:11px;display:block;color:var(--gedaempft);margin-bottom:3px;letter-spacing:.12em}
+.tab[aria-selected="true"]{border-color:var(--mint);color:var(--sand);background:#1E2848}
+.tab[aria-selected="true"] .num{color:var(--mint)}
+.tab:active{transform:scale(.98)}
+
+.card{background:var(--nacht-hell);border:1px solid var(--linie);border-radius:18px;padding:18px;margin:0 0 16px}
+.card h2{font-size:18px;margin:0 0 4px}
+.card .hint{color:var(--gedaempft);font-size:14px;margin:0 0 16px}
+
+/* Wizard */
+.fortschritt{display:flex;gap:6px;margin:0 0 18px}
+.fortschritt span{flex:1;height:5px;border-radius:99px;background:#0C1020;border:1px solid var(--linie)}
+.fortschritt span.an{background:var(--mint);border-color:var(--mint)}
+.frage{font-size:clamp(19px,4.4vw,24px);font-weight:800;line-height:1.3;margin:0 0 6px}
+.frage-hilfe{color:var(--gedaempft);font-size:14px;margin:0 0 18px}
+.antworten{display:flex;flex-direction:column;gap:10px}
+.antwort{cursor:pointer;text-align:left;width:100%;background:var(--nacht-tief);border:1px solid var(--linie);
+  color:var(--sand);border-radius:13px;padding:14px 16px;font-size:16px;font-weight:600;font-family:var(--sans);
+  transition:border-color .15s,transform .12s}
+.antwort:active{transform:scale(.99)}
+.antwort:hover{border-color:var(--mint)}
+.antwort small{display:block;font-weight:400;color:var(--gedaempft);font-size:13px;margin-top:3px}
+
+.ergebnis{border-radius:16px;padding:18px;border:2px solid;margin-top:4px}
+.ergebnis .stempel{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 8px}
+.ergebnis h3{font-size:clamp(21px,5vw,27px);margin:0 0 10px;line-height:1.2}
+.ergebnis p{margin:0 0 10px;font-size:15px;line-height:1.6}
+.ergebnis .para{font-family:var(--mono);font-size:13px;color:inherit;opacity:.85}
+.gruen{border-color:var(--mint)} .gruen h3,.gruen .stempel{color:var(--mint)}
+.gelb{border-color:var(--gold)} .gelb h3,.gelb .stempel{color:var(--gold)}
+.rot{border-color:var(--coral)} .rot h3,.rot .stempel{color:var(--coral)}
+
+.knopfzeile{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.knopf{cursor:pointer;background:transparent;border:1px solid var(--linie);color:var(--gedaempft);
+  border-radius:99px;padding:9px 16px;font-size:14px;font-weight:600;font-family:var(--sans)}
+.knopf.stark{border-color:var(--mint);color:var(--mint)}
+.knopf:active{transform:scale(.98)}
+.pfad{font-size:13px;color:var(--gedaempft);margin-top:14px;line-height:1.6}
+.pfad b{color:var(--sand);font-weight:600}
+
+/* Fallkartei */
+.faelle{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.faelle{grid-template-columns:1fr}}
+.fall{background:var(--nacht-tief);border:1px solid var(--linie);border-radius:14px;padding:14px;cursor:pointer}
+.fall:hover{border-color:var(--gedaempft)}
+.fall .nr{font-family:var(--mono);font-size:11px;color:var(--mint);letter-spacing:.12em}
+.fall .txt{font-size:15px;margin:6px 0 0;line-height:1.45}
+.fall .loesung{margin-top:12px;padding-top:12px;border-top:1px solid var(--linie);font-size:14px;line-height:1.55}
+.fall .loesung .urteil{font-weight:800;display:block;margin-bottom:4px}
+.fall .tipp{font-family:var(--mono);font-size:11px;color:var(--gedaempft);margin-top:10px;letter-spacing:.1em}
+
+/* Paragrafen */
+.norm{border-left:3px solid var(--mint);padding:2px 0 2px 14px;margin:0 0 16px}
+.norm h4{margin:0 0 4px;font-size:15px;font-family:var(--mono);color:var(--mint)}
+.norm p{margin:0;font-size:14.5px;color:var(--sand);line-height:1.6}
+.norm .zitat{color:var(--gedaempft);font-style:italic;margin-top:5px;font-size:13.5px}
+
+footer{color:var(--gedaempft);font-size:12.5px;line-height:1.6;margin-top:24px;border-top:1px solid var(--linie);padding-top:14px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kicker">Sitzung 5 · Gesch&auml;ftsf&auml;higkeit</p>
+  <h1>Darf ich das?</h1>
+  <p class="sub">Pr&uuml;fe in f&uuml;nf Fragen, ob ein Vertrag wirklich gilt.</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-1" aria-selected="true" aria-controls="p1"><span class="num">01</span>Fall-Pr&uuml;fer</button>
+  <button class="tab" role="tab" id="tab-2" aria-selected="false" aria-controls="p2"><span class="num">02</span>Fallkartei</button>
+  <button class="tab" role="tab" id="tab-3" aria-selected="false" aria-controls="p3"><span class="num">03</span>Die Paragrafen</button>
+</div>
+
+<!-- ============ PANEL 1 ============ -->
+<section id="p1" role="tabpanel" aria-labelledby="tab-1">
+  <div class="card">
+    <div class="fortschritt" id="w-fortschritt"></div>
+    <div id="w-frage-block">
+      <p class="frage" id="w-frage"></p>
+      <p class="frage-hilfe" id="w-hilfe"></p>
+      <div class="antworten" id="w-antworten"></div>
+    </div>
+    <div id="w-ergebnis" hidden></div>
+    <div class="knopfzeile">
+      <button class="knopf" id="w-zurueck">Eine Frage zur&uuml;ck</button>
+      <button class="knopf stark" id="w-neu">Neuer Fall</button>
+    </div>
+    <div class="pfad" id="w-pfad"></div>
+  </div>
+</section>
+
+<!-- ============ PANEL 2 ============ -->
+<section id="p2" role="tabpanel" aria-labelledby="tab-2" hidden>
+  <div class="card">
+    <h2>Acht F&auml;lle</h2>
+    <p class="hint">Entscheidet zuerst selbst. Dann antippen und die L&ouml;sung aufdecken.</p>
+    <div class="faelle" id="fallkartei"></div>
+  </div>
+</section>
+
+<!-- ============ PANEL 3 ============ -->
+<section id="p3" role="tabpanel" aria-labelledby="tab-3" hidden>
+  <div class="card">
+    <h2>Die Paragrafen im Klartext</h2>
+    <p class="hint">Alles aus dem B&uuml;rgerlichen Gesetzbuch (BGB). Stand: September 2026.</p>
+
+    <div class="norm">
+      <h4>&sect; 2 BGB &middot; Volljährigkeit</h4>
+      <p>Mit 18 bist du voll gesch&auml;ftsf&auml;hig. Ab da gilt jeder Vertrag, den du schlie&szlig;t &ndash; auch der ung&uuml;nstige.</p>
+    </div>
+    <div class="norm">
+      <h4>&sect; 104 Nr. 1 &middot; &sect; 105 BGB &middot; unter 7</h4>
+      <p>Wer noch keine sieben Jahre alt ist, ist gesch&auml;ftsunf&auml;hig. Seine Willenserkl&auml;rung ist nichtig &ndash; der Vertrag kommt gar nicht erst zustande. Auch die Eltern k&ouml;nnen ihn nicht nachtr&auml;glich genehmigen.</p>
+    </div>
+    <div class="norm">
+      <h4>&sect; 106 BGB &middot; 7 bis 17</h4>
+      <p>In diesem Alter bist du <b>beschr&auml;nkt gesch&auml;ftsf&auml;hig</b>. Du darfst Vertr&auml;ge schlie&szlig;en &ndash; aber nicht jeden allein.</p>
+    </div>
+    <div class="norm">
+      <h4>&sect; 107 BGB &middot; Einwilligung</h4>
+      <p class="zitat">&bdquo;Der Minderj&auml;hrige bedarf zu einer Willenserkl&auml;rung, durch die er nicht lediglich einen rechtlichen Vorteil erlangt, der Einwilligung seines gesetzlichen Vertreters.&ldquo;</p>
+      <p style="margin-top:6px">Im Klartext: Bringt das Gesch&auml;ft dir <b>nur</b> Vorteile &ndash; ein Geschenk zum Beispiel &ndash;, brauchst du niemanden zu fragen. Sobald du etwas zahlen oder tun musst, brauchst du das Ja der Eltern <b>vorher</b>.</p>
+    </div>
+    <div class="norm">
+      <h4>&sect; 108 BGB &middot; der Schwebezustand</h4>
+      <p>Fehlt das Ja, ist der Vertrag <b>schwebend unwirksam</b>: Er h&auml;ngt in der Luft. Genehmigen die Eltern ihn, gilt er von Anfang an. Verweigern sie, ist er endg&uuml;ltig unwirksam &ndash; Ware zur&uuml;ck, Geld zur&uuml;ck.</p>
+      <p style="margin-top:6px">Der Vertragspartner darf die Eltern auffordern, sich zu erkl&auml;ren. Dann haben sie <b>zwei Wochen</b> Zeit. Schweigen gilt als Nein.</p>
+      <p style="margin-top:6px">Und er darf sich selbst l&ouml;sen: Solange die Eltern nicht genehmigt haben, kann der Vertragspartner den Vertrag <b>widerrufen</b>. <span class="para">&sect; 109 BGB</span></p>
+    </div>
+    <div class="norm">
+      <h4>&sect; 110 BGB &middot; der Taschengeldparagraf</h4>
+      <p class="zitat">&bdquo;Ein von dem Minderj&auml;hrigen ohne Zustimmung des gesetzlichen Vertreters geschlossener Vertrag gilt als von Anfang an wirksam, wenn der Minderj&auml;hrige die vertragsm&auml;&szlig;ige Leistung mit Mitteln bewirkt, die ihm zu diesem Zweck oder zu freier Verf&uuml;gung von dem Vertreter oder mit dessen Zustimmung von einem Dritten &uuml;berlassen worden sind.&ldquo;</p>
+      <p style="margin-top:6px">Drei Bedingungen, alle drei m&uuml;ssen erf&uuml;llt sein:</p>
+      <p style="margin-top:4px">1. Du hast <b>vollst&auml;ndig bezahlt</b> &ndash; sofort, nicht in Raten, nicht auf Rechnung.<br>
+      2. Mit Geld, das dir <b>zur freien Verf&uuml;gung</b> &uuml;berlassen wurde (Taschengeld, Geldgeschenk) oder genau f&uuml;r diesen Zweck.<br>
+      3. &Uuml;berlassen von den Eltern oder mit deren Einverst&auml;ndnis von jemand anderem.</p>
+      <p style="margin-top:6px">Im Gesetz steht <b>keine Betragsgrenze</b>. Entscheidend ist, wof&uuml;r dir das Geld &uuml;berlassen wurde. Deshalb fragen H&auml;ndler bei teuren Sachen fast immer nach den Eltern &ndash; wenn der Vertrag platzt, tragen sie das Risiko.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Dieses Tool ist eine Lernhilfe f&uuml;r den Unterricht und ersetzt keine Rechtsberatung.<br>
+  Es rechnet ausschlie&szlig;lich in deinem Browser. Es speichert nichts und sendet nichts.<br>
+  WPK Wirtschaft &middot; Jahrgangsstufe 9 &middot; Humboldt-Gymnasium Cottbus
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Tabs ---------- */
+  var tabs = [].slice.call(document.querySelectorAll(".tab"));
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){
+      tabs.forEach(function(o){
+        var sel = (o === t);
+        o.setAttribute("aria-selected", sel ? "true" : "false");
+        $(o.getAttribute("aria-controls")).hidden = !sel;
+      });
+    });
+  });
+
+  /* ---------- Ergebnisse ---------- */
+  var ERG = {
+    nichtig: {
+      klasse: "rot", stempel: "Nichtig",
+      titel: "Der Vertrag kommt gar nicht zustande",
+      text: "Wer noch keine sieben Jahre alt ist, ist geschäftsunfähig. Seine Willenserklärung ist von vornherein nichtig – da hängt nichts in der Luft, da ist nichts. Selbst die Eltern können diesen Vertrag nicht nachträglich retten. Sie müssten ihn selbst schließen.",
+      para: "§ 104 Nr. 1 BGB · § 105 Abs. 1 BGB"
+    },
+    voll: {
+      klasse: "gruen", stempel: "Wirksam",
+      titel: "Der Vertrag gilt",
+      text: "Ab 18 bist du voll geschäftsfähig. Du brauchst niemanden mehr zu fragen – und niemand holt dich mehr raus, wenn der Vertrag ungünstig war. Genau deshalb lohnt sich der Fünf-Punkte-Check aus der letzten Stunde.",
+      para: "§ 2 BGB"
+    },
+    vorteil: {
+      klasse: "gruen", stempel: "Wirksam",
+      titel: "Nur Vorteile – das darfst du allein",
+      text: "Bringt dir ein Geschäft ausschließlich rechtliche Vorteile, brauchst du keine Zustimmung. Das klassische Beispiel ist das Geldgeschenk: Du bekommst etwas und musst dafür nichts geben. Achtung: Ein Schnäppchen ist ein wirtschaftlicher Vorteil, kein rechtlicher – das zählt hier nicht.",
+      para: "§ 107 BGB"
+    },
+    einwilligung: {
+      klasse: "gruen", stempel: "Wirksam",
+      titel: "Mit dem Ja der Eltern gilt der Vertrag",
+      text: "Die Einwilligung ist die Zustimmung <b>vorher</b>. Sie kann für ein einzelnes Geschäft gegeben werden oder allgemeiner – etwa: „Du darfst dir von deinem Taschengeld kaufen, was du willst.“",
+      para: "§ 107 BGB"
+    },
+    schwebend_zahlung: {
+      klasse: "gelb", stempel: "Schwebend unwirksam",
+      titel: "Der Vertrag hängt in der Luft",
+      text: "Der Taschengeldparagraf hilft hier nicht: Er greift nur, wenn du die Leistung <b>vollständig bewirkt</b> hast. Bei Raten, auf Rechnung oder im Abo steht noch etwas aus – also bleibt der Vertrag in der Schwebe, bis die Eltern ja oder nein sagen. Genau deshalb ist ein Handyvertrag für Minderjährige ohne die Eltern nicht zu haben.",
+      para: "§ 108 BGB · § 110 BGB greift nicht"
+    },
+    schwebend_mittel: {
+      klasse: "gelb", stempel: "Schwebend unwirksam",
+      titel: "Das Geld war nicht dafür gedacht",
+      text: "„Mein eigenes Geld“ reicht nicht. Das Gesetz verlangt Mittel, die dir <b>zur freien Verfügung</b> oder <b>genau für diesen Zweck</b> überlassen wurden. Geld, das für etwas anderes gedacht war – das Sparbuch für den Führerschein etwa –, gehört nicht dazu. Bis die Eltern zustimmen, hängt der Vertrag.",
+      para: "§ 108 BGB · § 110 BGB greift nicht"
+    },
+    taschengeld: {
+      klasse: "gruen", stempel: "Wirksam",
+      titel: "Der Taschengeldparagraf trägt",
+      text: "Vollständig bezahlt, und zwar mit Geld, das dir zur freien Verfügung überlassen wurde: Damit gilt der Vertrag von Anfang an, ganz ohne Rückfrage. Eine Betragsgrenze steht nicht im Gesetz – aber je teurer die Sache, desto eher wird ein Händler trotzdem nach deinen Eltern fragen. Das Risiko liegt nämlich bei ihm.",
+      para: "§ 110 BGB"
+    }
+  };
+
+  /* ---------- Wizard ---------- */
+  var FRAGEN = [
+    { id: "alter", frage: "Wie alt ist die Person?",
+      hilfe: "Das Alter entscheidet, welche Regeln überhaupt gelten.",
+      optionen: [
+        { label: "unter 7 Jahre", sub: "geschäftsunfähig", ende: "nichtig", kurz: "unter 7" },
+        { label: "7 bis 17 Jahre", sub: "beschränkt geschäftsfähig", weiter: 1, kurz: "7–17" },
+        { label: "18 oder älter", sub: "voll geschäftsfähig", ende: "voll", kurz: "ab 18" }
+      ]},
+    { id: "vorteil", frage: "Bringt das Geschäft nur Vorteile?",
+      hilfe: "Also: bekommst du etwas, ohne dafür zahlen oder etwas tun zu müssen? Ein Geldgeschenk zum Beispiel.",
+      optionen: [
+        { label: "Ja, nur Vorteile", sub: "Geschenk, ohne Gegenleistung", ende: "vorteil", kurz: "nur Vorteil" },
+        { label: "Nein, ich muss etwas geben", sub: "zahlen, tauschen, verpflichten", weiter: 2, kurz: "mit Gegenleistung" }
+      ]},
+    { id: "einwilligung", frage: "Haben die Eltern vorher zugestimmt?",
+      hilfe: "Vorher – nicht hinterher. Ein allgemeines „Du darfst dir vom Taschengeld kaufen, was du willst“ zählt auch.",
+      optionen: [
+        { label: "Ja, sie wussten Bescheid", sub: "Einwilligung liegt vor", ende: "einwilligung", kurz: "Eltern zugestimmt" },
+        { label: "Nein", sub: "ohne Rücksprache gekauft", weiter: 3, kurz: "ohne Zustimmung" }
+      ]},
+    { id: "bezahlt", frage: "Ist alles sofort und vollständig bezahlt?",
+      hilfe: "Keine Raten, keine Rechnung, kein Abo, keine offene Restzahlung.",
+      optionen: [
+        { label: "Ja, komplett bezahlt", sub: "einmalig und vollständig", weiter: 4, kurz: "komplett bezahlt" },
+        { label: "Nein – Raten, Rechnung oder Abo", sub: "es steht noch etwas aus", ende: "schwebend_zahlung", kurz: "nicht komplett bezahlt" }
+      ]},
+    { id: "mittel", frage: "Woher stammt das Geld?",
+      hilfe: "Entscheidend ist, wofür es dir überlassen wurde – nicht, wem es gehört.",
+      optionen: [
+        { label: "Taschengeld oder Geldgeschenk", sub: "zur freien Verfügung überlassen", ende: "taschengeld", kurz: "freie Verfügung" },
+        { label: "Geld für genau diesen Kauf bekommen", sub: "zweckgebunden überlassen", ende: "taschengeld", kurz: "zweckgebunden" },
+        { label: "Gespartes, das für etwas anderes gedacht war", sub: "oder: bin mir nicht sicher", ende: "schwebend_mittel", kurz: "anderer Zweck" }
+      ]}
+  ];
+
+  var schritt = 0, verlauf = [];
+
+  function zeichneFortschritt(){
+    var f = $("w-fortschritt");
+    f.innerHTML = "";
+    for(var i = 0; i < FRAGEN.length; i++){
+      var s = document.createElement("span");
+      if(i < schritt || (verlauf.length && i <= verlauf.length - 1)) s.className = "an";
+      f.appendChild(s);
+    }
+  }
+
+  function zeichnePfad(){
+    var p = $("w-pfad");
+    if(!verlauf.length){ p.innerHTML = ""; return; }
+    p.innerHTML = "Dein Weg: " + verlauf.map(function(v){ return "<b>" + v + "</b>"; }).join(" &rarr; ");
+  }
+
+  function zeigeFrage(){
+    $("w-ergebnis").hidden = true;
+    $("w-frage-block").hidden = false;
+    var f = FRAGEN[schritt];
+    $("w-frage").textContent = f.frage;
+    $("w-hilfe").textContent = f.hilfe;
+    var box = $("w-antworten");
+    box.innerHTML = "";
+    f.optionen.forEach(function(o){
+      var b = document.createElement("button");
+      b.className = "antwort";
+      b.innerHTML = o.label + "<small>" + o.sub + "</small>";
+      b.addEventListener("click", function(){
+        verlauf.push(o.kurz);
+        if(o.ende){ zeigeErgebnis(o.ende); }
+        else { schritt = o.weiter; zeichneFortschritt(); zeichnePfad(); zeigeFrage(); }
+      });
+      box.appendChild(b);
+    });
+    zeichneFortschritt();
+    zeichnePfad();
+  }
+
+  function zeigeErgebnis(key){
+    var e = ERG[key];
+    $("w-frage-block").hidden = true;
+    var box = $("w-ergebnis");
+    box.hidden = false;
+    box.innerHTML = '<div class="ergebnis ' + e.klasse + '">' +
+      '<p class="stempel">' + e.stempel + '</p>' +
+      '<h3>' + e.titel + '</h3>' +
+      '<p>' + e.text + '</p>' +
+      '<p class="para">' + e.para + '</p></div>';
+    for(var i = 0; i < FRAGEN.length; i++){ /* Fortschritt voll */ }
+    var f = $("w-fortschritt");
+    f.innerHTML = "";
+    for(var j = 0; j < FRAGEN.length; j++){
+      var s = document.createElement("span");
+      s.className = "an";
+      f.appendChild(s);
+    }
+    zeichnePfad();
+  }
+
+  $("w-neu").addEventListener("click", function(){
+    schritt = 0; verlauf = []; zeigeFrage();
+  });
+  $("w-zurueck").addEventListener("click", function(){
+    if(!verlauf.length) return;
+    verlauf.pop();
+    /* Weg neu abspielen */
+    var s = 0;
+    for(var i = 0; i < verlauf.length; i++){
+      var opt = null;
+      FRAGEN[s].optionen.forEach(function(o){ if(o.kurz === verlauf[i]) opt = o; });
+      if(opt && typeof opt.weiter === "number"){ s = opt.weiter; }
+    }
+    schritt = s;
+    zeigeFrage();
+  });
+
+  zeigeFrage();
+
+  /* ---------- Fallkartei ---------- */
+  var FAELLE = [
+    { t: "Mia (15) kauft sich vom Taschengeld ein Eis für 4 €.",
+      u: "Wirksam", k: "mint",
+      l: "Vollständig bezahlt, und zwar mit Taschengeld. Der Taschengeldparagraf trägt.", p: "§ 110 BGB" },
+    { t: "Ben (14) kauft ohne Rücksprache ein E-Bike für 890 € – von dem Geld auf seinem Sparbuch.",
+      u: "Kommt darauf an", k: "gold",
+      l: "Eine Betragsgrenze kennt das Gesetz nicht. Entscheidend ist, wofür das Geld überlassen war. War das Sparbuch für später gedacht, fehlt die freie Verfügung – dann hängt der Vertrag. Der Händler trägt das Risiko und fragt deshalb in der Praxis nach den Eltern.",
+      p: "§ 110 BGB · sonst § 108 BGB" },
+    { t: "Tom (6) kauft am Kiosk Kaugummi für 1 €.",
+      u: "Nichtig", k: "coral",
+      l: "Unter sieben ist man geschäftsunfähig. Der Vertrag kommt gar nicht zustande – auch die Eltern können ihn nicht genehmigen. Im Alltag fällt das niemandem auf, rechtlich ist es trotzdem so.",
+      p: "§ 104 Nr. 1 · § 105 Abs. 1 BGB" },
+    { t: "Lea (16) bekommt von ihrer Oma 50 € geschenkt und nimmt sie an.",
+      u: "Wirksam", k: "mint",
+      l: "Ein Geschenk bringt nur rechtliche Vorteile. Dafür braucht Lea niemanden zu fragen.", p: "§ 107 BGB" },
+    { t: "Nils (15) schließt einen Handyvertrag über 24 Monate ab und zahlt die erste Rate vom Taschengeld.",
+      u: "Schwebend unwirksam", k: "gold",
+      l: "Die erste Rate reicht nicht: Der Taschengeldparagraf verlangt, dass die Leistung <b>vollständig</b> bewirkt ist. 23 Monate stehen noch aus. Ohne das Ja der Eltern hängt der Vertrag.",
+      p: "§ 108 BGB" },
+    { t: "Sara (17) bestellt Sneaker auf Rechnung, zahlbar in 30 Tagen.",
+      u: "Schwebend unwirksam", k: "gold",
+      l: "Auf Rechnung heißt: noch nicht bezahlt. Erst wenn Sara den Betrag vollständig aus eigenen Mitteln begleicht, kann § 110 BGB greifen – bis dahin hängt der Vertrag.",
+      p: "§ 108 BGB · dann § 110 BGB" },
+    { t: "Jan (15) kauft ein Spiel für 60 €. Seine Mutter hatte vorher zugestimmt.",
+      u: "Wirksam", k: "mint",
+      l: "Mit der Einwilligung – der Zustimmung vorher – ist der Vertrag von Anfang an wirksam. Auf den Betrag kommt es dann nicht mehr an.",
+      p: "§ 107 BGB" },
+    { t: "Emma (16) kauft einmalig In-Game-Währung für 20 € und zahlt mit einer Guthabenkarte vom Taschengeld.",
+      u: "Wirksam", k: "mint",
+      l: "Einmalkauf, sofort und vollständig bezahlt, aus Taschengeld: § 110 BGB trägt. Vorsicht bei der Fortsetzung – ein Abo oder ein Battle Pass, der sich verlängert, wäre etwas anderes.",
+      p: "§ 110 BGB" }
+  ];
+
+  var kartei = $("fallkartei");
+  FAELLE.forEach(function(f, i){
+    var d = document.createElement("div");
+    d.className = "fall";
+    d.innerHTML = '<span class="nr">FALL ' + (i + 1) + '</span>' +
+      '<p class="txt">' + f.t + '</p>' +
+      '<div class="loesung" hidden>' +
+      '<span class="urteil" style="color:var(--' + f.k + ')">' + f.u + '</span>' +
+      f.l + '<br><span class="nr" style="color:var(--gedaempft)">' + f.p + '</span></div>' +
+      '<p class="tipp">ANTIPPEN ZUM AUFDECKEN</p>';
+    d.addEventListener("click", function(){
+      var l = d.querySelector(".loesung"), t = d.querySelector(".tipp");
+      l.hidden = !l.hidden;
+      t.textContent = l.hidden ? "ANTIPPEN ZUM AUFDECKEN" : "ANTIPPEN ZUM ZUKLAPPEN";
+    });
+    kartei.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>
