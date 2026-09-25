@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Widerrufs-Check · WPK Wirtschaft 9</title>
+<style>
+:root{
+  --nacht:#12172B; --nachthell:#1B2340; --mint:#3DE8A0; --coral:#FF6B5D;
+  --gold:#FFC94D; --sand:#F5F1E8; --daempf:#8A93B2;
+  --radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--nacht); color:var(--sand); min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.5; padding:0 0 60px;
+  background-image:radial-gradient(circle at 12% 0%, #1d2547 0%, transparent 55%),
+                   radial-gradient(circle at 88% 8%, #17325c 0%, transparent 50%);
+  background-attachment:fixed;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+header{padding:30px 0 16px}
+.kicker{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);font-weight:700}
+h1{font-size:clamp(26px,5.4vw,40px);line-height:1.12;margin:8px 0 6px;font-weight:800}
+.lead{color:var(--daempf);font-size:16px;margin:0}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 18px}
+nav button{
+  flex:1 1 auto;min-width:150px;padding:13px 14px;border:1px solid #2b3560;border-radius:14px;
+  background:var(--nachthell);color:var(--sand);font-size:15px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.18s;
+}
+nav button[aria-selected="true"]{background:var(--mint);color:var(--nacht);border-color:var(--mint)}
+section[hidden]{display:none}
+.card{
+  background:var(--nachthell);border:1px solid #2b3560;border-radius:var(--radius);
+  padding:20px;margin:0 0 16px;
+}
+.card h2{margin:0 0 6px;font-size:21px}
+.card h3{margin:18px 0 8px;font-size:17px;color:var(--gold)}
+.hint{color:var(--daempf);font-size:14px;margin:0 0 14px}
+.q{font-size:19px;font-weight:700;margin:4px 0 16px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{
+  display:block;width:100%;text-align:left;padding:14px 16px;border-radius:14px;
+  border:1px solid #333f74;background:#161d3a;color:var(--sand);font-size:16px;
+  font-family:inherit;cursor:pointer;transition:.15s;line-height:1.35;
+}
+.opt:hover,.opt:focus{border-color:var(--mint);background:#1a2246}
+.opt b{display:block;font-size:16px}
+.opt span{display:block;color:var(--daempf);font-size:13.5px;margin-top:3px}
+.steps{display:flex;gap:6px;margin:0 0 16px}
+.steps i{height:5px;flex:1;border-radius:3px;background:#2b3560;display:block}
+.steps i.on{background:var(--mint)}
+.result{border-radius:14px;padding:18px;margin-top:4px;border:1px solid}
+.result.ja{background:rgba(61,232,160,.10);border-color:var(--mint)}
+.result.nein{background:rgba(255,107,93,.10);border-color:var(--coral)}
+.result .tag{font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:800}
+.result.ja .tag{color:var(--mint)}
+.result.nein .tag{color:var(--coral)}
+.result .big{font-size:23px;font-weight:800;margin:6px 0 10px;line-height:1.2}
+.norm{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;
+  background:#0d1224;border:1px solid #333f74;border-radius:8px;padding:4px 9px;color:var(--gold);margin-top:10px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{
+  padding:12px 18px;border-radius:12px;border:1px solid var(--mint);background:transparent;
+  color:var(--mint);font-weight:700;font-size:15px;font-family:inherit;cursor:pointer
+}
+.btn.solid{background:var(--mint);color:var(--nacht)}
+.btn.ghost{border-color:#3b4784;color:var(--daempf)}
+label.f{display:block;font-size:14px;color:var(--daempf);margin:14px 0 6px;font-weight:600}
+input[type=date],select{
+  width:100%;padding:12px 14px;border-radius:12px;border:1px solid #333f74;background:#0d1224;
+  color:var(--sand);font-size:16px;font-family:inherit
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.outbox{margin-top:18px;border-top:1px dashed #333f74;padding-top:16px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid #222b52}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--daempf);font-size:14.5px}
+.row .v{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:18px;font-weight:700}
+.v.mint{color:var(--mint)} .v.gold{color:var(--gold)} .v.coral{color:var(--coral)}
+.quiz{border:1px solid #333f74;border-radius:14px;padding:16px;margin-bottom:12px;background:#161d3a}
+.quiz p.s{margin:0 0 12px;font-size:16.5px;line-height:1.45}
+.quiz .fb{margin-top:12px;font-size:14.5px;line-height:1.5;padding:12px;border-radius:10px;display:none}
+.quiz .fb.show{display:block}
+.fb.ok{background:rgba(61,232,160,.10);border:1px solid var(--mint)}
+.fb.no{background:rgba(255,107,93,.10);border:1px solid var(--coral)}
+.mini{display:flex;gap:10px;flex-wrap:wrap}
+.mini button{flex:1 1 120px;padding:11px;border-radius:11px;border:1px solid #333f74;background:#0d1224;
+  color:var(--sand);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.mini button.sel{border-color:var(--gold);color:var(--gold)}
+.score{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;color:var(--daempf);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:6px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #2b3560;vertical-align:top}
+th{color:var(--mint);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+td.n{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--gold);white-space:nowrap}
+footer{color:var(--daempf);font-size:13px;text-align:center;padding:28px 18px 0;line-height:1.6}
+.warn{background:rgba(255,201,77,.10);border:1px solid var(--gold);border-radius:12px;padding:13px 15px;
+  font-size:14.5px;color:var(--sand);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">WPK Wirtschaft 9 · Sitzung 6</div>
+  <h1>Zurück damit!</h1>
+  <p class="lead">Widerrufs-Check, Fristenrechner und Abofallen-Detektor. Läuft offline. Nichts wird gespeichert oder gesendet.</p>
+</header>
+
+<nav role="tablist">
+  <button role="tab" id="t1" aria-selected="true" onclick="tab(1)">1 · Widerrufs-Check</button>
+  <button role="tab" id="t2" aria-selected="false" onclick="tab(2)">2 · Fristenrechner</button>
+  <button role="tab" id="t3" aria-selected="false" onclick="tab(3)">3 · Abofallen-Detektor</button>
+  <button role="tab" id="t4" aria-selected="false" onclick="tab(4)">4 · Paragrafen</button>
+</nav>
+
+<!-- ================= 1 Widerrufs-Check ================= -->
+<section id="s1">
+  <div class="card">
+    <h2>Habe ich ein Widerrufsrecht?</h2>
+    <p class="hint">Beantworte die Fragen für deinen Fall. Am Ende steht das Ergebnis mit der passenden Vorschrift.</p>
+    <div class="steps" id="steps"><i class="on"></i><i></i><i></i><i></i></div>
+    <div id="wiz"></div>
+  </div>
+</section>
+
+<!-- ================= 2 Fristenrechner ================= -->
+<section id="s2" hidden>
+  <div class="card">
+    <h2>Wie lange habe ich Zeit?</h2>
+    <p class="hint">Die Frist beträgt 14 Tage (§ 355 Abs. 2 BGB). Der Tag des Ereignisses zählt nicht mit (§ 187 Abs. 1 BGB), die Frist endet um 24:00 Uhr (§ 188 Abs. 1 BGB).</p>
+
+    <label class="f" for="art">Worum geht es?</label>
+    <select id="art" onchange="rechne()">
+      <option value="ware">Ware, die geliefert wird (z. B. Sneaker, Headset)</option>
+      <option value="dienst">Dienstleistung ohne Lieferung (z. B. Online-Kurs, Abo)</option>
+    </select>
+
+    <div class="grid2">
+      <div>
+        <label class="f" for="dBestell">Tag des Vertragsschlusses (Bestellung)</label>
+        <input type="date" id="dBestell" onchange="rechne()">
+      </div>
+      <div id="boxLief">
+        <label class="f" for="dLief">Tag, an dem die Ware ankam</label>
+        <input type="date" id="dLief" onchange="rechne()">
+      </div>
+    </div>
+
+    <label class="f" for="belehrt">Hat der Shop korrekt über das Widerrufsrecht belehrt?</label>
+    <select id="belehrt" onchange="rechne()">
+      <option value="ja">ja, die Widerrufsbelehrung war vorhanden</option>
+      <option value="nein">nein, es gab keine oder eine fehlerhafte Belehrung</option>
+    </select>
+
+    <div class="outbox" id="fristOut"><p class="hint" style="margin:0">Trage oben die Daten ein.</p></div>
+    <div class="warn">Die Frist ist gewahrt, wenn du den Widerruf rechtzeitig <b>abschickst</b> – er muss nicht rechtzeitig ankommen (§ 355 Abs. 1 Satz 5 BGB).</div>
+  </div>
+</section>
+
+<!-- ================= 3 Abofallen ================= -->
+<section id="s3" hidden>
+  <div class="card">
+    <h2>Falle oder erlaubt?</h2>
+    <p class="hint">Acht Situationen aus echten Onlineshops. Entscheide und prüfe dich selbst.</p>
+    <div id="quizzes"></div>
+    <div class="score" id="score">0 von 8 bearbeitet</div>
+    <div class="btnrow"><button class="btn ghost" onclick="resetQuiz()">Neu starten</button></div>
+  </div>
+</section>
+
+<!-- ================= 4 Paragrafen ================= -->
+<section id="s4" hidden>
+  <div class="card">
+    <h2>Die Paragrafen der Stunde</h2>
+    <p class="hint">Stand: September 2026. Neu ist § 356a BGB – er gilt seit dem 19.06.2026.</p>
+    <table>
+      <thead><tr><th>Norm</th><th>Das steht drin</th></tr></thead>
+      <tbody id="normTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  Humboldt-Gymnasium Cottbus · Wahlpflichtkurs Wirtschaft, Jahrgangsstufe 9<br>
+  Alle Fälle und Beträge sind Beispiele für den Unterricht und keine Rechtsberatung.
+</footer>
+</div>
+
+<script>
+/* ---------------- Tabs ---------------- */
+function tab(n){
+  for(var i=1;i<=4;i++){
+    document.getElementById('s'+i).hidden = (i!==n);
+    document.getElementById('t'+i).setAttribute('aria-selected', i===n?'true':'false');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------------- 1 Wizard ---------------- */
+var path=[];
+var FRAGEN = {
+  start:{
+    q:'Wo wurde der Vertrag geschlossen?',
+    o:[
+      {t:'Im Internet, per App oder am Telefon', s:'Fernabsatzvertrag', go:'was'},
+      {t:'An der Haustür, auf der Straße oder bei einer Kaffeefahrt', s:'außerhalb von Geschäftsräumen', go:'was'},
+      {t:'In einem Laden, vor Ort', s:'klassischer Kauf im Geschäft', go:'ergLaden'}
+    ]
+  },
+  was:{
+    q:'Was hast du gekauft?',
+    o:[
+      {t:'Ware, die geliefert wird', s:'Sneaker, Headset, Buch …', go:'ausnahmeWare'},
+      {t:'Eine Dienstleistung oder ein Abo', s:'Streaming, Kurs, Fitnessstudio …', go:'ergJaDienst'},
+      {t:'Digitale Inhalte zum sofortigen Download', s:'Spiel, Song, App-Inhalt …', go:'digital'},
+      {t:'Ein Ticket für einen festen Termin', s:'Konzert, Kino, Freizeitpark …', go:'ergNein9'}
+    ]
+  },
+  ausnahmeWare:{
+    q:'Trifft eine dieser Beschreibungen auf die Ware zu?',
+    o:[
+      {t:'Nach meinen Wünschen angefertigt', s:'Namensdruck, Wunschmaß, Gravur', go:'ergNein1'},
+      {t:'Versiegelt geliefert, Siegel geöffnet – Hygieneartikel', s:'Kosmetik, Zahnbürstenkopf …', go:'ergNein3'},
+      {t:'Versiegelte Musik, Film oder Software – Folie ab', s:'Vinyl, CD, Spiel im Karton', go:'ergNein6'},
+      {t:'Schnell verderblich', s:'frische Lebensmittel', go:'ergNein2'},
+      {t:'Nichts davon – ganz normale Ware', s:'ausgepackt und anprobiert ist in Ordnung', go:'ergJaWare'}
+    ]
+  },
+  digital:{
+    q:'Hast du beim Kauf zugestimmt, dass es sofort losgeht, und bestätigt, dass du dadurch das Widerrufsrecht verlierst?',
+    o:[
+      {t:'Ja, beide Häkchen habe ich gesetzt', s:'und der Download lief sofort', go:'ergNeinDigital'},
+      {t:'Nein oder ich weiß es nicht', s:'kein Häkchen, kein Hinweis', go:'ergJaDigital'}
+    ]
+  }
+};
+var ERG = {
+  ergLaden:{ok:false,big:'Kein Widerrufsrecht.',
+    txt:'Beim Kauf im Ladengeschäft gibt es kein Widerrufsrecht. Was viele Ketten anbieten – Umtausch innerhalb von 14 oder 30 Tagen – ist freiwillige Kulanz und kein Recht. Ein Recht hast du nur, wenn die Ware kaputt oder fehlerhaft ist: das ist die Reklamation.',
+    n:'§ 312g Abs. 1 BGB im Umkehrschluss · Reklamation: § 437 BGB'},
+  ergJaWare:{ok:true,big:'Ja – 14 Tage ab Erhalt der Ware.',
+    txt:'Du kannst ohne Begründung widerrufen. Auspacken und Anprobieren sind erlaubt; das entspricht dem Anprobieren im Laden. Erst wer die Sachen benutzt, als wären sie schon gekauft, muss unter Umständen Wertersatz zahlen.',
+    n:'§ 312g Abs. 1 · § 355 · § 356 Abs. 2 Nr. 1 · § 357a BGB'},
+  ergJaDienst:{ok:true,big:'Ja – 14 Tage ab Vertragsschluss.',
+    txt:'Bei Dienstleistungen und Abos wird nichts geliefert, deshalb beginnt die Frist mit dem Tag des Vertragsschlusses. Wenn die Leistung auf deinen ausdrücklichen Wunsch sofort startet, musst du bei einem späteren Widerruf anteilig für den genutzten Zeitraum zahlen.',
+    n:'§ 312g Abs. 1 · § 355 Abs. 2 Satz 2 · § 357a BGB'},
+  ergJaDigital:{ok:true,big:'Ja – das Widerrufsrecht besteht noch.',
+    txt:'Das Widerrufsrecht erlischt bei digitalen Inhalten nur, wenn beides vorliegt: deine ausdrückliche Zustimmung zum sofortigen Beginn UND deine Bestätigung, dass du dadurch das Widerrufsrecht verlierst. Fehlt eins davon, bleibt es bestehen.',
+    n:'§ 356 Abs. 5 BGB'},
+  ergNeinDigital:{ok:false,big:'Nein – das Widerrufsrecht ist erloschen.',
+    txt:'Mit den beiden Häkchen hast du auf das Widerrufsrecht verzichtet, und der Download ist gestartet. Genau deshalb lohnt es sich, vor dem Klick zu lesen, was man da bestätigt.',
+    n:'§ 356 Abs. 5 BGB'},
+  ergNein1:{ok:false,big:'Nein – personalisierte Ware.',
+    txt:'Waren, die nach deinen Angaben angefertigt oder eindeutig auf dich zugeschnitten sind, kann der Händler nicht weiterverkaufen. Deshalb gibt es hier kein Widerrufsrecht.',
+    n:'§ 312g Abs. 2 Nr. 1 BGB'},
+  ergNein2:{ok:false,big:'Nein – schnell verderbliche Ware.',
+    txt:'Frische Lebensmittel und alles, was schnell schlecht wird, ist vom Widerrufsrecht ausgenommen.',
+    n:'§ 312g Abs. 2 Nr. 2 BGB'},
+  ergNein3:{ok:false,big:'Nein – Siegel geöffnet.',
+    txt:'Bei versiegelten Hygieneartikeln endet das Widerrufsrecht in dem Moment, in dem das Siegel entfernt wird. Solange das Siegel dran ist, kannst du widerrufen.',
+    n:'§ 312g Abs. 2 Nr. 3 BGB'},
+  ergNein6:{ok:false,big:'Nein – Datenträger entsiegelt.',
+    txt:'Bei versiegelter Musik, Filmen und Software endet das Widerrufsrecht mit dem Entsiegeln. Ungeöffnet darfst du zurückschicken.',
+    n:'§ 312g Abs. 2 Nr. 6 BGB'},
+  ergNein9:{ok:false,big:'Nein – fester Termin.',
+    txt:'Tickets für Konzerte, Kino, Sport oder Freizeitparks mit konkretem Datum sind ausgenommen. Sonst könnte man sie bis kurz vor Beginn zurückgeben, und der Veranstalter bliebe auf leeren Plätzen sitzen.',
+    n:'§ 312g Abs. 2 Nr. 9 BGB'}
+};
+
+function wiz(key){
+  var box=document.getElementById('wiz');
+  var st=document.getElementById('steps').children;
+  if(ERG[key]){
+    var e=ERG[key];
+    for(var i=0;i<4;i++) st[i].className='on';
+    box.innerHTML='<div class="result '+(e.ok?'ja':'nein')+'">'+
+      '<div class="tag">'+(e.ok?'Widerruf möglich':'Kein Widerruf')+'</div>'+
+      '<div class="big">'+e.big+'</div><div>'+e.txt+'</div>'+
+      '<div class="norm">'+e.n+'</div></div>'+
+      '<div class="btnrow"><button class="btn solid" onclick="startWiz()">Neuer Fall</button>'+
+      '<button class="btn ghost" onclick="zurueck()">einen Schritt zurück</button></div>';
+    return;
+  }
+  var f=FRAGEN[key];
+  for(var j=0;j<4;j++) st[j].className = (j<path.length+1)?'on':'';
+  var h='<div class="q">'+f.q+'</div><div class="opts">';
+  for(var k=0;k<f.o.length;k++){
+    h+='<button class="opt" onclick="weiter(\''+f.o[k].go+'\')"><b>'+f.o[k].t+'</b><span>'+f.o[k].s+'</span></button>';
+  }
+  h+='</div>';
+  if(path.length>0) h+='<div class="btnrow"><button class="btn ghost" onclick="zurueck()">einen Schritt zurück</button></div>';
+  box.innerHTML=h;
+}
+function weiter(go){ path.push(go); wiz(go); }
+function zurueck(){ path.pop(); wiz(path.length?path[path.length-1]:'start'); }
+function startWiz(){ path=[]; wiz('start'); }
+
+/* ---------------- 2 Fristenrechner ---------------- */
+var MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+function fmt(d){ return d.getDate()+'. '+MON[d.getMonth()]+' '+d.getFullYear(); }
+function plusTage(d,n){ var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function parse(v){ if(!v) return null; var p=v.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+
+function rechne(){
+  var art=document.getElementById('art').value;
+  document.getElementById('boxLief').style.display = (art==='ware')?'':'none';
+  var out=document.getElementById('fristOut');
+  var dB=parse(document.getElementById('dBestell').value);
+  var dL=parse(document.getElementById('dLief').value);
+  var belehrt=document.getElementById('belehrt').value;
+
+  var ereignis=null, label='';
+  if(art==='ware'){ ereignis=dL; label='Tag, an dem die Ware ankam'; }
+  else { ereignis=dB; label='Tag des Vertragsschlusses'; }
+
+  if(!ereignis){ out.innerHTML='<p class="hint" style="margin:0">Trage oben die Daten ein.</p>'; return; }
+  if(art==='ware' && dB && dL && dL<dB){
+    out.innerHTML='<div class="result nein"><div class="tag">Bitte prüfen</div><div class="big">Die Lieferung liegt vor der Bestellung.</div><div>Vertausche die beiden Daten – geliefert wird immer nach der Bestellung.</div></div>';
+    return;
+  }
+
+  var beginn=plusTage(ereignis,1);
+  var ende=plusTage(ereignis,14);
+  var h='<div class="row"><span class="k">Maßgeblicher Tag ('+label+')</span><span class="v">'+fmt(ereignis)+'</span></div>'+
+        '<div class="row"><span class="k">Tag 1 der Frist</span><span class="v mint">'+fmt(beginn)+'</span></div>'+
+        '<div class="row"><span class="k">Letzter Tag (24:00 Uhr)</span><span class="v gold">'+fmt(ende)+'</span></div>';
+
+  if(belehrt==='nein'){
+    var spaet=new Date(ereignis.getTime());
+    spaet.setFullYear(spaet.getFullYear()+1);
+    spaet=plusTage(spaet,14);
+    h+='<div class="row"><span class="k">Ohne Belehrung: Erlöschen spätestens</span><span class="v coral">'+fmt(spaet)+'</span></div>';
+    h+='<div class="warn">Weil nicht ordnungsgemäß belehrt wurde, läuft die Frist zwölf Monate und 14 Tage länger (§ 356 Abs. 3 Satz 2 BGB).</div>';
+  }
+  var heute=new Date(); heute.setHours(0,0,0,0);
+  var grenze = (belehrt==='nein') ? plusTage(new Date(ereignis.getFullYear()+1,ereignis.getMonth(),ereignis.getDate()),14) : ende;
+  var tage=Math.round((grenze-heute)/86400000);
+  if(tage>=0){ h+='<div class="row"><span class="k">Ab heute bleiben noch</span><span class="v mint">'+tage+' Tage</span></div>'; }
+  else { h+='<div class="row"><span class="k">Frist abgelaufen seit</span><span class="v coral">'+(-tage)+' Tagen</span></div>'; }
+  out.innerHTML=h;
+}
+
+/* ---------------- 3 Abofallen ---------------- */
+var QUIZ=[
+ {s:'Am Ende der Bestellung heißt der Knopf „Weiter". Erst danach erscheint der Preis.',
+  falle:true, n:'§ 312j Abs. 3, 4 BGB',
+  fb:'Der Knopf muss eindeutig sagen, dass es Geld kostet – „zahlungspflichtig bestellen" oder gleich deutlich. Fehlt das, kommt gar kein Vertrag zustande. Du musst also nichts zahlen.'},
+ {s:'Der Bestellknopf heißt „Zahlungspflichtig bestellen", darüber stehen Ware, Preis und Laufzeit.',
+  falle:false, n:'§ 312j Abs. 3 BGB',
+  fb:'Genau so sieht ein korrekter Bestellvorgang aus: klare Beschriftung und alle wichtigen Angaben direkt darüber.'},
+ {s:'„7 Tage gratis testen" – im Kleingedruckten geht das Abo danach automatisch in 12 Monate zu 9,99 € über.',
+  falle:true, n:'§ 312j Abs. 2 BGB · § 355 BGB',
+  fb:'Die wesentlichen Angaben – auch Laufzeit und Folgekosten – müssen klar und unmittelbar vor dem Bestellknopf stehen. Und: Du hast 14 Tage Widerrufsrecht. 12 × 9,99 € wären 119,88 € im Jahr.'},
+ {s:'Kündigen ist laut Website nur schriftlich per Post möglich, einen Kündigungsbutton gibt es nicht.',
+  falle:true, n:'§ 312k BGB',
+  fb:'Für Dauerverträge im Internet ist eine Schaltfläche „Verträge hier kündigen" Pflicht. Fehlt sie, kannst du jederzeit fristlos kündigen (§ 312k Abs. 6 BGB).'},
+ {s:'Der Shop hat eine dauerhaft sichtbare Schaltfläche „Vertrag widerrufen" mit Bestätigungsseite.',
+  falle:false, n:'§ 356a BGB',
+  fb:'Seit dem 19.06.2026 ist dieser Button sogar Pflicht. Der Shop macht alles richtig.'},
+ {s:'Ein Gewinnspiel verlangt deine Handynummer. Im Kleingedruckten steckt ein Abo für 4,99 € pro Woche.',
+  falle:true, n:'§ 312j Abs. 3 BGB · § 355 BGB',
+  fb:'Ein Abo, das im Gewinnspiel versteckt ist, erfüllt die Anforderungen an einen Bestellvorgang nicht. Zusätzlich gilt das Widerrufsrecht. 4,99 € pro Woche sind rund 259,48 € im Jahr.'},
+ {s:'Der Händler verlangt 4,95 € Rücksendekosten und hat darüber vor der Bestellung informiert.',
+  falle:false, n:'§ 357 Abs. 5 BGB',
+  fb:'Die unmittelbaren Rücksendekosten darf der Händler auf dich abwälzen – aber nur, wenn er dich vorher darüber informiert hat.'},
+ {s:'Nach dem Widerruf sagt der Shop, das Geld gebe es erst in acht Wochen zurück.',
+  falle:true, n:'§ 357 Abs. 1, 4 BGB',
+  fb:'Zurückzuzahlen ist spätestens nach 14 Tagen. Der Händler darf nur so lange warten, bis er die Ware zurückhat oder du den Versand nachweist.'}
+];
+var done=[];
+function buildQuiz(){
+  var box=document.getElementById('quizzes'); var h='';
+  for(var i=0;i<QUIZ.length;i++){
+    h+='<div class="quiz"><p class="s">'+(i+1)+'. '+QUIZ[i].s+'</p>'+
+       '<div class="mini"><button id="b'+i+'f" onclick="antw('+i+',true)">Falle</button>'+
+       '<button id="b'+i+'e" onclick="antw('+i+',false)">erlaubt</button></div>'+
+       '<div class="fb" id="fb'+i+'"></div></div>';
+  }
+  box.innerHTML=h;
+}
+function antw(i,val){
+  var richtig = (val===QUIZ[i].falle);
+  var fb=document.getElementById('fb'+i);
+  fb.className='fb show '+(richtig?'ok':'no');
+  fb.innerHTML='<b>'+(richtig?'Richtig':'Noch nicht')+' – '+(QUIZ[i].falle?'das ist eine Falle.':'das ist erlaubt.')+'</b> '+QUIZ[i].fb+'<div class="norm">'+QUIZ[i].n+'</div>';
+  document.getElementById('b'+i+'f').className = val?'sel':'';
+  document.getElementById('b'+i+'e').className = val?'':'sel';
+  if(done.indexOf(i)<0) done.push(i);
+  document.getElementById('score').textContent = done.length+' von '+QUIZ.length+' bearbeitet';
+}
+function resetQuiz(){ done=[]; buildQuiz(); document.getElementById('score').textContent='0 von 8 bearbeitet'; }
+
+/* ---------------- 4 Paragrafen ---------------- */
+var NORMEN=[
+ ['§ 312b BGB','Verträge außerhalb von Geschäftsräumen – Haustür, Straße, Kaffeefahrt.'],
+ ['§ 312c BGB','Fernabsatzvertrag – Abschluss nur über Internet, App, Telefon oder Brief.'],
+ ['§ 312g Abs. 1 BGB','Das Widerrufsrecht selbst: 14 Tage bei Fernabsatz und außerhalb von Geschäftsräumen.'],
+ ['§ 312g Abs. 2 BGB','Die Ausnahmen – u. a. personalisierte Ware (Nr. 1), Verderbliches (Nr. 2), entsiegelte Hygieneartikel (Nr. 3), entsiegelte Ton- und Videoaufnahmen (Nr. 6), Termine für Freizeitveranstaltungen (Nr. 9).'],
+ ['§ 312j Abs. 3, 4 BGB','Bestellknopf: „zahlungspflichtig bestellen". Fehlt die klare Beschriftung, kommt kein Vertrag zustande.'],
+ ['§ 312k BGB','Kündigungsbutton „Verträge hier kündigen". Fehlt er, ist jederzeit fristlose Kündigung möglich (Abs. 6).'],
+ ['§ 355 BGB','14 Tage, keine Begründung nötig, rechtzeitiges Absenden genügt.'],
+ ['§ 356 Abs. 2, 3 BGB','Fristbeginn mit Erhalt der Ware; ohne Belehrung erlischt das Recht erst nach zwölf Monaten und 14 Tagen.'],
+ ['§ 356 Abs. 5 BGB','Digitale Inhalte: Erlöschen nur bei ausdrücklicher Zustimmung und Kenntnisbestätigung.'],
+ ['§ 356a BGB','Widerrufsbutton „Vertrag widerrufen" – Pflicht für Onlineshops seit dem 19.06.2026.'],
+ ['§ 357 BGB','Rückabwicklung: Rückzahlung binnen 14 Tagen (Abs. 1); Rücksendekosten trägt der Verbraucher, wenn er informiert wurde (Abs. 5).'],
+ ['§ 357a BGB','Wertersatz, wenn die Ware mehr als nur geprüft wurde.'],
+ ['§ 309 Nr. 9 BGB','Laufzeit in AGB höchstens 24 Monate, Verlängerung nur unbefristet, Kündigungsfrist höchstens ein Monat.'],
+ ['§ 437, § 438 BGB','Reklamation bei Mängeln – zwei Jahre, unabhängig vom Widerrufsrecht.'],
+ ['§§ 187, 188 BGB','Fristberechnung: Der Ereignistag zählt nicht mit, die Frist endet um 24:00 Uhr.']
+];
+function buildNormen(){
+  var t=document.getElementById('normTable'), h='';
+  for(var i=0;i<NORMEN.length;i++) h+='<tr><td class="n">'+NORMEN[i][0]+'</td><td>'+NORMEN[i][1]+'</td></tr>';
+  t.innerHTML=h;
+}
+
+startWiz(); buildQuiz(); buildNormen(); rechne();
+</script>
+</body>
+</html>
