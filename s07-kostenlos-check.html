@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kostenlos-Check (Fotos) · Sitzung 7</title>
+<style>
+:root{
+  --nb:#12172B; --nb2:#1B2340; --nb3:#252E52; --mint:#3DE8A0; --coral:#FF6B5D;
+  --gold:#FFC94D; --sand:#F5F1E8; --mut:#8A93B2;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--nb);color:var(--sand);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+body{padding:env(safe-area-inset-top) 0 40px}
+.wrap{max-width:980px;margin:0 auto;padding:18px 16px}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);font-weight:700}
+h1{font-size:30px;margin:6px 0 4px;line-height:1.15}
+h1 em{font-style:normal;color:var(--mint)}
+.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+.tab{flex:1 1 180px;background:var(--nb2);border:2px solid var(--nb3);color:var(--sand);
+  border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700;text-align:left;cursor:pointer}
+.tab small{display:block;color:var(--mut);font-weight:400;font-size:13px;margin-top:2px}
+.tab[aria-selected="true"]{border-color:var(--mint);background:#17203d}
+.tab .n{font-family:var(--mono);color:var(--mint);margin-right:6px}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--nb2);border-radius:14px;padding:16px;margin-bottom:14px}
+.btn{background:var(--mint);color:var(--nb);border:0;border-radius:10px;padding:12px 16px;
+  font-size:16px;font-weight:800;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--sand);border:2px solid var(--nb3)}
+.btn.coral{background:var(--coral);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--mut)}
+.mono{font-family:var(--mono)}
+/* Feed-Simulator */
+.sim{display:grid;grid-template-columns:1fr 300px;gap:16px}
+@media (max-width:760px){.sim{grid-template-columns:1fr}.side{position:static!important}}
+.feed{display:flex;flex-direction:column;gap:12px}
+.post{background:var(--nb2);border-radius:14px;overflow:hidden;border:1px solid var(--nb3)}
+.post .pic{aspect-ratio:16/10;min-height:200px;overflow:hidden;background:#1B2340}
+.post .pic{position:relative}.post .pic svg,.post .pic img{width:100%;height:100%;display:block;object-fit:cover}.credit{position:absolute;right:6px;bottom:6px;font-size:11px;background:rgba(18,23,43,.75);color:#F5F1E8;padding:3px 7px;border-radius:6px;text-decoration:none}
+.post .meta{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;gap:8px}
+.post .cap{font-size:15px}
+.post .tag{font-size:12px;color:var(--mut)}
+.like{min-width:92px;background:transparent;border:2px solid var(--nb3);color:var(--sand);
+  border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:14px}
+.like.on{background:var(--coral);border-color:var(--coral);color:#fff}
+.ad{border:2px dashed var(--gold);background:#1d2238;border-radius:14px;padding:12px}
+.ad .lbl{font-size:11px;letter-spacing:.14em;color:var(--gold);font-weight:800}
+.ad .ttl{font-size:18px;font-weight:800;margin:4px 0}
+.ad .why{font-size:13px;color:var(--mut)}
+.ad .bids{margin-top:8px;font-family:var(--mono);font-size:13px;line-height:1.5}
+.ad .bids .win{color:var(--mint)}
+.ad.pending{opacity:.55}
+.side{position:sticky;top:12px;align-self:start}
+.big{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--mint)}
+.bar{height:10px;background:var(--nb3);border-radius:6px;overflow:hidden;margin:4px 0 8px}
+.bar i{display:block;height:100%;background:var(--mint)}
+.lock{margin-top:8px;padding:10px;border-radius:10px;background:#2a1e2a;color:#ffd0cb;font-size:13px}
+.ok{color:var(--mint)} .bad{color:var(--coral)}
+.agebox{display:flex;gap:10px;flex-wrap:wrap}
+.agebox .btn{flex:1 1 200px}
+.summary{border:2px solid var(--mint)}
+/* Quiz */
+.q{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--nb3)}
+@media (max-width:600px){.q{grid-template-columns:1fr}}
+.q .app{font-weight:800}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:2px solid var(--nb3);background:transparent;color:var(--sand);border-radius:999px;
+  padding:7px 11px;font-weight:700;cursor:pointer;font-size:14px}
+.chip.on{background:var(--mint);border-color:var(--mint);color:var(--nb)}
+.chip.right{outline:3px solid var(--mint)} .chip.wrong{outline:3px solid var(--coral)}
+.fb{font-size:13px;margin-top:4px;grid-column:2}
+@media (max-width:600px){.fb{grid-column:1}}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.legend div{background:var(--nb);border-radius:10px;padding:8px 10px;font-size:14px}
+.legend b{font-family:var(--mono);color:var(--mint);margin-right:6px}
+/* Rechner */
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+input[type=text]{width:100%;max-width:260px;font-size:20px;font-family:var(--mono);padding:10px;border-radius:10px;
+  border:2px solid var(--nb3);background:var(--nb);color:var(--sand)}
+.bon{background:var(--sand);color:#222;font-family:var(--mono);border-radius:6px;padding:16px;max-width:420px;line-height:1.6}
+.bon .l{display:flex;justify-content:space-between;gap:10px}
+.bon hr{border:0;border-top:2px dashed #999;margin:8px 0}
+.foot{font-size:12px;color:var(--mut);margin-top:22px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">WPK Wirtschaft 9 · Sitzung 7</div>
+  <h1>Der Preis von <em>„kostenlos“</em></h1>
+  <p class="sub">Wie Plattformen mit dir Geld verdienen – ohne dass du bezahlst.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-p="p1"><span class="n">1</span>Feed-Simulator<small>Wie viel bist du als 15- oder 18-Jährige/r wert?</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p2"><span class="n">2</span>Wer verdient woran?<small>8 Apps, 6 Geschäftsmodelle</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p3"><span class="n">3</span>Dein Wert in Zahlen<small>Werbeumsatz pro Person berechnen</small></button>
+  </div>
+
+  <!-- ============ 1 FEED-SIMULATOR ============ -->
+  <section class="panel on" id="p1">
+    <div class="card" id="start">
+      <b>So geht's:</b> Wähle ein Alter und scrolle durch den Feed (20 Beiträge). Tippe auf <b>Gefällt mir</b> bei allem, was dich interessiert.
+      Nach je vier Beiträgen kommt ein Werbeplatz. Rechts siehst du, was die Plattform über dich lernt – und wie viel Geld sie mit deinen Anzeigen verdient.
+      <div class="agebox" style="margin-top:12px">
+        <button class="btn" data-age="15">Runde mit 15 Jahren starten</button>
+        <button class="btn ghost" data-age="18">Runde mit 18 Jahren starten</button>
+      </div>
+    </div>
+    <div class="sim" id="simArea" hidden>
+      <div class="feed" id="feed"></div>
+      <aside class="side">
+        <div class="card">
+          <div class="kicker" id="ageLbl">Runde · 15 Jahre</div>
+          <div style="margin-top:8px" class="muted">Anzeigen gesehen</div>
+          <div class="big" id="adCount">0</div>
+          <div class="muted">Werbeumsatz für die Plattform (Modell)</div>
+          <div class="big" id="rev">0,0 ct</div>
+          <div style="margin-top:10px"><b>Dein Profil</b> <span class="muted">(aus deinen Likes)</span></div>
+          <div id="profile"></div>
+          <div class="lock" id="lock"></div>
+        </div>
+        <div class="card">
+          <button class="btn ghost" id="restart" style="width:100%">Neue Runde / Alter wechseln</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 2 QUIZ ============ -->
+  <section class="panel" id="p2">
+    <div class="card">
+      <b>Sechs Geschäftsmodelle</b>
+      <div class="legend" style="margin-top:8px">
+        <div><b>W</b>Werbung – Werbekunden zahlen für Anzeigen</div>
+        <div><b>A</b>Abo – du zahlst regelmäßig einen festen Preis</div>
+        <div><b>F</b>Freemium – Grundversion gratis, Extras kosten</div>
+        <div><b>I</b>In-App-Käufe – Kleinbeträge für Extras im Spiel/in der App</div>
+        <div><b>G</b>Gebühr – die Plattform kassiert bei jedem Verkauf mit</div>
+        <div><b>S</b>Spenden – Menschen geben freiwillig Geld</div>
+      </div>
+    </div>
+    <div class="card">
+      <b>Tippe bei jeder App das Modell an, mit dem sie hauptsächlich Geld verdient.</b>
+      <span class="muted">Manche Apps nutzen zwei Modelle – dann tippst du beide an.</span>
+      <div id="quiz" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="check">Prüfen</button>
+        <button class="btn ghost" id="qreset">Zurücksetzen</button>
+        <span id="score" class="big" style="font-size:22px"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3 RECHNER ============ -->
+  <section class="panel" id="p3">
+    <div class="card">
+      <b>Meta (Instagram, Facebook, WhatsApp) im Jahr 2025</b>
+      <p class="muted" style="margin:6px 0 0">Die Werte sind schon eingetragen. Du kannst sie ändern, zum Beispiel um deine eigene Rechnung aus A4 zu prüfen.</p>
+      <div class="row" style="align-items:flex-start;gap:24px">
+        <div>
+          <label for="u">Werbeumsatz im Jahr (Mrd. US-$)</label>
+          <input type="text" id="u" value="196,2" inputmode="decimal">
+          <label for="g">Gesamtumsatz im Jahr (Mrd. US-$)</label>
+          <input type="text" id="g" value="201,0" inputmode="decimal">
+          <label for="n">Täglich aktive Menschen (Mrd.)</label>
+          <input type="text" id="n" value="3,58" inputmode="decimal">
+          <label for="a">Preis Abo ohne Werbung pro Monat (€)</label>
+          <input type="text" id="a" value="5,99" inputmode="decimal">
+        </div>
+        <div class="bon" id="bon" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="card muted" style="font-size:14px">
+      Quelle: Meta Platforms, Geschäftszahlen für das 4. Quartal und das Gesamtjahr 2025 (veröffentlicht im Januar 2026).
+      „Täglich aktive Menschen“ = Durchschnitt im Dezember 2025 über alle Meta-Apps. Die Rechnung ist eine grobe Schätzung,
+      weil manche Menschen nur einen Teil des Jahres aktiv sind. Achtung: US-Dollar und Euro sind nicht gleich viel wert.
+      Abo-Preis: Browser-Preis in der EU (Stand bei Erstellung, bitte aktuell prüfen).
+    </div>
+  </section>
+
+  <p class="foot">
+    Alle Anzeigenpreise im Feed-Simulator sind vereinfachte <b>Modellwerte</b> zum Vergleichen, keine echten Preise einer Plattform.
+    Rechtlicher Hintergrund: Nach Art. 28 Abs. 2 des Digital Services Act (DSA) dürfen Online-Plattformen Minderjährigen keine Werbung zeigen,
+    die auf Profiling mit ihren personenbezogenen Daten beruht. Die Fotos im Feed stammen von <a href="https://unsplash.com/?utm_source=wpk_wirtschaft_9&utm_medium=referral" style="color:#8A93B2">Unsplash</a> und werden beim Öffnen von dort geladen. Ohne Internet erscheinen gezeichnete Ersatzbilder. Das Werkzeug speichert nichts; deine Likes bleiben auf deinem Gerät.
+  </p>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Tabs ---------- */
+var tabs=document.querySelectorAll('.tab');
+tabs.forEach(function(t){t.addEventListener('click',function(){
+  tabs.forEach(function(x){x.setAttribute('aria-selected','false')});
+  t.setAttribute('aria-selected','true');
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
+  document.getElementById(t.dataset.p).classList.add('on');
+  window.scrollTo(0,0);
+});});
+
+/* ---------- Kategorien und Symbole (Vektor statt Emoji) ---------- */
+var CAT={
+  sport:{n:'Sport',c:'#3DE8A0',svg:'<svg viewBox="0 0 64 64" fill="none" stroke="#12172B" stroke-width="4"><circle cx="32" cy="32" r="22"/><path d="M10 32h44M32 10c8 7 8 37 0 44M32 10c-8 7-8 37 0 44"/></svg>'},
+  gaming:{n:'Gaming',c:'#8FA2FF',svg:'<svg viewBox="0 0 64 64" fill="none" stroke="#12172B" stroke-width="4"><rect x="8" y="20" width="48" height="26" rx="13"/><path d="M20 28v10M15 33h10"/><circle cx="42" cy="30" r="2.5" fill="#12172B"/><circle cx="48" cy="36" r="2.5" fill="#12172B"/></svg>'},
+  mode:{n:'Mode',c:'#FF9D8F',svg:'<svg viewBox="0 0 64 64" fill="none" stroke="#12172B" stroke-width="4" stroke-linejoin="round"><path d="M22 10l10 8 10-8 14 10-6 10-6-3v27H20V27l-6 3-6-10z"/></svg>'},
+  musik:{n:'Musik',c:'#FFC94D',svg:'<svg viewBox="0 0 64 64" fill="none" stroke="#12172B" stroke-width="4"><path d="M24 46V14l28-6v32"/><circle cx="18" cy="46" r="7"/><circle cx="46" cy="40" r="7"/></svg>'},
+  tiere:{n:'Tiere',c:'#9BE7F0',svg:'<svg viewBox="0 0 64 64" fill="#12172B"><ellipse cx="32" cy="42" rx="12" ry="10"/><circle cx="16" cy="28" r="6"/><circle cx="48" cy="28" r="6"/><circle cx="25" cy="16" r="6"/><circle cx="39" cy="16" r="6"/></svg>'},
+  essen:{n:'Essen',c:'#F5F1E8',svg:'<svg viewBox="0 0 64 64" fill="none" stroke="#12172B" stroke-width="4" stroke-linejoin="round"><path d="M10 30h44c0-12-10-18-22-18S10 18 10 30z"/><path d="M8 38h48M12 46h40a4 4 0 0 1-4 6H16a4 4 0 0 1-4-6z"/></svg>'}
+};
+var ORDER=['sport','gaming','mode','musik','tiere','essen'];
+
+/* Originale Illustrationen, eigens für dieses Tool gezeichnet */
+var IMG=["<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g0\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7EC8F2\"/><stop offset=\"1\" stop-color=\"#CFEFFF\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g0)\"/><rect y=\"165\" width=\"400\" height=\"85\" fill=\"#4CAF50\"/><path d=\"M0 200 H400\" stroke=\"#E8F5E9\" stroke-width=\"3\"/><g stroke=\"#fff\" stroke-width=\"5\" fill=\"none\"><path d=\"M270 170 V95 H390 V170\"/></g><g stroke=\"#ffffff\" stroke-width=\"1\" opacity=\".6\"><path d=\"M275 95 V170\"/><path d=\"M287 95 V170\"/><path d=\"M299 95 V170\"/><path d=\"M311 95 V170\"/><path d=\"M323 95 V170\"/><path d=\"M335 95 V170\"/><path d=\"M347 95 V170\"/><path d=\"M359 95 V170\"/><path d=\"M371 95 V170\"/><path d=\"M383 95 V170\"/></g><g stroke-linecap=\"round\"><path d=\"M168 150 L205 118\" stroke=\"#FF6B5D\" stroke-width=\"26\"/><path d=\"M205 118 L210 70\" stroke=\"#1B2340\" stroke-width=\"11\"/><path d=\"M200 122 L240 100\" stroke=\"#1B2340\" stroke-width=\"11\"/><path d=\"M175 140 L150 118\" stroke=\"#FF6B5D\" stroke-width=\"9\"/><path d=\"M170 150 L140 168\" stroke=\"#FF6B5D\" stroke-width=\"9\"/></g><circle cx=\"152\" cy=\"160\" r=\"13\" fill=\"#E0A57A\"/><path d=\"M140 158 a13 13 0 0 1 18 -10 q-8 4 -18 10z\" fill=\"#3B2A20\"/><rect x=\"205\" y=\"62\" width=\"12\" height=\"8\" rx=\"3\" fill=\"#fff\"/><circle cx=\"228\" cy=\"52\" r=\"13\" fill=\"#fff\" stroke=\"#222\" stroke-width=\"2\"/><path d=\"M222 46l6 3 6-3-2 7h-8z\" fill=\"#222\"/><path d=\"M245 60 q20 -10 30 5\" stroke=\"#fff\" stroke-width=\"3\" fill=\"none\" stroke-dasharray=\"4 5\"/><rect x=\"20\" y=\"30\" width=\"70\" height=\"26\" rx=\"4\" fill=\"#12172B\"/><text x=\"55\" y=\"48\" font-family=\"monospace\" font-size=\"14\" fill=\"#3DE8A0\" text-anchor=\"middle\">2 : 1</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g1\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FCE8D0\"/><stop offset=\"1\" stop-color=\"#F6D2A8\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g1)\"/><rect y=\"185\" width=\"400\" height=\"65\" fill=\"#C98E5A\"/><path d=\"M0 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M50 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M100 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M150 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M200 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M250 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M300 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M350 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><path d=\"M400 185 V250\" stroke=\"#B57A48\" stroke-width=\"2\"/><g transform=\"translate(150,120)\"><ellipse cx=\"0\" cy=\"0\" rx=\"48\" ry=\"30\" fill=\"#8C8C8C\"/><path d=\"M-40 -5 q-30 -40 -10 -60\" stroke=\"#8C8C8C\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"45\" cy=\"-22\" r=\"24\" fill=\"#8C8C8C\"/><path d=\"M30 -40 l6 -20 10 14z M52 -44 l10 -18 4 20z\" fill=\"#8C8C8C\"/><circle cx=\"40\" cy=\"-24\" r=\"7\" fill=\"#fff\"/><circle cx=\"56\" cy=\"-24\" r=\"7\" fill=\"#fff\"/><circle cx=\"41\" cy=\"-24\" r=\"3\" fill=\"#222\"/><circle cx=\"57\" cy=\"-24\" r=\"3\" fill=\"#222\"/><ellipse cx=\"49\" cy=\"-10\" rx=\"5\" ry=\"4\" fill=\"#444\"/><g stroke=\"#8C8C8C\" stroke-width=\"9\" stroke-linecap=\"round\"><path d=\"M-30 20 l-12 30\"/><path d=\"M-10 25 l-4 32\"/><path d=\"M15 25 l6 30\"/><path d=\"M32 18 l14 28\"/></g></g><g stroke=\"#12172B\" stroke-width=\"3\" stroke-linecap=\"round\"><path d=\"M110 60 l-8 -10\"/><path d=\"M130 52 l0 -14\"/><path d=\"M150 58 l8 -12\"/></g><g transform=\"translate(290,195) rotate(-8)\"><rect x=\"-55\" y=\"-12\" width=\"110\" height=\"24\" rx=\"12\" fill=\"#3E8E3E\"/><circle cx=\"-40\" cy=\"4\" r=\"2\" fill=\"#2B6B2B\"/><circle cx=\"-24\" cy=\"-3\" r=\"2\" fill=\"#2B6B2B\"/><circle cx=\"-8\" cy=\"4\" r=\"2\" fill=\"#2B6B2B\"/><circle cx=\"8\" cy=\"-3\" r=\"2\" fill=\"#2B6B2B\"/><circle cx=\"24\" cy=\"4\" r=\"2\" fill=\"#2B6B2B\"/><circle cx=\"40\" cy=\"-3\" r=\"2\" fill=\"#2B6B2B\"/></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g2\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#1B2340\"/><stop offset=\"1\" stop-color=\"#12172B\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g2)\"/><rect x=\"60\" y=\"30\" width=\"280\" height=\"160\" rx=\"10\" fill=\"#0A0E1C\" stroke=\"#8A93B2\" stroke-width=\"4\"/><rect x=\"72\" y=\"42\" width=\"256\" height=\"136\" fill=\"#2E7D4F\"/><path d=\"M72 120 q60 -30 120 0 t136 -10 V178 H72z\" fill=\"#3E9E62\"/><path d=\"M180 42 q20 60 -10 136\" stroke=\"#4FA3E0\" stroke-width=\"12\" fill=\"none\"/><g fill=\"#6B4F2A\"><rect x=\"100\" y=\"60\" width=\"26\" height=\"20\"/><rect x=\"250\" y=\"130\" width=\"30\" height=\"22\"/><rect x=\"230\" y=\"60\" width=\"18\" height=\"18\"/></g><circle cx=\"110\" cy=\"150\" r=\"7\" fill=\"#3DE8A0\"/><circle cx=\"290\" cy=\"70\" r=\"7\" fill=\"#FF6B5D\"/><circle cx=\"300\" cy=\"85\" r=\"7\" fill=\"#FF6B5D\"/><circle cx=\"275\" cy=\"92\" r=\"7\" fill=\"#FF6B5D\"/><rect x=\"250\" y=\"48\" width=\"70\" height=\"18\" rx=\"3\" fill=\"#12172B\"/><text x=\"285\" y=\"61\" font-family=\"monospace\" font-size=\"11\" fill=\"#FFC94D\" text-anchor=\"middle\">SEASON 9</text><rect x=\"180\" y=\"190\" width=\"40\" height=\"20\" fill=\"#8A93B2\"/><g transform=\"translate(200,225)\"><rect x=\"-50\" y=\"-14\" width=\"100\" height=\"30\" rx=\"15\" fill=\"#F5F1E8\"/><circle cx=\"-28\" cy=\"0\" r=\"7\" fill=\"#1B2340\"/><circle cx=\"28\" cy=\"-4\" r=\"4\" fill=\"#FF6B5D\"/><circle cx=\"36\" cy=\"4\" r=\"4\" fill=\"#3DE8A0\"/></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g3\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFF4E0\"/><stop offset=\"1\" stop-color=\"#FBE3BD\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g3)\"/><rect y=\"170\" width=\"400\" height=\"80\" fill=\"#E7C9A0\"/><ellipse cx=\"200\" cy=\"175\" rx=\"170\" ry=\"32\" fill=\"#fff\" stroke=\"#E0D6C8\" stroke-width=\"3\"/><g transform=\"translate(90,160) rotate(-15)\"><rect x=\"-38\" y=\"-14\" width=\"76\" height=\"28\" rx=\"14\" fill=\"#F3D08A\"/><path d=\"M-30 -10 q30 -12 60 0\" stroke=\"#6BBF59\" stroke-width=\"6\" fill=\"none\"/><path d=\"M-26 6 q26 8 52 0\" stroke=\"#E0554A\" stroke-width=\"5\" fill=\"none\"/></g><g><path d=\"M170 175 L230 130\" stroke=\"#B08050\" stroke-width=\"3\"/><circle cx=\"182\" cy=\"166\" r=\"9\" fill=\"#E0554A\"/><circle cx=\"196\" cy=\"156\" r=\"9\" fill=\"#FFC94D\"/><circle cx=\"210\" cy=\"145\" r=\"9\" fill=\"#6BBF59\"/><circle cx=\"222\" cy=\"136\" r=\"8\" fill=\"#8E5BD6\"/></g><g transform=\"translate(300,160)\"><path d=\"M-40 -10 h80 l-10 30 h-60z\" fill=\"#4FA3E0\"/><ellipse cx=\"0\" cy=\"-10\" rx=\"40\" ry=\"9\" fill=\"#F5F1E8\"/><circle cx=\"-25\" cy=\"-14\" r=\"5\" fill=\"#F3D08A\"/><circle cx=\"-15\" cy=\"-10\" r=\"5\" fill=\"#F3D08A\"/><circle cx=\"-5\" cy=\"-14\" r=\"5\" fill=\"#F3D08A\"/><circle cx=\"5\" cy=\"-10\" r=\"5\" fill=\"#F3D08A\"/><circle cx=\"15\" cy=\"-14\" r=\"5\" fill=\"#F3D08A\"/><circle cx=\"25\" cy=\"-10\" r=\"5\" fill=\"#F3D08A\"/></g><g transform=\"translate(330,60)\"><circle r=\"30\" fill=\"#fff\" stroke=\"#12172B\" stroke-width=\"4\"/><path d=\"M0 0 V-20 M0 0 L14 8\" stroke=\"#12172B\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M0 -30 A30 30 0 0 1 28 -9 L0 0z\" fill=\"#FF6B5D\" opacity=\".6\"/></g><text x=\"30\" y=\"60\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"30\" fill=\"#12172B\">3 in 5</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g4\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#D9D4E8\"/><stop offset=\"1\" stop-color=\"#B8B0CF\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g4)\"/><rect x=\"0\" y=\"226\" width=\"400\" height=\"24\" fill=\"#A89FC0\"/><rect x=\"44\" y=\"202\" width=\"356\" height=\"24\" fill=\"#9C93B5\"/><rect x=\"88\" y=\"178\" width=\"312\" height=\"24\" fill=\"#A89FC0\"/><rect x=\"132\" y=\"154\" width=\"268\" height=\"24\" fill=\"#9C93B5\"/><rect x=\"176\" y=\"130\" width=\"224\" height=\"24\" fill=\"#A89FC0\"/><rect x=\"220\" y=\"106\" width=\"180\" height=\"24\" fill=\"#9C93B5\"/><rect x=\"264\" y=\"82\" width=\"136\" height=\"24\" fill=\"#A89FC0\"/><rect x=\"308\" y=\"58\" width=\"92\" height=\"24\" fill=\"#9C93B5\"/><rect x=\"352\" y=\"34\" width=\"48\" height=\"24\" fill=\"#A89FC0\"/><path d=\"M0 60 L400 -30\" stroke=\"#6E6590\" stroke-width=\"6\"/><rect x=\"300\" y=\"20\" width=\"70\" height=\"90\" fill=\"#F5F1E8\" opacity=\".85\"/><path d=\"M335 20 V110 M300 65 H370\" stroke=\"#9C93B5\" stroke-width=\"4\"/><g transform=\"translate(150,202) scale(1.1)\"><rect x=\"-11\" y=\"-48\" width=\"9\" height=\"48\" rx=\"4\" fill=\"#3B4570\"/><rect x=\"2\" y=\"-48\" width=\"9\" height=\"48\" rx=\"4\" fill=\"#3B4570\"/><rect x=\"-15\" y=\"-92\" width=\"30\" height=\"48\" rx=\"10\" fill=\"#1B2340\"/><rect x=\"-24\" y=\"-88\" width=\"9\" height=\"36\" rx=\"4\" fill=\"#1B2340\"/><rect x=\"15\" y=\"-88\" width=\"9\" height=\"36\" rx=\"4\" fill=\"#1B2340\"/><circle cx=\"0\" cy=\"-106\" r=\"14\" fill=\"#F2C6A0\"/><path d=\"M-14 -108 a14 14 0 0 1 28 0 q-6 -6 -14 -5 q-8 -1 -14 5z\" fill=\"#1A1A1A\"/></g><g transform=\"translate(155,125) rotate(-25)\"><ellipse cx=\"0\" cy=\"12\" rx=\"22\" ry=\"18\" fill=\"#C27A3A\"/><ellipse cx=\"0\" cy=\"-8\" rx=\"16\" ry=\"14\" fill=\"#C27A3A\"/><circle cx=\"0\" cy=\"4\" r=\"6\" fill=\"#3B2A20\"/><rect x=\"-3\" y=\"-70\" width=\"6\" height=\"62\" fill=\"#5A3A1F\"/></g><g fill=\"#12172B\"><path d=\"M220 60 q4 -12 10 -2 v18\" stroke=\"#12172B\" stroke-width=\"3\" fill=\"none\"/><circle cx=\"226\" cy=\"78\" r=\"4\"/><path d=\"M245 40 v18\" stroke=\"#12172B\" stroke-width=\"3\"/><circle cx=\"241\" cy=\"59\" r=\"4\"/></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g5\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F7EFE3\"/><stop offset=\"1\" stop-color=\"#EADCC6\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g5)\"/><path d=\"M60 40 H340\" stroke=\"#8A6B4A\" stroke-width=\"6\" stroke-linecap=\"round\"/><path d=\"M70 40 V230 M330 40 V230\" stroke=\"#8A6B4A\" stroke-width=\"5\"/><g transform=\"translate(100,42)\"><path d=\"M0 0 q0 -8 6 -8\" stroke=\"#555\" stroke-width=\"2\" fill=\"none\"/><path d=\"M-22 14 L0 4 22 14 18 95 -18 95z\" fill=\"#FF6B5D\"/><path d=\"M-22 14 l-8 26 10 3 M22 14 l8 26 -10 3\" fill=\"#FF6B5D\"/></g><g transform=\"translate(155,42)\"><path d=\"M0 0 q0 -8 6 -8\" stroke=\"#555\" stroke-width=\"2\" fill=\"none\"/><path d=\"M-22 14 L0 4 22 14 18 115 -18 115z\" fill=\"#3E6FB0\"/><path d=\"M-22 14 l-8 26 10 3 M22 14 l8 26 -10 3\" fill=\"#3E6FB0\"/></g><g transform=\"translate(210,42)\"><path d=\"M0 0 q0 -8 6 -8\" stroke=\"#555\" stroke-width=\"2\" fill=\"none\"/><path d=\"M-22 14 L0 4 22 14 18 95 -18 95z\" fill=\"#FFC94D\"/><path d=\"M-22 14 l-8 26 10 3 M22 14 l8 26 -10 3\" fill=\"#FFC94D\"/></g><g transform=\"translate(265,42)\"><path d=\"M0 0 q0 -8 6 -8\" stroke=\"#555\" stroke-width=\"2\" fill=\"none\"/><path d=\"M-22 14 L0 4 22 14 18 115 -18 115z\" fill=\"#6BBF59\"/><path d=\"M-22 14 l-8 26 10 3 M22 14 l8 26 -10 3\" fill=\"#6BBF59\"/></g><g transform=\"translate(320,42)\"><path d=\"M0 0 q0 -8 6 -8\" stroke=\"#555\" stroke-width=\"2\" fill=\"none\"/><path d=\"M-22 14 L0 4 22 14 18 95 -18 95z\" fill=\"#9C6ADE\"/><path d=\"M-22 14 l-8 26 10 3 M22 14 l8 26 -10 3\" fill=\"#9C6ADE\"/></g><g transform=\"translate(300,160) rotate(12)\"><rect x=\"-30\" y=\"-16\" width=\"60\" height=\"32\" rx=\"4\" fill=\"#fff\" stroke=\"#12172B\" stroke-width=\"2\"/><circle cx=\"-22\" cy=\"0\" r=\"3\" fill=\"#12172B\"/><text x=\"6\" y=\"7\" font-family=\"monospace\" font-size=\"18\" font-weight=\"700\" fill=\"#D64A3C\" text-anchor=\"middle\">20 €</text></g><rect x=\"110\" y=\"200\" width=\"70\" height=\"36\" rx=\"4\" fill=\"#C9A77C\"/><text x=\"145\" y=\"223\" font-family=\"Helvetica,Arial\" font-size=\"12\" font-weight=\"700\" fill=\"#5A3A1F\" text-anchor=\"middle\">2nd HAND</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g6\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFB88C\"/><stop offset=\"1\" stop-color=\"#FFE3C4\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g6)\"/><circle cx=\"320\" cy=\"60\" r=\"28\" fill=\"#FFE08A\"/><path d=\"M0 250 V180 H120 Q210 180 230 110 H250 V250z\" fill=\"#A0A6B8\"/><path d=\"M230 110 H400 V250 H250z\" fill=\"#8A91A6\"/><path d=\"M120 180 Q210 180 230 110\" stroke=\"#5E6478\" stroke-width=\"5\" fill=\"none\"/><g stroke=\"#5E6478\" stroke-width=\"2\" opacity=\".6\"><path d=\"M20 200 h60\"/><path d=\"M280 170 h80\"/></g><text x=\"270\" y=\"210\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"22\" fill=\"#FF6B5D\" opacity=\".85\">CB</text><g transform=\"translate(190,120) scale(0.95)\"><rect x=\"-11\" y=\"-48\" width=\"9\" height=\"48\" rx=\"4\" fill=\"#1B2340\"/><rect x=\"2\" y=\"-48\" width=\"9\" height=\"48\" rx=\"4\" fill=\"#1B2340\"/><rect x=\"-15\" y=\"-92\" width=\"30\" height=\"48\" rx=\"10\" fill=\"#FFC94D\"/><rect x=\"-24\" y=\"-88\" width=\"9\" height=\"36\" rx=\"4\" fill=\"#FFC94D\"/><rect x=\"15\" y=\"-88\" width=\"9\" height=\"36\" rx=\"4\" fill=\"#FFC94D\"/><circle cx=\"0\" cy=\"-106\" r=\"14\" fill=\"#F2C6A0\"/><path d=\"M-14 -108 a14 14 0 0 1 28 0 q-6 -6 -14 -5 q-8 -1 -14 5z\" fill=\"#6B3F1F\"/></g><g transform=\"translate(190,140) rotate(-30)\"><rect x=\"-38\" y=\"-5\" width=\"76\" height=\"10\" rx=\"5\" fill=\"#12172B\"/><circle cx=\"-25\" cy=\"9\" r=\"5\" fill=\"#3DE8A0\"/><circle cx=\"25\" cy=\"9\" r=\"5\" fill=\"#3DE8A0\"/></g><path d=\"M150 150 a40 20 0 1 0 80 -5\" stroke=\"#fff\" stroke-width=\"3\" fill=\"none\" stroke-dasharray=\"5 5\"/></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g7\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#2A1E5C\"/><stop offset=\"1\" stop-color=\"#12172B\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g7)\"/><rect x=\"40\" y=\"35\" width=\"230\" height=\"150\" rx=\"8\" fill=\"#0A0E1C\" stroke=\"#8A93B2\" stroke-width=\"3\"/><rect x=\"52\" y=\"47\" width=\"206\" height=\"126\" fill=\"#5B8DEF\"/><rect x=\"52\" y=\"140\" width=\"206\" height=\"33\" fill=\"#6BBF59\"/><rect x=\"70\" y=\"120\" width=\"26\" height=\"20\" fill=\"#C27A3A\"/><rect x=\"110\" y=\"108\" width=\"26\" height=\"32\" fill=\"#C27A3A\"/><rect x=\"150\" y=\"96\" width=\"26\" height=\"44\" fill=\"#C27A3A\"/><rect x=\"190\" y=\"84\" width=\"26\" height=\"56\" fill=\"#C27A3A\"/><rect x=\"210\" y=\"70\" width=\"12\" height=\"18\" fill=\"#FF6B5D\"/><rect x=\"60\" y=\"54\" width=\"110\" height=\"26\" rx=\"3\" fill=\"#12172B\" opacity=\".85\"/><text x=\"115\" y=\"72\" font-family=\"monospace\" font-size=\"16\" fill=\"#3DE8A0\" text-anchor=\"middle\">12:34.56</text><g transform=\"translate(330,120)\"><path d=\"M-30 -50 h60 v20 a30 30 0 0 1 -60 0z\" fill=\"#FFC94D\"/><path d=\"M-30 -45 h-14 a14 14 0 0 0 14 22 M30 -45 h14 a14 14 0 0 1 -14 22\" stroke=\"#FFC94D\" stroke-width=\"5\" fill=\"none\"/><rect x=\"-6\" y=\"0\" width=\"12\" height=\"22\" fill=\"#FFC94D\"/><rect x=\"-24\" y=\"22\" width=\"48\" height=\"12\" rx=\"3\" fill=\"#B8860B\"/><text x=\"0\" y=\"-26\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"14\" fill=\"#12172B\" text-anchor=\"middle\">WR</text></g><text x=\"155\" y=\"220\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"18\" fill=\"#F5F1E8\" text-anchor=\"middle\">NEUER REKORD</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g8\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#BFE6D8\"/><stop offset=\"1\" stop-color=\"#E8F7F1\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g8)\"/><rect y=\"185\" width=\"400\" height=\"65\" fill=\"#9AA3B5\"/><path d=\"M0 188 H400\" stroke=\"#7D869A\" stroke-width=\"3\"/><g transform=\"translate(200,150)\"><ellipse cx=\"0\" cy=\"0\" rx=\"55\" ry=\"26\" fill=\"#D9A15E\"/><circle cx=\"58\" cy=\"-22\" r=\"24\" fill=\"#D9A15E\"/><ellipse cx=\"78\" cy=\"-14\" rx=\"14\" ry=\"10\" fill=\"#E8C28E\"/><circle cx=\"90\" cy=\"-16\" r=\"5\" fill=\"#222\"/><path d=\"M44 -40 q-10 -2 -12 22 q10 4 16 -6z\" fill=\"#8A5A2B\"/><circle cx=\"62\" cy=\"-28\" r=\"4\" fill=\"#222\"/><path d=\"M-55 -8 q-22 -20 -12 -36\" stroke=\"#D9A15E\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/><g stroke=\"#D9A15E\" stroke-width=\"11\" stroke-linecap=\"round\"><path d=\"M-35 18 v14\"/><path d=\"M-15 20 v12\"/><path d=\"M20 20 v12\"/><path d=\"M40 16 v16\"/></g><rect x=\"-12\" y=\"-26\" width=\"30\" height=\"8\" rx=\"3\" fill=\"#FF6B5D\"/></g><g transform=\"translate(200,188)\"><rect x=\"-70\" y=\"-10\" width=\"140\" height=\"10\" rx=\"5\" fill=\"#12172B\"/><circle cx=\"-48\" cy=\"6\" r=\"7\" fill=\"#FFC94D\"/><circle cx=\"48\" cy=\"6\" r=\"7\" fill=\"#FFC94D\"/></g><g stroke=\"#12172B\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\".5\"><path d=\"M90 140 h-40\"/><path d=\"M95 160 h-55\"/><path d=\"M92 180 h-30\"/></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g9\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FDEBD3\"/><stop offset=\"1\" stop-color=\"#F3D2A8\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g9)\"/><rect y=\"180\" width=\"400\" height=\"70\" fill=\"#8A5A2B\"/><circle cx=\"110\" cy=\"140\" r=\"70\" fill=\"#E8A857\"/><circle cx=\"110\" cy=\"140\" r=\"62\" fill=\"#E0554A\"/><circle cx=\"110\" cy=\"140\" r=\"58\" fill=\"#F7D774\" opacity=\".85\"/><circle cx=\"85\" cy=\"120\" r=\"9\" fill=\"#B0302A\"/><circle cx=\"130\" cy=\"110\" r=\"9\" fill=\"#B0302A\"/><circle cx=\"100\" cy=\"165\" r=\"9\" fill=\"#B0302A\"/><circle cx=\"140\" cy=\"155\" r=\"9\" fill=\"#B0302A\"/><circle cx=\"110\" cy=\"135\" r=\"6\" fill=\"#3E8E3E\"/><circle cx=\"75\" cy=\"150\" r=\"6\" fill=\"#3E8E3E\"/><circle cx=\"125\" cy=\"175\" r=\"6\" fill=\"#3E8E3E\"/><circle cx=\"290\" cy=\"140\" r=\"60\" fill=\"#E8A857\"/><circle cx=\"290\" cy=\"140\" r=\"52\" fill=\"#E0554A\"/><circle cx=\"290\" cy=\"140\" r=\"48\" fill=\"#F7D774\" opacity=\".85\"/><circle cx=\"275\" cy=\"130\" r=\"7\" fill=\"#B0302A\"/><circle cx=\"308\" cy=\"152\" r=\"7\" fill=\"#B0302A\"/><text x=\"200\" y=\"145\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"26\" fill=\"#12172B\" text-anchor=\"middle\">vs</text><g font-family=\"monospace\" font-weight=\"700\" font-size=\"18\" text-anchor=\"middle\"><rect x=\"70\" y=\"20\" width=\"80\" height=\"30\" rx=\"5\" fill=\"#12172B\"/><text x=\"110\" y=\"41\" fill=\"#FFC94D\">14,90 €</text><rect x=\"255\" y=\"30\" width=\"70\" height=\"30\" rx=\"5\" fill=\"#12172B\"/><text x=\"290\" y=\"51\" fill=\"#3DE8A0\">2,49 €</text></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g10\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#E3F1FA\"/><stop offset=\"1\" stop-color=\"#C7E2F3\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g10)\"/><rect y=\"185\" width=\"400\" height=\"65\" fill=\"#D8C3A5\"/><g transform=\"translate(90,170)\"><path d=\"M-40 -30 h80 v30 a10 10 0 0 1 -10 10 h-60 a10 10 0 0 1 -10 -10z\" fill=\"#9AA3B5\"/><ellipse cx=\"0\" cy=\"-30\" rx=\"40\" ry=\"8\" fill=\"#B8BFCE\"/><path d=\"M40 -22 h18\" stroke=\"#5E6478\" stroke-width=\"6\" stroke-linecap=\"round\"/></g><g transform=\"translate(190,175)\"><rect x=\"-22\" y=\"-45\" width=\"44\" height=\"50\" rx=\"6\" fill=\"#FF6B5D\"/><path d=\"M22 -35 q16 0 16 14 q0 14 -16 14\" stroke=\"#FF6B5D\" stroke-width=\"6\" fill=\"none\"/></g><g stroke=\"#8A6B4A\" stroke-width=\"6\" stroke-linecap=\"round\"><path d=\"M120 110 l30 30\"/><path d=\"M160 105 l-10 40\"/></g><ellipse cx=\"152\" cy=\"140\" rx=\"7\" ry=\"10\" fill=\"#8A6B4A\" transform=\"rotate(45 152 140)\"/><path d=\"M240 70 l6 10 l6 -17 l6 24 l6 -31 l6 13 l6 -20 l6 27 l6 -34 l6 16 l6 -23 l6 30 l6 -12 l6 19 l6 -26 l6 33 l6 -15 l6 22 l6 -29 l6 11 l6 -18 \" stroke=\"#12172B\" stroke-width=\"3\" fill=\"none\"/><g transform=\"translate(320,150)\"><path d=\"M-35 0 a35 35 0 0 1 70 0\" stroke=\"#12172B\" stroke-width=\"8\" fill=\"none\"/><rect x=\"-45\" y=\"-5\" width=\"18\" height=\"34\" rx=\"8\" fill=\"#3DE8A0\"/><rect x=\"27\" y=\"-5\" width=\"18\" height=\"34\" rx=\"8\" fill=\"#3DE8A0\"/></g><text x=\"30\" y=\"50\" font-family=\"monospace\" font-size=\"18\" font-weight=\"700\" fill=\"#12172B\">120 BPM</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g11\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#E8F7F1\"/><stop offset=\"1\" stop-color=\"#CDEEDF\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g11)\"/><rect y=\"190\" width=\"400\" height=\"60\" fill=\"#FFFFFF\"/><g transform=\"translate(180,170)\"><path d=\"M-110 10 q0 -40 30 -45 l40 -5 q20 -30 45 -30 l20 30 q60 5 85 30 q10 10 0 20z\" fill=\"#F5F5F5\" stroke=\"#12172B\" stroke-width=\"3\"/><path d=\"M-110 10 h180 l0 12 h-180z\" fill=\"#3DE8A0\" stroke=\"#12172B\" stroke-width=\"3\"/><path d=\"M-20 -55 l40 20 M-10 -62 l40 20 M0 -68 l38 18\" stroke=\"#12172B\" stroke-width=\"3\"/><path d=\"M-80 -15 q60 -10 110 0\" stroke=\"#FF6B5D\" stroke-width=\"6\" fill=\"none\"/></g><g transform=\"translate(320,90) rotate(25)\"><rect x=\"-40\" y=\"-12\" width=\"80\" height=\"24\" rx=\"8\" fill=\"#8A5A2B\"/><path d=\"M-35 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M-28 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M-21 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M-14 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M-7 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M0 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M7 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M14 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M21 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M28 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/><path d=\"M35 12 v14\" stroke=\"#FFC94D\" stroke-width=\"3\"/></g><circle cx=\"250\" cy=\"120\" r=\"10\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/><circle cx=\"270\" cy=\"140\" r=\"7\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/><circle cx=\"235\" cy=\"145\" r=\"6\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/><circle cx=\"285\" cy=\"115\" r=\"5\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/><circle cx=\"120\" cy=\"95\" r=\"8\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/><circle cx=\"100\" cy=\"115\" r=\"5\" fill=\"#fff\" stroke=\"#9AD7F2\" stroke-width=\"2\"/></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g12\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FDF1E6\"/><stop offset=\"1\" stop-color=\"#F7DCC4\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g12)\"/><rect y=\"200\" width=\"400\" height=\"50\" fill=\"#C9A77C\"/><rect x=\"60\" y=\"192\" width=\"280\" height=\"12\" rx=\"4\" fill=\"#3DE8A0\"/><g transform=\"translate(200,150) rotate(8)\"><rect x=\"-85\" y=\"-8\" width=\"120\" height=\"22\" rx=\"10\" fill=\"#FF6B5D\"/><rect x=\"-120\" y=\"-2\" width=\"45\" height=\"12\" rx=\"6\" fill=\"#1B2340\"/><circle cx=\"52\" cy=\"-2\" r=\"15\" fill=\"#E0A57A\"/><path d=\"M42 -16 a15 15 0 0 1 22 2 q-10 -4 -22 -2z\" fill=\"#3B2A20\"/></g><g stroke=\"#E0A57A\" stroke-width=\"10\" stroke-linecap=\"round\"><path d=\"M225 165 v28\"/><path d=\"M200 162 v31\"/></g><path d=\"M85 162 l-15 32\" stroke=\"#1B2340\" stroke-width=\"10\" stroke-linecap=\"round\"/><rect x=\"290\" y=\"30\" width=\"90\" height=\"44\" rx=\"8\" fill=\"#12172B\"/><text x=\"335\" y=\"60\" font-family=\"monospace\" font-size=\"22\" font-weight=\"700\" fill=\"#3DE8A0\" text-anchor=\"middle\">09:47</text><text x=\"30\" y=\"60\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"24\" fill=\"#12172B\">ohne Geräte</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g13\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#2A1E5C\"/><stop offset=\"1\" stop-color=\"#12172B\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g13)\"/><g opacity=\".35\" fill=\"#FFC94D\"><circle cx=\"40\" cy=\"30\" r=\"2\"/><circle cx=\"90\" cy=\"70\" r=\"2\"/><circle cx=\"330\" cy=\"40\" r=\"2\"/><circle cx=\"370\" cy=\"110\" r=\"2\"/><circle cx=\"60\" cy=\"180\" r=\"2\"/><circle cx=\"350\" cy=\"200\" r=\"2\"/><circle cx=\"150\" cy=\"30\" r=\"2\"/><circle cx=\"260\" cy=\"25\" r=\"2\"/></g><circle cx=\"200\" cy=\"110\" r=\"80\" fill=\"#8E5BD6\" opacity=\".35\"/><g transform=\"translate(200,175)\"><rect x=\"-70\" y=\"-40\" width=\"140\" height=\"60\" rx=\"6\" fill=\"#8A5A2B\" stroke=\"#FFC94D\" stroke-width=\"4\"/><path d=\"M-70 -40 q70 -60 140 0\" fill=\"#A0703A\" stroke=\"#FFC94D\" stroke-width=\"4\" transform=\"translate(0,-8) rotate(-10)\"/><rect x=\"-10\" y=\"-30\" width=\"20\" height=\"22\" rx=\"3\" fill=\"#FFC94D\"/></g><g transform=\"translate(200,95)\"><path d=\"M0 -35 L25 -10 L0 35 L-25 -10z\" fill=\"#3DE8A0\"/><path d=\"M0 -35 L10 -10 L0 35 L-10 -10z\" fill=\"#9FF5CF\"/><path d=\"M-25 -10 H25\" stroke=\"#1FA875\" stroke-width=\"2\"/></g><path transform=\"translate(150,30)\" d=\"M0 -9 L2.6 -3 9 -2.8 4 1.5 5.6 8 0 4.5 -5.6 8 -4 1.5 -9 -2.8 -2.6 -3z\" fill=\"#FFC94D\"/><path transform=\"translate(175,30)\" d=\"M0 -9 L2.6 -3 9 -2.8 4 1.5 5.6 8 0 4.5 -5.6 8 -4 1.5 -9 -2.8 -2.6 -3z\" fill=\"#FFC94D\"/><path transform=\"translate(200,30)\" d=\"M0 -9 L2.6 -3 9 -2.8 4 1.5 5.6 8 0 4.5 -5.6 8 -4 1.5 -9 -2.8 -2.6 -3z\" fill=\"#FFC94D\"/><path transform=\"translate(225,30)\" d=\"M0 -9 L2.6 -3 9 -2.8 4 1.5 5.6 8 0 4.5 -5.6 8 -4 1.5 -9 -2.8 -2.6 -3z\" fill=\"#FFC94D\"/><path transform=\"translate(250,30)\" d=\"M0 -9 L2.6 -3 9 -2.8 4 1.5 5.6 8 0 4.5 -5.6 8 -4 1.5 -9 -2.8 -2.6 -3z\" fill=\"#FFC94D\"/><text x=\"200\" y=\"240\" font-family=\"monospace\" font-size=\"13\" fill=\"#FFC94D\" text-anchor=\"middle\">DROP-CHANCE 0,1 %</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g14\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#DFF3D6\"/><stop offset=\"1\" stop-color=\"#BFE3AE\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g14)\"/><rect y=\"190\" width=\"400\" height=\"60\" fill=\"#8BC34A\"/><path d=\"M0 190 q100 -15 200 0 t200 0\" fill=\"#9CCC65\"/><path d=\"M20 190 V140 M20 150 H120 M20 170 H120 M120 190 V140\" stroke=\"#A0703A\" stroke-width=\"6\"/><g transform=\"translate(230,150)\"><rect x=\"-55\" y=\"-28\" width=\"100\" height=\"50\" rx=\"22\" fill=\"#9AD7F2\"/><rect x=\"-50\" y=\"-28\" width=\"9\" height=\"50\" fill=\"#FFFFFF\" opacity=\".7\"/><rect x=\"-30\" y=\"-28\" width=\"9\" height=\"50\" fill=\"#FFFFFF\" opacity=\".7\"/><rect x=\"-10\" y=\"-28\" width=\"9\" height=\"50\" fill=\"#FFFFFF\" opacity=\".7\"/><rect x=\"10\" y=\"-28\" width=\"9\" height=\"50\" fill=\"#FFFFFF\" opacity=\".7\"/><rect x=\"30\" y=\"-28\" width=\"9\" height=\"50\" fill=\"#FFFFFF\" opacity=\".7\"/><g stroke=\"#9AD7F2\" stroke-width=\"12\" stroke-linecap=\"round\"><path d=\"M-40 18 v22\"/><path d=\"M-15 20 v20\"/><path d=\"M15 20 v20\"/><path d=\"M35 18 v22\"/></g><g stroke=\"#F5F1E8\" stroke-width=\"6\"><path d=\"M-40 40 v5\"/><path d=\"M-15 40 v5\"/><path d=\"M15 40 v5\"/><path d=\"M35 40 v5\"/></g><ellipse cx=\"62\" cy=\"-40\" rx=\"22\" ry=\"20\" fill=\"#F5F1E8\"/><ellipse cx=\"78\" cy=\"-32\" rx=\"10\" ry=\"8\" fill=\"#FFE0D6\"/><path d=\"M50 -58 q-18 -2 -24 8 q12 6 26 0z M68 -60 q10 -14 22 -10 q-6 10 -18 14z\" fill=\"#F5F1E8\" stroke=\"#E0D6C8\"/><circle cx=\"60\" cy=\"-44\" r=\"4\" fill=\"#222\"/><path d=\"M52 -58 l-4 -12 M64 -60 l2 -12\" stroke=\"#B8A38A\" stroke-width=\"4\" stroke-linecap=\"round\"/></g><path d=\"M300 60 q10 -20 20 0 q10 -20 20 0\" stroke=\"#12172B\" stroke-width=\"3\" fill=\"none\"/><text x=\"345\" y=\"45\" font-family=\"Helvetica,Arial\" font-size=\"18\" font-weight=\"700\" fill=\"#12172B\">z z</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g15\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#EAF0FA\"/><stop offset=\"1\" stop-color=\"#D5E0F2\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g15)\"/><g transform=\"translate(120,160)\"><rect x=\"-95\" y=\"-50\" width=\"190\" height=\"100\" rx=\"10\" fill=\"#C9CCD8\"/><circle cx=\"-45\" cy=\"-5\" r=\"32\" fill=\"#fff\"/><path d=\"M-70 -5 q25 -25 50 0z\" fill=\"#F3D08A\"/><circle cx=\"-55\" cy=\"5\" r=\"8\" fill=\"#6BBF59\"/><circle cx=\"-38\" cy=\"8\" r=\"8\" fill=\"#6BBF59\"/><rect x=\"5\" y=\"-40\" width=\"75\" height=\"35\" rx=\"6\" fill=\"#fff\"/><path d=\"M12 -30 h60\" stroke=\"#E0554A\" stroke-width=\"10\"/><rect x=\"5\" y=\"5\" width=\"34\" height=\"34\" rx=\"6\" fill=\"#fff\"/><circle cx=\"22\" cy=\"22\" r=\"10\" fill=\"#FFC94D\"/><rect x=\"46\" y=\"5\" width=\"34\" height=\"34\" rx=\"6\" fill=\"#fff\"/><path d=\"M52 14 h22 v18 h-22z\" fill=\"#9C6ADE\"/></g><g transform=\"translate(300,200)\" font-family=\"monospace\" font-weight=\"700\" font-size=\"22\" text-anchor=\"middle\"><rect x=\"-25\" y=\"-90\" width=\"50\" height=\"90\" fill=\"#FFC94D\"/><text x=\"0\" y=\"-60\" fill=\"#12172B\">1</text><rect x=\"-80\" y=\"-60\" width=\"50\" height=\"60\" fill=\"#B8BFCE\"/><text x=\"-55\" y=\"-32\" fill=\"#12172B\">2</text><rect x=\"30\" y=\"-40\" width=\"50\" height=\"40\" fill=\"#D9A15E\"/><text x=\"55\" y=\"-14\" fill=\"#12172B\">3</text></g><text x=\"30\" y=\"45\" font-family=\"Helvetica,Arial\" font-weight=\"700\" font-size=\"24\" fill=\"#12172B\">MENSA-RANKING</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g16\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#2A1E5C\"/><stop offset=\"1\" stop-color=\"#0A0E1C\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g16)\"/><path d=\"M60 0 L140 170 M340 0 L260 170\" stroke=\"#FFC94D\" stroke-width=\"30\" opacity=\".18\"/><path d=\"M200 0 L200 170\" stroke=\"#3DE8A0\" stroke-width=\"40\" opacity=\".15\"/><rect x=\"40\" y=\"110\" width=\"320\" height=\"30\" fill=\"#1B2340\"/><rect x=\"40\" y=\"40\" width=\"320\" height=\"10\" fill=\"#1B2340\"/><circle cx=\"80\" cy=\"60\" r=\"6\" fill=\"#FF6B5D\"/><circle cx=\"140\" cy=\"60\" r=\"6\" fill=\"#FFC94D\"/><circle cx=\"200\" cy=\"60\" r=\"6\" fill=\"#3DE8A0\"/><circle cx=\"260\" cy=\"60\" r=\"6\" fill=\"#FFC94D\"/><circle cx=\"320\" cy=\"60\" r=\"6\" fill=\"#FF6B5D\"/><g fill=\"#12172B\"><circle cx=\"20\" cy=\"200\" r=\"14\"/><rect x=\"6\" y=\"210\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"50\" cy=\"206\" r=\"14\"/><rect x=\"36\" y=\"216\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"80\" cy=\"212\" r=\"14\"/><rect x=\"66\" y=\"222\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"110\" cy=\"200\" r=\"14\"/><rect x=\"96\" y=\"210\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"140\" cy=\"206\" r=\"14\"/><rect x=\"126\" y=\"216\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"170\" cy=\"212\" r=\"14\"/><rect x=\"156\" y=\"222\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"200\" cy=\"200\" r=\"14\"/><rect x=\"186\" y=\"210\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"230\" cy=\"206\" r=\"14\"/><rect x=\"216\" y=\"216\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"260\" cy=\"212\" r=\"14\"/><rect x=\"246\" y=\"222\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"290\" cy=\"200\" r=\"14\"/><rect x=\"276\" y=\"210\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"320\" cy=\"206\" r=\"14\"/><rect x=\"306\" y=\"216\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"350\" cy=\"212\" r=\"14\"/><rect x=\"336\" y=\"222\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"380\" cy=\"200\" r=\"14\"/><rect x=\"366\" y=\"210\" width=\"28\" height=\"50\" rx=\"10\"/><circle cx=\"410\" cy=\"206\" r=\"14\"/><rect x=\"396\" y=\"216\" width=\"28\" height=\"50\" rx=\"10\"/><path d=\"M95 200 l-10 -45\" stroke=\"#12172B\" stroke-width=\"10\" stroke-linecap=\"round\"/><path d=\"M290 205 l12 -48\" stroke=\"#12172B\" stroke-width=\"10\" stroke-linecap=\"round\"/></g><g transform=\"translate(250,150) rotate(-8)\"><rect x=\"-22\" y=\"-38\" width=\"44\" height=\"76\" rx=\"7\" fill=\"#F5F1E8\"/><rect x=\"-18\" y=\"-32\" width=\"36\" height=\"60\" fill=\"#5B3FA0\"/><circle cx=\"10\" cy=\"-26\" r=\"3\" fill=\"#FF6B5D\"/><text x=\"0\" y=\"5\" font-family=\"Helvetica,Arial\" font-size=\"9\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">REC</text></g></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g17\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#5C4B3B\"/><stop offset=\"1\" stop-color=\"#3A2E24\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g17)\"/><path d=\"M200 0 v30\" stroke=\"#222\" stroke-width=\"2\"/><path d=\"M185 30 h30 l-8 14 h-14z\" fill=\"#8A93B2\"/><path d=\"M160 44 L100 250 H300 L240 44z\" fill=\"#FFE08A\" opacity=\".18\"/><circle cx=\"200\" cy=\"48\" r=\"6\" fill=\"#FFE08A\"/><rect x=\"20\" y=\"150\" width=\"90\" height=\"70\" fill=\"#A0703A\"/><path d=\"M20 170 H110\" stroke=\"#7A5428\" stroke-width=\"3\"/><rect x=\"300\" y=\"160\" width=\"85\" height=\"60\" fill=\"#A0703A\"/><rect x=\"310\" y=\"120\" width=\"65\" height=\"40\" fill=\"#B8864E\"/><rect y=\"220\" width=\"400\" height=\"30\" fill=\"#2A221B\"/><g transform=\"translate(200,140)\"><path d=\"M-60 -50 L-20 -62 L0 -40 L20 -62 L60 -50 L78 40 L50 44 L45 -10 L45 60 H-45 L-45 -10 L-50 44 L-78 40z\" fill=\"#4A78B5\" stroke=\"#2F5585\" stroke-width=\"3\"/><path d=\"M-20 -62 L-5 0 M20 -62 L5 0\" stroke=\"#2F5585\" stroke-width=\"3\"/><path d=\"M0 -40 V60\" stroke=\"#2F5585\" stroke-width=\"3\"/><circle cx=\"6\" cy=\"-20\" r=\"3\" fill=\"#D9A15E\"/><circle cx=\"6\" cy=\"-2\" r=\"3\" fill=\"#D9A15E\"/><circle cx=\"6\" cy=\"16\" r=\"3\" fill=\"#D9A15E\"/><circle cx=\"6\" cy=\"34\" r=\"3\" fill=\"#D9A15E\"/><rect x=\"-38\" y=\"-5\" width=\"24\" height=\"18\" fill=\"none\" stroke=\"#FFC94D\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/><rect x=\"14\" y=\"-5\" width=\"24\" height=\"18\" fill=\"none\" stroke=\"#FFC94D\" stroke-width=\"2\" stroke-dasharray=\"3 2\"/></g><text x=\"345\" y=\"150\" font-family=\"monospace\" font-size=\"12\" fill=\"#F5F1E8\" text-anchor=\"middle\">1994</text></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g18\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#D6E6F5\"/><stop offset=\"1\" stop-color=\"#B9D1EA\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g18)\"/><rect y=\"200\" width=\"400\" height=\"50\" fill=\"#8A93B2\"/><path d=\"M40 150 L360 150 L380 185 L20 185z\" fill=\"#1E6FB8\"/><path d=\"M200 150 L200 185\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M40 150 L360 150\" stroke=\"#fff\" stroke-width=\"3\"/><path d=\"M20 185 H380\" stroke=\"#fff\" stroke-width=\"3\"/><rect x=\"196\" y=\"126\" width=\"8\" height=\"34\" fill=\"#F5F1E8\" opacity=\".9\"/><path d=\"M160 130 H240\" stroke=\"#12172B\" stroke-width=\"3\"/><path d=\"M160 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M168 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M176 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M184 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M192 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M200 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M208 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M216 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M224 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M232 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M240 130 V150\" stroke=\"#12172B\" stroke-width=\"1\"/><path d=\"M40 185 v40 M360 185 v40\" stroke=\"#12172B\" stroke-width=\"6\"/><g transform=\"translate(70,110) rotate(-30)\"><ellipse cx=\"0\" cy=\"0\" rx=\"20\" ry=\"24\" fill=\"#E0554A\"/><rect x=\"-4\" y=\"22\" width=\"8\" height=\"26\" rx=\"3\" fill=\"#8A5A2B\"/></g><g transform=\"translate(340,95) rotate(30)\"><ellipse cx=\"0\" cy=\"0\" rx=\"20\" ry=\"24\" fill=\"#12172B\"/><rect x=\"-4\" y=\"22\" width=\"8\" height=\"26\" rx=\"3\" fill=\"#8A5A2B\"/></g><path d=\"M85 100 Q150 20 210 110 T320 90\" stroke=\"#FF6B5D\" stroke-width=\"3\" fill=\"none\" stroke-dasharray=\"6 6\"/><circle cx=\"265\" cy=\"68\" r=\"8\" fill=\"#FFFFFF\" stroke=\"#E0E0E0\"/></svg>", "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"g19\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F3E6D3\"/><stop offset=\"1\" stop-color=\"#E2CDAE\"/></linearGradient></defs><rect width=\"400\" height=\"250\" fill=\"url(#g19)\"/><rect y=\"190\" width=\"400\" height=\"60\" fill=\"#A0703A\"/><g transform=\"translate(270,120)\"><rect x=\"-90\" y=\"-80\" width=\"180\" height=\"140\" rx=\"16\" fill=\"#6B5A4A\"/><rect x=\"-75\" y=\"-66\" width=\"130\" height=\"104\" rx=\"18\" fill=\"#2E3A2E\"/><rect x=\"-66\" y=\"-58\" width=\"112\" height=\"88\" rx=\"14\" fill=\"#6FA86F\" opacity=\".75\"/><rect x=\"-40\" y=\"-20\" width=\"12\" height=\"12\" fill=\"#2E3A2E\"/><rect x=\"-10\" y=\"-30\" width=\"30\" height=\"8\" fill=\"#2E3A2E\"/><circle cx=\"72\" cy=\"-40\" r=\"7\" fill=\"#C9A77C\"/><circle cx=\"72\" cy=\"-16\" r=\"7\" fill=\"#C9A77C\"/><path d=\"M-40 -80 L-60 -110 M40 -80 L60 -110\" stroke=\"#444\" stroke-width=\"3\"/></g><g transform=\"translate(95,190)\"><rect x=\"-70\" y=\"-30\" width=\"140\" height=\"30\" rx=\"4\" fill=\"#B8BFCE\"/><rect x=\"-40\" y=\"-55\" width=\"60\" height=\"28\" rx=\"3\" fill=\"#5E6478\"/><rect x=\"-34\" y=\"-50\" width=\"48\" height=\"12\" fill=\"#FF6B5D\"/><circle cx=\"45\" cy=\"-15\" r=\"5\" fill=\"#FF6B5D\"/><rect x=\"-60\" y=\"-18\" width=\"22\" height=\"6\" rx=\"3\" fill=\"#5E6478\"/></g><path d=\"M140 180 q60 20 60 -20\" stroke=\"#222\" stroke-width=\"3\" fill=\"none\"/><text x=\"30\" y=\"50\" font-family=\"monospace\" font-size=\"18\" font-weight=\"700\" fill=\"#12172B\">PRESS START</text></svg>"];
+/* Fotos von Unsplash (Unsplash-Lizenz), werden beim Oeffnen geladen. Ohne Internet: gezeichnete Ersatzbilder */
+var FOTO=[{"u": "https://images.unsplash.com/photo-1631478854728-b4a5479d1d36?auto=format&fit=crop&w=720&h=450&q=70", "n": "Omar Ramadan", "l": "https://unsplash.com/@omarvellous14?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1561948946-cb70f9e73ca5?auto=format&fit=crop&w=720&h=450&q=70", "n": "hang niu", "l": "https://unsplash.com/@niuhang?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1626218174358-7769486c4b79?auto=format&fit=crop&w=720&h=450&q=70", "n": "Resul Kaya", "l": "https://unsplash.com/@rsullkya?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1642574902333-dbf3f22c2728?auto=format&fit=crop&w=720&h=450&q=70", "n": "Edgar Soto", "l": "https://unsplash.com/@edgardo1987?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1758525863361-04d3f01735b5?auto=format&fit=crop&w=720&h=450&q=70", "n": "Vitaly Gariev", "l": "https://unsplash.com/@silverkblack?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1619161519929-befcb28d6384?auto=format&fit=crop&w=720&h=450&q=70", "n": "Noémie Roussel", "l": "https://unsplash.com/@noemierssl?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1638486071986-bbcac55fc52c?auto=format&fit=crop&w=720&h=450&q=70", "n": "Jan Kopřiva", "l": "https://unsplash.com/@jxk?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=720&h=450&q=70", "n": "Javier Martínez", "l": "https://unsplash.com/@cjdante?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1572291904159-09dca2d977a1?auto=format&fit=crop&w=720&h=450&q=70", "n": "Denis", "l": "https://unsplash.com/@denis96?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=720&h=450&q=70", "n": "Ivan Torres", "l": "https://unsplash.com/@iavnt?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1627773755683-dfcf2774596a?auto=format&fit=crop&w=720&h=450&q=70", "n": "Techivation", "l": "https://unsplash.com/@techivation?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1636262899511-dc5865c774dc?auto=format&fit=crop&w=720&h=450&q=70", "n": "Ervan M Wirawan", "l": "https://unsplash.com/@ervan_me?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?auto=format&fit=crop&w=720&h=450&q=70", "n": "Gordon Cowie", "l": "https://unsplash.com/@gcowie?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=720&h=450&q=70", "n": "Carl Raw", "l": "https://unsplash.com/@carltraw?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1646378201390-e11b6ad7b2e9?auto=format&fit=crop&w=720&h=450&q=70", "n": "Matt Ketchum", "l": "https://unsplash.com/@mkultraman?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1656414270935-1dbf52b3bbca?auto=format&fit=crop&w=720&h=450&q=70", "n": "Dana Sarsenbekova", "l": "https://unsplash.com/@barsuklis?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=720&h=450&q=70", "n": "Danny Howe", "l": "https://unsplash.com/@dannyhowe?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=720&h=450&q=70", "n": "kemal alkan", "l": "https://unsplash.com/@kemalalkan?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1646978567314-32cfd5a8854e?auto=format&fit=crop&w=720&h=450&q=70", "n": "Inkiipow", "l": "https://unsplash.com/@inkiipow?utm_source=wpk_wirtschaft_9&utm_medium=referral"}, {"u": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=720&h=450&q=70", "n": "Lorenzo Herrera", "l": "https://unsplash.com/@lorenzoherrera?utm_source=wpk_wirtschaft_9&utm_medium=referral"}];
+var POSTS=[
+ ['sport','Kreisliga: Tor in letzter Minute'],
+ ['tiere','Wenn die Katze merkt, dass du Snacks hast'],
+ ['gaming','Mein Gaming-Setup nach dem Umbau'],
+ ['essen','Kartoffel-Snack in 5 Minuten'],
+ ['musik','Live-Cover im Treppenhaus'],
+ ['mode','Thrift-Haul: alles unter 20 Euro'],
+ ['sport','Skatepark: der perfekte Sprung'],
+ ['gaming','Neuer Controller im Test'],
+ ['tiere','Hund fährt Skateboard'],
+ ['essen','Pizza-Test: teuer gegen billig'],
+ ['musik','So entsteht ein Beat im Studio'],
+ ['mode','Sneaker putzen wie ein Profi'],
+ ['sport','Training ohne Geräte – 10 Minuten'],
+ ['gaming','Retro-Arcade in der Innenstadt entdeckt'],
+ ['tiere','Babyziege, zwei Tage alt'],
+ ['essen','Das Mensa-Ranking der Klasse'],
+ ['musik','Festival-Vlog: Tag 1'],
+ ['mode','Vintage-Jacke aus dem Keller'],
+ ['sport','Tischtennis: Wer schafft den Trickshot?'],
+ ['gaming','Retro-Konsole aus dem Schrank']
+];
+
+var ADS_PERS={
+  sport:['Laufschuh-Händler','Neue Laufschuhe – 20 % Rabatt'],
+  gaming:['Gaming-Shop','Controller-Bundle zum Season-Start'],
+  mode:['Mode-Label','Neuer Hoodie-Drop – nur diese Woche'],
+  musik:['Kopfhörer-Marke','Kabellose Kopfhörer im Angebot'],
+  tiere:['Tierbedarf-Shop','Kuschelbett für Hund und Katze'],
+  essen:['Liefer-App','Erste Bestellung ohne Liefergebühr']
+};
+var ADS_GEN=[
+  ['Supermarkt','Die Angebote der Woche'],
+  ['Möbelhaus','Neue Regale für dein Zimmer'],
+  ['Mobilfunkanbieter','Handytarif mit mehr Datenvolumen'],
+  ['Baumarkt','Alles für den Herbst im Garten'],
+  ['Stadtwerke','Busticket jetzt in der App']
+];
+var PRICE_GEN=0.5, PRICE_PERS=1.5; /* Modellwerte in Cent */
+
+var age=15, likes={}, ads=[], adShown=0, revenue=0;
+function fmt(x,d){return x.toFixed(d).replace('.',',');}
+
+function topCat(){
+  var best=null,bv=0;
+  ORDER.forEach(function(k){if((likes[k]||0)>bv){bv=likes[k];best=k;}});
+  return best;
+}
+
+function renderSide(){
+  document.getElementById('adCount').textContent=adShown;
+  document.getElementById('rev').textContent=fmt(revenue,1)+' ct';
+  var total=0;ORDER.forEach(function(k){total+=likes[k]||0});
+  var h='';
+  ORDER.forEach(function(k){
+    var v=likes[k]||0, p=total?Math.round(v/total*100):0;
+    h+='<div style="display:flex;justify-content:space-between;font-size:14px"><span>'+CAT[k].n+'</span><span class="mono">'+v+'</span></div><div class="bar"><i style="width:'+p+'%"></i></div>';
+  });
+  document.getElementById('profile').innerHTML=h;
+  document.getElementById('lock').innerHTML= age<18
+    ? '<b>Für Werbung gesperrt.</b> Du bist minderjährig: Die Plattform darf dir keine Werbung zeigen, die auf deinem Profil beruht (Art. 28 Abs. 2 DSA). Sie zeigt dir allgemeine Anzeigen.'
+    : '<b>Für Werbung freigegeben.</b> Mit 18 darf die Plattform – mit deiner Einwilligung – Anzeigen passend zu deinem Profil verkaufen. Werbekunden zahlen dafür mehr.';
+  document.getElementById('lock').style.background= age<18 ? '#2a1e2a' : '#1c3a31';
+  document.getElementById('lock').style.color= age<18 ? '#ffd0cb' : '#c9f7e3';
+}
+
+function fillAd(el,idx){
+  var html,price,tc=topCat();
+  var gen=ADS_GEN[idx%ADS_GEN.length];
+  var bids;
+  if(age>=18 && tc){
+    var a=ADS_PERS[tc]; price=PRICE_PERS;
+    bids=[[a[0],PRICE_PERS,true],[gen[0],PRICE_GEN,false],[ADS_GEN[(idx+1)%ADS_GEN.length][0],PRICE_GEN,false]];
+    html='<div class="lbl">ANZEIGE · PERSONALISIERT</div><div class="ttl">'+a[1]+'</div>'+
+      '<div class="why">Warum sehe ich das? Du hast oft <b>'+CAT[tc].n+'</b> geliked.</div>';
+  }else{
+    price=PRICE_GEN;
+    bids=[[gen[0],PRICE_GEN,true],[ADS_GEN[(idx+1)%ADS_GEN.length][0],PRICE_GEN,false],[ADS_GEN[(idx+2)%ADS_GEN.length][0],PRICE_GEN,false]];
+    html='<div class="lbl">ANZEIGE · ALLGEMEIN</div><div class="ttl">'+gen[1]+'</div>'+
+      '<div class="why">'+(age<18?'Warum sehe ich das? Nicht wegen deines Profils – das ist bei Minderjährigen verboten.':'Warum sehe ich das? Dein Profil ist noch leer – die Plattform weiß noch nichts über dich.')+'</div>';
+  }
+  html+='<div class="bids">Auktion um diesen Werbeplatz:<br>';
+  bids.forEach(function(b){html+=(b[2]?'<span class="win">&#9654; ':'&nbsp;&nbsp;')+b[0]+': '+fmt(b[1],1)+' ct'+(b[2]?' – Zuschlag</span>':'')+'<br>';});
+  html+='</div>';
+  el.innerHTML=html; el.classList.remove('pending');
+  adShown++; revenue+=price; renderSide();
+  if(adShown===5) showSummary();
+}
+
+function showSummary(){
+  var tc=topCat();
+  var s=document.createElement('div');
+  s.className='card summary';
+  s.innerHTML='<div class="kicker">Ergebnis dieser Runde · '+age+' Jahre</div>'+
+   '<p style="margin:8px 0">Anzeigen gesehen: <b class="mono">'+adShown+'</b><br>Werbeumsatz (Modell): <b class="mono">'+fmt(revenue,1)+' ct</b><br>'+
+   'Stärkstes Interesse im Profil: <b>'+(tc?CAT[tc].n:'noch keins')+'</b></p>'+
+   '<p class="muted" style="margin:0">Trag die Werte in A6 ein. Starte dann eine neue Runde mit dem anderen Alter und like möglichst dieselben Beiträge.</p>';
+  document.getElementById('feed').appendChild(s);
+}
+
+var io=null;
+function startRound(a){
+  age=a; likes={}; adShown=0; revenue=0;
+  document.getElementById('ageLbl').textContent='Runde · '+a+' Jahre';
+  var f=document.getElementById('feed'); f.innerHTML='';
+  if(io) io.disconnect();
+  io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting && e.target.classList.contains('pending')){
+        io.unobserve(e.target); fillAd(e.target, +e.target.dataset.i);
+      }
+    });
+  },{threshold:0.6});
+  POSTS.forEach(function(p,i){
+    var c=CAT[p[0]];
+    var d=document.createElement('div'); d.className='post';
+    d.innerHTML='<div class="pic"><img alt="'+p[1]+'" referrerpolicy="no-referrer" src="'+FOTO[i].u+'">'+
+      '<a class="credit" target="_blank" rel="noopener" href="'+FOTO[i].l+'">Foto: '+FOTO[i].n+' / Unsplash</a></div>'+
+      '<div class="meta"><div><div class="cap">'+p[1]+'</div><div class="tag">#'+c.n.toLowerCase()+'</div></div>'+
+      '<button class="like" aria-pressed="false">Gefällt mir</button></div>';
+    d.querySelector('.like').addEventListener('click',function(){
+      var on=this.classList.toggle('on');
+      this.setAttribute('aria-pressed',on?'true':'false');
+      likes[p[0]]=(likes[p[0]]||0)+(on?1:-1);
+      renderSide();
+    });
+    (function(pic,idx){var im=pic.querySelector('img');im.addEventListener('error',function(){pic.innerHTML=IMG[idx];});})(d.querySelector('.pic'),i);
+    f.appendChild(d);
+    if((i+1)%4===0){
+      var ad=document.createElement('div'); ad.className='ad pending'; ad.dataset.i=String((i+1)/4-1);
+      ad.innerHTML='<div class="lbl">WERBEPLATZ</div><div class="why">Wird versteigert, sobald du hierher scrollst …</div>';
+      f.appendChild(ad); io.observe(ad);
+    }
+  });
+  document.getElementById('start').hidden=true;
+  document.getElementById('simArea').hidden=false;
+  renderSide(); window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-age]').forEach(function(b){
+  b.addEventListener('click',function(){startRound(+b.dataset.age);});
+});
+document.getElementById('restart').addEventListener('click',function(){
+  document.getElementById('simArea').hidden=true;
+  document.getElementById('start').hidden=false;
+  window.scrollTo(0,0);
+});
+
+/* ---------- Quiz ---------- */
+var MODELS=['W','A','F','I','G','S'];
+var APPS=[
+  ['Instagram',['W'],'Finanziert sich fast vollständig über Werbung.'],
+  ['Netflix',['A'],'Monatliches Abo. Der günstigste Tarif enthält zusätzlich Werbung.'],
+  ['Spotify',['F'],'Gratis mit Werbung, Premium kostet. Das ist Freemium.'],
+  ['Brawl Stars',['I'],'Kostenlos spielbar, Geld kommt über Käufe im Spiel.'],
+  ['Wikipedia',['S'],'Keine Werbung, finanziert durch Spenden.'],
+  ['Vinted',['G'],'Bei jedem Kauf zahlt die Käuferin/der Käufer eine Gebühr an die Plattform.'],
+  ['Duolingo',['F'],'Gratis mit Werbung, das Abo ohne Werbung kostet. Freemium.'],
+  ['TikTok',['W','I'],'Werbung – und Münzen für Geschenke an Creator (In-App-Käufe).']
+];
+var sel={};
+function renderQuiz(){
+  var h='';
+  APPS.forEach(function(a,i){
+    h+='<div class="q"><div class="app">'+a[0]+'</div><div class="chips">';
+    MODELS.forEach(function(m){h+='<button class="chip" data-i="'+i+'" data-m="'+m+'">'+m+'</button>';});
+    h+='</div><div class="fb" id="fb'+i+'"></div></div>';
+  });
+  document.getElementById('quiz').innerHTML=h;
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click',function(){
+      var i=c.dataset.i,m=c.dataset.m; sel[i]=sel[i]||{};
+      sel[i][m]=!sel[i][m]; c.classList.toggle('on',!!sel[i][m]);
+    });
+  });
+}
+renderQuiz();
+document.getElementById('check').addEventListener('click',function(){
+  var pts=0;
+  APPS.forEach(function(a,i){
+    var s=sel[i]||{}, chosen=MODELS.filter(function(m){return s[m]});
+    var right=chosen.length===a[1].length && a[1].every(function(m){return s[m]});
+    if(right)pts++;
+    document.querySelectorAll('.chip[data-i="'+i+'"]').forEach(function(c){
+      c.classList.remove('right','wrong');
+      if(a[1].indexOf(c.dataset.m)>=0)c.classList.add('right');
+      else if(s[c.dataset.m])c.classList.add('wrong');
+    });
+    document.getElementById('fb'+i).innerHTML=(right?'<span class="ok">Richtig.</span> ':'<span class="bad">Lösung: '+a[1].join(' + ')+'.</span> ')+a[2];
+  });
+  document.getElementById('score').textContent=pts+' / 8';
+});
+document.getElementById('qreset').addEventListener('click',function(){sel={};renderQuiz();document.getElementById('score').textContent='';});
+
+/* ---------- Rechner ---------- */
+function num(id){var v=document.getElementById(id).value.replace(/\s/g,'').replace(',','.');var x=parseFloat(v);return isFinite(x)?x:NaN;}
+function calc(){
+  var u=num('u'),g=num('g'),n=num('n'),a=num('a'),b=document.getElementById('bon');
+  if(!(u>0&&g>0&&n>0)){b.innerHTML='Bitte gültige Zahlen eingeben.';return;}
+  var anteil=u/g*100, jahr=u/n, monat=jahr/12;
+  var h='<div style="text-align:center;font-weight:700">KASSENBON „KOSTENLOS“</div><hr>'+
+   '<div class="l"><span>Werbeanteil am Umsatz</span><span>'+fmt(anteil,1)+' %</span></div>'+
+   '<div class="l"><span>Werbeumsatz pro Person/Jahr</span><span>'+fmt(jahr,2)+' US-$</span></div>'+
+   '<div class="l"><span>… pro Monat</span><span>'+fmt(monat,2)+' US-$</span></div><hr>'+
+   '<div class="l"><span>Du hast bezahlt</span><span>0,00 €</span></div>';
+  if(a>0) h+='<div class="l"><span>Abo ohne Werbung/Monat</span><span>'+fmt(a,2)+' €</span></div>';
+  h+='<hr><div style="font-size:13px">Rechenweg: '+fmt(u,1)+' Mrd. : '+fmt(n,2)+' Mrd. = '+fmt(jahr,2)+' US-$ pro Jahr; : 12 = '+fmt(monat,2)+' US-$ pro Monat.</div>';
+  b.innerHTML=h;
+}
+['u','g','n','a'].forEach(function(id){document.getElementById(id).addEventListener('input',calc);});
+calc();
+})();
+</script>
+</body>
+</html>
