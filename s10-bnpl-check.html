@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Später zahlen – der Check</title>
+<style>
+:root{--ink:#12172B;--ink2:#1B2340;--ink3:#252F52;--mint:#3DE8A0;--coral:#FF6B5D;
+--gold:#FFC94D;--sand:#F5F1E8;--muted:#8A93B2;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--sand);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+-webkit-text-size-adjust:100%}
+body{padding:28px 16px 70px;max-width:760px;margin:0 auto;line-height:1.5}
+.kicker{font-size:.72rem;font-weight:700;color:var(--mint);letter-spacing:3px;
+text-transform:uppercase;margin-bottom:8px}
+h1{font-size:1.9rem;margin:0 0 8px;line-height:1.15;letter-spacing:-.01em}
+h1 span{color:var(--mint)}
+p.sub{color:var(--muted);margin:0 0 26px;font-size:.95rem}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+nav button{flex:1 1 auto;min-width:120px;background:var(--ink2);color:var(--muted);
+border:1px solid rgba(138,147,178,.25);border-radius:11px;padding:11px 10px;
+font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;
+-webkit-tap-highlight-color:transparent}
+nav button.on{background:var(--mint);color:var(--ink);border-color:var(--mint)}
+section{display:none}
+section.on{display:block}
+.card{background:var(--ink2);border:1px solid rgba(138,147,178,.2);
+border-radius:16px;padding:20px 18px;margin-bottom:16px}
+h2{font-size:1.15rem;margin:0 0 6px}
+.lead{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);
+margin:14px 0 6px;text-transform:uppercase;letter-spacing:1px}
+input[type=number],select{width:100%;background:var(--ink);color:var(--sand);
+border:1px solid rgba(138,147,178,.35);border-radius:10px;padding:12px 13px;
+font-size:1.05rem;font-family:inherit;-webkit-appearance:none}
+input[type=range]{width:100%;accent-color:var(--mint)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1 1 140px;min-width:0}
+.out{margin-top:18px;background:var(--ink3);border-radius:12px;padding:16px 15px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:7px 0;
+border-bottom:1px solid rgba(138,147,178,.18);font-size:.95rem}
+.line:last-child{border-bottom:0}
+.line span:last-child{font-weight:700;font-family:"Courier New",monospace;
+white-space:nowrap}
+.line.big{font-size:1.15rem;padding-top:13px}
+.line.big span:last-child{color:var(--mint)}
+.line.warn span:last-child{color:var(--coral)}
+.line.gold span:last-child{color:var(--gold)}
+.note{margin-top:14px;font-size:.84rem;color:var(--muted);line-height:1.5}
+.note b{color:var(--sand)}
+.bar{height:12px;border-radius:7px;background:rgba(138,147,178,.22);
+overflow:hidden;margin:10px 0 4px;display:flex}
+.bar i{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.76rem;color:var(--muted);
+margin-bottom:6px}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;
+margin-right:5px;vertical-align:middle}
+.case{background:var(--ink3);border-radius:12px;padding:15px 14px;margin-bottom:11px}
+.case p{margin:0 0 11px;font-size:.95rem;line-height:1.45}
+.case .q{font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;
+color:var(--gold);font-weight:700;margin-bottom:7px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opts button{flex:1 1 110px;background:var(--ink2);color:var(--sand);
+border:1px solid rgba(138,147,178,.3);border-radius:10px;padding:10px 8px;
+font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;
+-webkit-tap-highlight-color:transparent}
+.opts button.right{background:var(--mint);color:var(--ink);border-color:var(--mint)}
+.opts button.wrong{background:var(--coral);color:#2A0E0B;border-color:var(--coral)}
+.opts button.dim{opacity:.4}
+.fb{margin-top:11px;font-size:.88rem;line-height:1.5;display:none;
+padding:11px 12px;border-radius:9px;background:rgba(61,232,160,.1);
+border-left:3px solid var(--mint)}
+.fb.show{display:block}
+.fb.miss{background:rgba(255,107,93,.1);border-left-color:var(--coral)}
+.score{text-align:center;padding:18px;background:var(--ink3);border-radius:12px;
+margin-top:6px}
+.score .n{font-size:2.3rem;font-weight:800;color:var(--mint);
+font-family:"Courier New",monospace;line-height:1.1}
+.score .t{font-size:.85rem;color:var(--muted)}
+.chk{display:flex;align-items:flex-start;gap:11px;padding:11px 0;
+border-bottom:1px solid rgba(138,147,178,.18);cursor:pointer}
+.chk:last-of-type{border-bottom:0}
+.chk input{flex:0 0 auto;width:21px;height:21px;accent-color:var(--mint);
+margin:1px 0 0}
+.chk span{font-size:.93rem;line-height:1.45}
+.btn{display:block;width:100%;background:var(--mint);color:var(--ink);border:0;
+border-radius:11px;padding:14px;font-size:.98rem;font-weight:800;cursor:pointer;
+font-family:inherit;margin-top:16px;-webkit-tap-highlight-color:transparent}
+.btn.ghost{background:transparent;color:var(--muted);
+border:1px solid rgba(138,147,178,.35);font-weight:600}
+footer{margin-top:30px;padding-top:18px;border-top:1px solid rgba(138,147,178,.2);
+color:var(--muted);font-size:.76rem;text-align:center;line-height:1.6}
+.tag{display:inline-block;font-size:.68rem;letter-spacing:1.2px;font-weight:700;
+text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-bottom:9px}
+.tag.a{background:rgba(61,232,160,.16);color:var(--mint)}
+.tag.b{background:rgba(255,201,77,.16);color:var(--gold)}
+.tag.c{background:rgba(255,107,93,.16);color:var(--coral)}
+</style>
+</head>
+<body>
+
+<div class="kicker">WPK Wirtschaft 9 &middot; Sitzung 10</div>
+<h1>Später zahlen &ndash; <span>der Check</span></h1>
+<p class="sub">Vier Werkzeuge zu &bdquo;Buy Now, Pay Later&ldquo;. Rechne nach, was der Knopf
+&bdquo;Jetzt kaufen, später zahlen&ldquo; wirklich kostet.</p>
+
+<nav>
+  <button class="on" data-go="t1">1 &middot; Zu spät</button>
+  <button data-go="t2">2 &middot; In Raten</button>
+  <button data-go="t3">3 &middot; Der Stapel</button>
+  <button data-go="t4">4 &middot; Checkout</button>
+  <button data-go="t5">5 &middot; Mein Limit</button>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section id="t1" class="on">
+<div class="card">
+  <span class="tag a">Rechnungskauf</span>
+  <h2>Was kostet es, zu spät zu zahlen?</h2>
+  <p class="lead">Du kaufst auf Rechnung. Pünktlich bezahlt kostet dich das nichts.
+  Aber was, wenn die Rechnung liegen bleibt?</p>
+
+  <label for="k1">Kaufpreis in Euro</label>
+  <input type="number" id="k1" value="89" min="1" max="5000" step="0.01">
+
+  <label for="t1d">Tage nach Ende des Zahlungsziels: <b id="t1dv">60</b></label>
+  <input type="range" id="t1d" value="60" min="0" max="180" step="1">
+
+  <div class="row">
+    <div>
+      <label for="m1">1. Mahnung (&euro;)</label>
+      <input type="number" id="m1" value="2.40" min="0" max="20" step="0.10">
+    </div>
+    <div>
+      <label for="m2">2. Mahnung (&euro;)</label>
+      <input type="number" id="m2" value="3.60" min="0" max="20" step="0.10">
+    </div>
+  </div>
+
+  <div class="out" id="o1"></div>
+  <p class="note"><b>Verzugszins:</b> 5 Prozentpunkte über dem Basiszinssatz
+  (&sect; 288 Abs. 1 BGB). Basiszinssatz seit 01.07.2026: 1,52 % &rarr; 6,52 % im Jahr.
+  Mahngebühren darf ein Unternehmen nur in Höhe der tatsächlichen Kosten verlangen
+  (Porto, Papier) &ndash; nicht für die eigene Arbeitszeit.</p>
+</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="t2">
+<div class="card">
+  <span class="tag b">Ratenkauf</span>
+  <h2>Was kosten die Raten wirklich?</h2>
+  <p class="lead">&bdquo;Nur 22,40 &euro; im Monat&ldquo; klingt klein. Rechne aus, was am
+  Ende dasteht &ndash; und wie hoch der Zinssatz pro Jahr ist.</p>
+
+  <label for="k2">Kaufpreis in Euro</label>
+  <input type="number" id="k2" value="249" min="1" max="10000" step="0.01">
+
+  <div class="row">
+    <div>
+      <label for="r2">Monatsrate (&euro;)</label>
+      <input type="number" id="r2" value="22.40" min="0.5" max="2000" step="0.01">
+    </div>
+    <div>
+      <label for="n2">Anzahl Raten</label>
+      <select id="n2">
+        <option>3</option><option>6</option><option selected>12</option>
+        <option>18</option><option>24</option><option>36</option><option>48</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="out" id="o2"></div>
+  <p class="note"><b>Warum zwei Prozentzahlen?</b> Der Aufschlag sagt, wie viel mehr du
+  insgesamt zahlst. Der effektive Jahreszins rechnet mit ein, dass du das Geld nicht
+  die ganze Zeit schuldest &ndash; die Schuld schrumpft ja mit jeder Rate. Nur der
+  effektive Jahreszins ist mit anderen Krediten vergleichbar.</p>
+</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="t3">
+<div class="card">
+  <span class="tag c">Mehrere Käufe</span>
+  <h2>Der Stapel</h2>
+  <p class="lead">Einzeln ist jeder Kauf klein. Das Problem entsteht, wenn mehrere
+  Rechnungen im selben Monat fällig werden. Schiebe die Regler.</p>
+
+  <label for="b3">Dein Geld pro Monat (Taschengeld, Job, Geschenke): <b id="b3v">60</b> &euro;</label>
+  <input type="range" id="b3" value="60" min="10" max="300" step="5">
+
+  <label for="f3">Feste Ausgaben pro Monat (Handy, Abos, Fahrkarte): <b id="f3v">18</b> &euro;</label>
+  <input type="range" id="f3" value="18" min="0" max="150" step="1">
+
+  <label for="a3">Anzahl Käufe &bdquo;später zahlen&ldquo; in 3 Monaten: <b id="a3v">5</b></label>
+  <input type="range" id="a3" value="5" min="1" max="20" step="1">
+
+  <label for="s3">Durchschnittlicher Kaufpreis: <b id="s3v">45</b> &euro;</label>
+  <input type="range" id="s3" value="45" min="5" max="200" step="5">
+
+  <div class="out" id="o3"></div>
+</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="t4">
+<div class="card">
+  <span class="tag b">12 Fälle</span>
+  <h2>Checkout-Detektor</h2>
+  <p class="lead">Erlaubt oder nicht erlaubt? Entscheide und lies die Begründung.
+  Rechtsstand: die neuen Regeln, die ab 20.11.2026 gelten.</p>
+  <div id="cases"></div>
+  <div class="score"><div class="n" id="sc">0 / 12</div>
+  <div class="t">richtig eingeordnet</div></div>
+  <button class="btn ghost" id="reset4">Noch einmal von vorn</button>
+</div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="t5">
+<div class="card">
+  <span class="tag a">Für dich</span>
+  <h2>Mein Limit</h2>
+  <p class="lead">Sieben Fragen an dich selbst. Niemand sieht die Antworten &ndash;
+  sie werden nirgends gespeichert und nicht bewertet.</p>
+  <div id="chks"></div>
+  <div class="out" id="o5"></div>
+  <button class="btn" id="go5">Auswerten</button>
+  <button class="btn ghost" id="reset5">Zurücksetzen</button>
+</div>
+<div class="card">
+  <h2>Drei Sätze zum Mitnehmen</h2>
+  <p class="lead" style="margin-bottom:0">
+  <b style="color:var(--sand)">1.</b> &bdquo;Später zahlen&ldquo; ist kein Rabatt, sondern ein
+  Kredit &ndash; auch wenn kein Zins draufsteht.<br><br>
+  <b style="color:var(--sand)">2.</b> Teuer wird es fast nie durch Zinsen, sondern durch
+  Gebühren, wenn etwas schiefgeht.<br><br>
+  <b style="color:var(--sand)">3.</b> Gefährlich ist nicht der eine Kauf, sondern der
+  fünfte &ndash; weil alle im selben Monat fällig werden.</p>
+</div>
+</section>
+
+<footer>
+Humboldt-Gymnasium Cottbus &middot; Wahlpflichtkurs Wirtschaft, Klasse 9<br>
+Dieses Werkzeug rechnet nur in deinem Browser. Es werden keine Daten gespeichert
+oder übertragen. Es funktioniert auch ohne Internet.
+</footer>
+
+<script>
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+function eur(x){ return x.toLocaleString('de-DE',{minimumFractionDigits:2,
+  maximumFractionDigits:2}) + ' €'; }
+function pct(x,d){ if(d===undefined){d=2;} return x.toLocaleString('de-DE',
+  {minimumFractionDigits:d,maximumFractionDigits:d}) + ' %'; }
+function num(x,d){ return x.toLocaleString('de-DE',{minimumFractionDigits:d,
+  maximumFractionDigits:d}); }
+function r2(x){ return Math.round(x*100)/100; }
+
+/* ---- Navigation ---- */
+var navBtns = document.querySelectorAll('nav button');
+for (var i=0;i<navBtns.length;i++){
+  navBtns[i].addEventListener('click', function(){
+    for (var j=0;j<navBtns.length;j++){ navBtns[j].classList.remove('on'); }
+    this.classList.add('on');
+    var secs = document.querySelectorAll('section');
+    for (var k=0;k<secs.length;k++){ secs[k].classList.remove('on'); }
+    $(this.getAttribute('data-go')).classList.add('on');
+    window.scrollTo(0,0);
+  });
+}
+
+/* ---- 1 Verzug ---- */
+var VZ = 6.52;
+function calc1(){
+  var K  = parseFloat($('k1').value)||0;
+  var d  = parseInt($('t1d').value,10)||0;
+  var m1 = parseFloat($('m1').value)||0;
+  var m2 = parseFloat($('m2').value)||0;
+  $('t1dv').textContent = d;
+
+  var stufen = 0, geb = 0;
+  if (d >= 10){ stufen = 1; geb = m1; }
+  if (d >= 35){ stufen = 2; geb = m1 + m2; }
+  var zins = r2(K * VZ/100 * d/365);
+  geb = r2(geb);
+  var mehr = r2(geb + zins);
+  var ges  = r2(K + mehr);
+  var antGeb = mehr>0 ? geb/mehr*100 : 0;
+  var auf = K>0 ? mehr/K*100 : 0;
+  var pa  = d>0 ? auf*365/d : 0;
+
+  var h = '';
+  h += '<div class="line"><span>Kaufpreis</span><span>'+eur(K)+'</span></div>';
+  h += '<div class="line"><span>Mahngebühren ('+stufen+' Mahnung'+(stufen===1?'':'en')+
+       ')</span><span>'+eur(geb)+'</span></div>';
+  h += '<div class="line"><span>Verzugszinsen, '+d+' Tage, 6,52 % im Jahr</span><span>'+
+       eur(zins)+'</span></div>';
+  h += '<div class="line big"><span>Du zahlst insgesamt</span><span>'+eur(ges)+'</span></div>';
+  if (mehr > 0){
+    h += '<div class="line warn"><span>Mehrkosten</span><span>+ '+eur(mehr)+'</span></div>';
+    h += '<div class="line gold"><span>davon Gebühren (keine Zinsen)</span><span>'+
+         pct(antGeb,1)+'</span></div>';
+    h += '<div class="line warn"><span>Aufschlag in '+d+' Tagen</span><span>'+
+         pct(auf)+'</span></div>';
+    h += '<div class="line warn"><span>aufs Jahr hochgerechnet</span><span>'+
+         pct(pa,1)+'</span></div>';
+  } else {
+    h += '<div class="line"><span>Mehrkosten</span><span>0,00 €</span></div>';
+  }
+  $('o1').innerHTML = h;
+}
+['k1','t1d','m1','m2'].forEach(function(id){
+  $(id).addEventListener('input', calc1);
+});
+
+/* ---- 2 Raten ---- */
+function effZins(K, rate, n){
+  if (rate*n <= K){ return 0; }
+  var lo = 1e-9, hi = 1.0, mid, v;
+  for (var i=0;i<200;i++){
+    mid = (lo+hi)/2;
+    v = rate*(1-Math.pow(1+mid,-n))/mid - K;
+    if (v > 0){ lo = mid; } else { hi = mid; }
+  }
+  mid = (lo+hi)/2;
+  return Math.pow(1+mid,12)-1;
+}
+function calc2(){
+  var K = parseFloat($('k2').value)||0;
+  var r = parseFloat($('r2').value)||0;
+  var n = parseInt($('n2').value,10)||1;
+  var ges  = r2(r*n);
+  var mehr = r2(ges-K);
+  var auf  = K>0 ? mehr/K*100 : 0;
+  var eff  = effZins(K, r, n)*100;
+
+  var h = '';
+  h += '<div class="line"><span>Kaufpreis heute</span><span>'+eur(K)+'</span></div>';
+  h += '<div class="line"><span>'+n+' Raten × '+eur(r)+'</span><span>'+eur(ges)+'</span></div>';
+  h += '<div class="line big"><span>Mehrkosten</span><span>'+(mehr>=0?'+ ':'')+eur(mehr)+'</span></div>';
+  h += '<div class="line gold"><span>Aufschlag auf den Preis</span><span>'+pct(auf)+'</span></div>';
+  h += '<div class="line warn"><span>effektiver Jahreszins (gerundet)</span><span>'+
+       pct(eff)+'</span></div>';
+  h += '<div class="line"><span>Laufzeit</span><span>'+n+' Monate</span></div>';
+  if (mehr <= 0){
+    h += '<div class="line"><span>Hinweis</span><span>zinsfrei</span></div>';
+  }
+  $('o2').innerHTML = h;
+}
+['k2','r2','n2'].forEach(function(id){
+  $(id).addEventListener('input', calc2);
+  $(id).addEventListener('change', calc2);
+});
+
+/* ---- 3 Stapel ---- */
+function calc3(){
+  var b = parseInt($('b3').value,10);
+  var f = parseInt($('f3').value,10);
+  var a = parseInt($('a3').value,10);
+  var s = parseInt($('s3').value,10);
+  $('b3v').textContent = b; $('f3v').textContent = f;
+  $('a3v').textContent = a; $('s3v').textContent = s;
+
+  var summe = a*s;
+  var frei  = b-f;
+  var monate = frei>0 ? summe/frei : Infinity;
+  /* Spitzenmonat: alle Kaeufe des dritten Monats werden gleichzeitig faellig */
+  var proMonat = a/3;
+  var spitze = r2(Math.ceil(proMonat)*s);
+  /* Anteil des Spitzenmonats, den dein freies Geld deckt */
+  var roh     = frei>0 ? frei/Math.max(spitze,0.01)*100 : 0;
+  var deckung = Math.min(100, roh);
+  var luecke  = r2(Math.max(0, spitze-Math.max(frei,0)));
+
+  var h = '';
+  h += '<div class="line"><span>Summe aller Käufe</span><span>'+eur(summe)+'</span></div>';
+  h += '<div class="line"><span>Frei verfügbar pro Monat</span><span>'+eur(frei)+'</span></div>';
+  h += '<div class="line '+(frei<=0?'warn':'')+'"><span>Monate, um alles abzuzahlen</span><span>'+
+       (frei>0 ? num(monate,1) : 'nie') + '</span></div>';
+  h += '<div class="line"><span>Fällig im stärksten Monat</span><span>'+eur(spitze)+'</span></div>';
+  h += '<div class="line '+(deckung>=100?'big':'warn')+'"><span>davon deckt dein Geld</span><span>'+
+       pct(deckung,0) + '</span></div>';
+  h += '<div class="line '+(luecke>0?'warn':'')+'"><span>Es fehlen</span><span>'+eur(luecke)+'</span></div>';
+
+  h += '<div class="legend" style="margin-top:14px">'+
+       '<span><b style="background:#3DE8A0"></b>gedeckt</span>'+
+       '<span><b style="background:#FF6B5D"></b>Lücke</span></div>';
+  h += '<div class="bar"><i style="width:'+deckung+'%;background:#3DE8A0"></i>'+
+       '<i style="width:'+(100-deckung)+'%;background:#FF6B5D"></i></div>';
+
+  var txt;
+  if (frei <= 0){
+    txt = 'Deine festen Ausgaben fressen dein ganzes Geld. Jeder Kauf auf Rechnung wird zur Schuld.';
+  } else if (roh >= 160){
+    txt = 'Das geht sich locker aus. Trotzdem: Schreib dir auf, was wann fällig ist.';
+  } else if (roh >= 100){
+    txt = 'Es reicht – aber knapp. Ein unerwarteter Betrag, und eine Rechnung bleibt liegen.';
+  } else {
+    txt = 'Im stärksten Monat fehlen dir ' + eur(luecke) + '. Genau hier fangen Mahngebühren an.';
+  }
+  h += '<p class="note" style="margin-top:12px"><b>'+txt+'</b></p>';
+  $('o3').innerHTML = h;
+}
+['b3','f3','a3','s3'].forEach(function(id){
+  $(id).addEventListener('input', calc3);
+});
+
+/* ---- 4 Faelle ---- */
+var CASES = [
+ {t:'Im Checkout ist „Später zahlen“ schon vorausgewählt. Wer einfach weiterklickt, schließt den Zahlungsaufschub ab.',
+  a:false,
+  f:'Nicht erlaubt. Eine Voreinstellung, die Geld kostet, muss der Kunde aktiv selbst wählen (§ 312a Abs. 3 BGB). Außerdem ist das ein Kreditvertrag – da darf nichts „aus Versehen“ zustande kommen.'},
+ {t:'Ein Shop prüft vor dem Ratenkauf, ob du schon andere offene Rechnungen hast, und lehnt ab, wenn die Rückzahlung unwahrscheinlich ist.',
+  a:true,
+  f:'Erlaubt – und seit dem 20.11.2026 sogar Pflicht. Die Kreditwürdigkeitsprüfung nach §§ 505a, 505b BGB gilt jetzt auch für „Buy Now, Pay Later“.'},
+ {t:'Für die Bonitätsprüfung wertet der Anbieter dein öffentliches Instagram-Profil aus.',
+  a:false,
+  f:'Nicht erlaubt. Das neue Recht verbietet ausdrücklich, Informationen aus sozialen Netzwerken für die Kreditwürdigkeitsprüfung zu verwenden.'},
+ {t:'Ein 15-Jähriger kauft Sneaker für 120 € auf Rechnung. Sein Taschengeld reicht, er will nächsten Monat zahlen.',
+  a:false,
+  f:'Der Vertrag ist schwebend unwirksam. § 110 BGB (der „Taschengeldparagraf“) greift nur, wenn der Minderjährige die Leistung bereits mit eigenen Mitteln bewirkt – also bezahlt – hat. Beim Zahlungsaufschub ist genau das nicht der Fall. Ohne Zustimmung der Eltern (§§ 107, 108 BGB) wird daraus nichts.'},
+ {t:'Der Anbieter berechnet für die zweite Mahnung 2,40 € für Porto, Druck und Papier.',
+  a:true,
+  f:'Erlaubt. Tatsächlich entstandene Kosten darf der Gläubiger als Verzugsschaden verlangen (§§ 280, 286 BGB). Unzulässig wäre eine Pauschale, die darüber hinausgeht oder die eigene Arbeitszeit abrechnet.'},
+ {t:'Der Anbieter berechnet zusätzlich 40 € Pauschale, weil du zu spät gezahlt hast.',
+  a:false,
+  f:'Nicht erlaubt. Die 40-Euro-Pauschale aus § 288 Abs. 5 BGB gilt nur, wenn der Schuldner kein Verbraucher ist. Gegenüber Privatkunden gibt es sie nicht.'},
+ {t:'Eine Werbung sagt: „Kredit in 60 Sekunden – ohne lästige Fragen.“',
+  a:false,
+  f:'Teils. Mit schneller Vergabe darf geworben werden. Der Zusatz „ohne lästige Fragen“ läuft aber der Pflicht zur Kreditwürdigkeitsprüfung zuwider; außerdem muss Kreditwerbung darauf hinweisen, dass die Aufnahme eines Darlehens Geld kostet. Diese Anzeige wäre so nicht zulässig.'},
+ {t:'Ein Rechnungskauf über 85 € – also unter 200 € – wird vom Anbieter als „kein Kredit, deshalb keine Verbraucherschutzregeln“ bezeichnet.',
+  a:false,
+  f:'Nicht mehr haltbar. Die alte Bagatellgrenze von 200 € ist weggefallen: Das Umsetzungsgesetz erstreckt den Schutz ausdrücklich auch auf Kleinstdarlehen, unentgeltliche und kurzfristige Darlehen (§ 491 Abs. 2 BGB in der neuen Fassung).'},
+ {t:'Du widerrufst deinen Ratenkauf innerhalb von 14 Tagen und schickst die Ware zurück.',
+  a:true,
+  f:'Erlaubt. Beim Verbraucherdarlehen besteht ein Widerrufsrecht von 14 Tagen (§ 355 BGB). Neu ist, dass die Frist bei fehlerhafter Information höchstens zwölf Monate und 14 Tage beträgt (§ 356b Abs. 2 S. 5 BGB) – ein „ewiges Widerrufsrecht“ gibt es nicht mehr.'},
+ {t:'Der Shop zeigt beim Produkt groß „ab 22,40 € mtl.“ und erst nach einem Klick den Gesamtpreis von 268,80 €.',
+  a:false,
+  f:'Problematisch. Die Monatsrate ohne Gesamtbetrag und effektiven Jahreszins ist irreführend: Bei Kreditwerbung mit Zahlen müssen die Standardinformationen mit angegeben werden (§ 6a PAngV). Außerdem greift das Verbot irreführender Werbung (§ 5a UWG).'},
+ {t:'Ein Score für die Kreditentscheidung wird vollautomatisch berechnet. Du verlangst, dass ein Mensch die Entscheidung überprüft.',
+  a:true,
+  f:'Erlaubt – das ist dein Recht. § 30 Abs. 6 BDSG gibt dir bei rein automatisierter Bewertung einen Anspruch auf menschliche Überprüfung; die Linie entspricht dem EuGH-Urteil zum SCHUFA-Scoring vom 07.12.2023 (C-634/21).'},
+ {t:'Ein Anbieter speichert für 16-Jährige Scorewerte, um künftige Kreditanfragen schneller bearbeiten zu können.',
+  a:false,
+  f:'Nicht erlaubt. Scorewerte für Minderjährige sind nach dem neuen Recht ausgeschlossen.'}
+];
+var answered = [];
+function buildCases(){
+  var box = $('cases'); box.innerHTML = ''; answered = [];
+  for (var i=0;i<CASES.length;i++){
+    (function(i){
+      var c = CASES[i];
+      var d = document.createElement('div');
+      d.className = 'case';
+      d.innerHTML = '<div class="q">Fall '+(i+1)+'</div><p>'+c.t+'</p>'+
+        '<div class="opts"><button data-v="1">erlaubt</button>'+
+        '<button data-v="0">nicht erlaubt</button></div>'+
+        '<div class="fb"></div>';
+      var bs = d.querySelectorAll('.opts button');
+      var fb = d.querySelector('.fb');
+      for (var j=0;j<bs.length;j++){
+        bs[j].addEventListener('click', function(){
+          if (answered[i] !== undefined){ return; }
+          var pick = this.getAttribute('data-v') === '1';
+          var ok = (pick === c.a);
+          answered[i] = ok;
+          for (var m=0;m<bs.length;m++){
+            var isRight = (bs[m].getAttribute('data-v')==='1') === c.a;
+            if (isRight){ bs[m].classList.add('right'); }
+            else { bs[m].classList.add('dim'); }
+          }
+          if (!ok){ this.classList.remove('right','dim'); this.classList.add('wrong'); }
+          fb.textContent = c.f;
+          fb.className = 'fb show' + (ok ? '' : ' miss');
+          score();
+        });
+      }
+      box.appendChild(d);
+    })(i);
+  }
+  score();
+}
+function score(){
+  var n = 0;
+  for (var i=0;i<CASES.length;i++){ if (answered[i]){ n++; } }
+  $('sc').textContent = n + ' / ' + CASES.length;
+}
+$('reset4').addEventListener('click', function(){ buildCases(); window.scrollTo(0,0); });
+
+/* ---- 5 Mein Limit ---- */
+var Q = [
+ 'Ich weiß gerade auswendig, ob ich irgendwo eine offene Rechnung habe.',
+ 'Wenn ich „später zahlen“ wähle, habe ich das Geld schon.',
+ 'Ich lege mir vor dem Bestellen eine Obergrenze fest und halte sie ein.',
+ 'Ich notiere mir, wann eine Rechnung fällig ist.',
+ 'Ich habe noch nie etwas bestellt, nur weil die Rate klein aussah.',
+ 'Ich könnte alle offenen Beträge aus dem Geld dieses Monats bezahlen.',
+ 'Ich würde es merken, wenn eine Mahnung im Spam-Ordner landet.'
+];
+function buildChecks(){
+  var box = $('chks'); box.innerHTML = '';
+  for (var i=0;i<Q.length;i++){
+    var l = document.createElement('label');
+    l.className = 'chk';
+    l.innerHTML = '<input type="checkbox"><span>'+Q[i]+'</span>';
+    box.appendChild(l);
+  }
+  $('o5').innerHTML = '';
+}
+$('go5').addEventListener('click', function(){
+  var cbs = $('chks').querySelectorAll('input');
+  var n = 0;
+  for (var i=0;i<cbs.length;i++){ if (cbs[i].checked){ n++; } }
+  var txt;
+  if (n >= 6){ txt = 'Du hast den Überblick. Behalte ihn – gerade dann, wenn mehrere Bestellungen zusammenkommen.'; }
+  else if (n >= 4){ txt = 'Solide Grundlage, aber ein paar Lücken. Ein einfacher Zettel mit Betrag und Fälligkeitsdatum schließt die meisten davon.'; }
+  else if (n >= 2){ txt = 'Hier wird es wacklig. Überleg dir eine feste Regel, zum Beispiel: höchstens eine offene Rechnung gleichzeitig.'; }
+  else { txt = 'Im Moment entscheidet eher der Zufall als du. Die einfachste Regel: „Später zahlen“ nur, wenn das Geld schon da ist.'; }
+  $('o5').innerHTML = '<div class="line big"><span>Angekreuzt</span><span>'+n+' / '+Q.length+
+    '</span></div><p class="note" style="margin-top:12px"><b>'+txt+'</b></p>'+
+    '<p class="note">Diese Auswertung ist kein Urteil über dich und wird nicht bewertet. '+
+    'Sie verschwindet, sobald du die Seite schließt.</p>';
+});
+$('reset5').addEventListener('click', buildChecks);
+
+/* ---- Start ---- */
+calc1(); calc2(); calc3(); buildCases(); buildChecks();
+</script>
+</body>
+</html>
