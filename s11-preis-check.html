@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preis-Check &middot; WPK Wirtschaft 9</title>
+<style>
+:root{
+  --navy:#16213E; --teal:#0E7C7B; --mag:#D81E5B; --amber:#F4A300;
+  --fest:#4263EB; --dyn:#0CA678; --pers:#E8590C;
+  --ink:#16213E; --ink2:#5B6477; --line:#C7D0E0; --light:#F2F5FB; --card:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink);background:#EEF2F9;line-height:1.5;-webkit-text-size-adjust:100%}
+header{background:var(--navy);color:#fff;padding:18px 16px 16px}
+header .wrap{max-width:980px;margin:0 auto}
+header h1{margin:0;font-size:1.35rem;letter-spacing:-.01em}
+header p{margin:4px 0 0;font-size:.85rem;color:#A9B6CE}
+main{max-width:980px;margin:0 auto;padding:0 16px 48px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 18px}
+nav button{flex:1 1 auto;min-width:130px;border:1px solid var(--line);background:#fff;color:var(--ink);
+  font:inherit;font-size:.88rem;padding:10px 12px;border-radius:10px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px}
+.card h2{margin:0 0 4px;font-size:1.05rem}
+.card h3{margin:14px 0 6px;font-size:.95rem;color:var(--teal)}
+.hint{color:var(--ink2);font-size:.86rem;margin:0 0 10px}
+label{display:block;font-size:.84rem;color:var(--ink2);margin:10px 0 3px}
+input[type=number],select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;
+  font:inherit;font-size:1rem;background:#fff;color:var(--ink)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.grid{display:grid;gap:10px}
+@media(min-width:640px){.grid.g2{grid-template-columns:1fr 1fr}.grid.g3{grid-template-columns:1fr 1fr 1fr}}
+.btn{display:inline-block;border:0;background:var(--teal);color:#fff;font:inherit;font-weight:600;
+  padding:11px 16px;border-radius:9px;cursor:pointer;margin:12px 6px 0 0}
+.btn.alt{background:var(--navy)} .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.out{background:var(--light);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px}
+.out dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:.95rem}
+.out dt{color:var(--ink2)} .out dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.big{font-size:1.5rem;font-weight:700;color:var(--mag);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:10px}
+th,td{border:1px solid var(--line);padding:7px 8px;text-align:left}
+th{background:var(--navy);color:#fff;font-weight:600}
+tbody tr:nth-child(even){background:var(--light)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.best td{background:#E6F7F1;font-weight:700}
+tr.pick td{box-shadow:inset 3px 0 0 var(--amber)}
+.choices{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.choices button{flex:1 1 90px;border:1px solid var(--line);background:#fff;font:inherit;font-size:.9rem;
+  padding:11px 8px;border-radius:9px;cursor:pointer;font-weight:600}
+.choices button.f{border-color:var(--fest);color:var(--fest)}
+.choices button.d{border-color:var(--dyn);color:var(--dyn)}
+.choices button.p{border-color:var(--pers);color:var(--pers)}
+.fb{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:.9rem;display:none}
+.fb.ok{display:block;background:#E6F7F1;border:1px solid #9FDFC8}
+.fb.no{display:block;background:#FDECEF;border:1px solid #F3BECB}
+.bar{height:9px;background:var(--light);border:1px solid var(--line);border-radius:5px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--teal);width:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;padding:3px 8px;
+  border-radius:99px;color:#fff;margin-right:6px}
+.tag.f{background:var(--fest)}.tag.d{background:var(--dyn)}.tag.p{background:var(--pers)}
+footer{max-width:980px;margin:0 auto;padding:0 16px 32px;color:var(--ink2);font-size:.78rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ul.tight{margin:6px 0 0;padding-left:18px;font-size:.9rem}
+ul.tight li{margin:3px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Preis-Check</h1>
+  <p>WPK Wirtschaft 9 &middot; Sitzung 11 &middot; Preise, die tanzen &middot; l&auml;uft offline, speichert nichts</p>
+</div></header>
+<main>
+<nav role="tablist" aria-label="Bereiche">
+  <button role="tab" id="t1" aria-controls="p1" aria-selected="true">1 &middot; Flug-Simulator</button>
+  <button role="tab" id="t2" aria-controls="p2" aria-selected="false">2 &middot; Endpreis-Rechner</button>
+  <button role="tab" id="t3" aria-controls="p3" aria-selected="false">3 &middot; Preis-Detektor</button>
+  <button role="tab" id="t4" aria-controls="p4" aria-selected="false">4 &middot; Mein Preislimit</button>
+</nav>
+
+<section class="panel on" id="p1" role="tabpanel" aria-labelledby="t1">
+ <div class="card">
+  <h2>Wann h&auml;ttest du gebucht?</h2>
+  <p class="hint">Derselbe Flug, sechs m&ouml;gliche Buchungszeitpunkte. W&auml;hle einen aus &ndash;
+   erst danach siehst du alle Preise. Die Nachfrage wird bei jedem Durchlauf neu gew&uuml;rfelt,
+   genau wie in echt.</p>
+  <label for="when">Ich buche &hellip;</label>
+  <select id="when">
+   <option value="180">180 Tage vor Abflug</option>
+   <option value="90">90 Tage vor Abflug</option>
+   <option value="45" selected>45 Tage vor Abflug</option>
+   <option value="30">30 Tage vor Abflug</option>
+   <option value="14">14 Tage vor Abflug</option>
+   <option value="3">3 Tage vor Abflug</option>
+  </select>
+  <button class="btn" id="flyGo">Buchen und aufdecken</button>
+  <button class="btn ghost" id="flyReset">Von vorn</button>
+  <div id="flyOut" class="out" hidden></div>
+ </div>
+ <div class="card">
+  <h3>Was der Simulator zeigt</h3>
+  <p class="hint">Die sechs Grundpreise sind immer dieselben (129,00 &ndash; 109,00 &ndash; 89,00 &ndash;
+   119,00 &ndash; 189,00 &ndash; 349,00&nbsp;&euro;). Darauf legt der Simulator eine zuf&auml;llige
+   Nachfrage. Spiele mindestens drei Durchl&auml;ufe und notiere, welcher Zeitpunkt jeweils der
+   g&uuml;nstigste war.</p>
+  <div id="flyStats" class="out">Noch kein Durchlauf.</div>
+ </div>
+</section>
+
+<section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+ <div class="card">
+  <h2>Was das Ticket wirklich kostet</h2>
+  <p class="hint">Trage den beworbenen Preis ein und pr&uuml;fe die Geb&uuml;hren. Die Voreinstellung
+   entspricht dem Arbeitsblatt.</p>
+  <div class="grid g2">
+   <div><label for="nenn">Beworbener Preis (Nennwert) in &euro;</label>
+     <input type="number" id="nenn" value="59.00" step="0.01" min="0"></div>
+   <div><label for="vvk">Vorverkaufsgeb&uuml;hr in % vom Nennwert</label>
+     <input type="number" id="vvk" value="10" step="0.1" min="0"></div>
+   <div><label for="sys">Systemgeb&uuml;hr in &euro; (fest)</label>
+     <input type="number" id="sys" value="2.50" step="0.01" min="0"></div>
+   <div><label for="ver">Ticketversand in &euro; (fest)</label>
+     <input type="number" id="ver" value="4.90" step="0.01" min="0"></div>
+   <div><label for="zah">Zahlungsgeb&uuml;hr in &euro; (fest)</label>
+     <input type="number" id="zah" value="1.90" step="0.01" min="0"></div>
+   <div><label for="lohn">Dein Stundenlohn im Ferienjob in &euro;</label>
+     <input type="number" id="lohn" value="10.00" step="0.01" min="0.01"></div>
+  </div>
+  <div class="out" id="tickOut"></div>
+  <h3>Zum Vergleich</h3>
+  <p class="hint">Ein Klick setzt die n&auml;chste Preisstufe ein &ndash; der Nennwert verdoppelt sich.
+   Achte darauf, was mit dem <em>prozentualen</em> Aufschlag passiert.</p>
+  <button class="btn alt" id="stufe1">Stufe 1: 59,00 &euro;</button>
+  <button class="btn alt" id="stufe2">Stufe 2: 118,00 &euro;</button>
+ </div>
+ <div class="card">
+  <h3>Rechtlicher Hinweis zur Zahlungsgeb&uuml;hr</h3>
+  <ul class="tight">
+   <li>F&uuml;r <strong>SEPA-&Uuml;berweisung, SEPA-Lastschrift</strong> und g&auml;ngige Zahlungskarten
+     ist ein Entgelt gegen&uuml;ber Verbrauchern <strong>unwirksam</strong> &ndash; &sect;&nbsp;270a BGB.</li>
+   <li>F&uuml;r <strong>PayPal</strong> oder <strong>Sofort&uuml;berweisung</strong> darf ein Entgelt
+     verlangt werden &ndash; BGH, Urteil vom 25.03.2021, I&nbsp;ZR&nbsp;203/19.</li>
+   <li>Der <strong>Gesamtpreis</strong> muss erkennbar sein (&sect;&nbsp;3 PAngV); Geb&uuml;hren erst
+     im letzten Schritt zu zeigen, kann eine Irref&uuml;hrung sein (&sect;&nbsp;5a UWG).</li>
+  </ul>
+ </div>
+</section>
+
+<section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
+ <div class="card">
+  <h2>Preis-Detektor</h2>
+  <p class="hint">Zw&ouml;lf F&auml;lle. Pr&uuml;ffrage: &Auml;ndert sich der Preis mit der
+   <strong>Zeit</strong> oder mit der <strong>Person</strong>?</p>
+  <p><span class="tag f">F</span>Festpreis <span class="tag d">D</span>dynamisch
+     <span class="tag p">P</span>personalisiert</p>
+  <div class="bar"><i id="detBar"></i></div>
+  <p class="hint" id="detProg">Fall 1 von 12</p>
+  <div id="detCase" class="out"></div>
+  <div class="choices">
+   <button class="f" data-a="F">F &middot; Festpreis</button>
+   <button class="d" data-a="D">D &middot; dynamisch</button>
+   <button class="p" data-a="P">P &middot; personalisiert</button>
+  </div>
+  <div class="fb" id="detFb"></div>
+  <button class="btn" id="detNext" hidden>N&auml;chster Fall</button>
+  <button class="btn ghost" id="detReset">Von vorn</button>
+ </div>
+</section>
+
+<section class="panel" id="p4" role="tabpanel" aria-labelledby="t4">
+ <div class="card">
+  <h2>Mein Preislimit</h2>
+  <p class="hint">Der st&auml;rkste Schutz gegen einen tanzenden Preis ist eine eigene Zahl. Lege sie
+   fest, <em>bevor</em> du den Preis siehst. Nichts davon wird gespeichert oder gesendet.</p>
+  <label for="ding">Worum geht es?</label>
+  <input type="text" id="ding" placeholder="z. B. Kopfh&ouml;rer, Konzertticket, Trikot"
+     style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:1rem">
+  <div class="grid g2">
+   <div><label for="limit">Mehr als das gebe ich daf&uuml;r nicht aus (&euro;)</label>
+     <input type="number" id="limit" step="0.01" min="0" placeholder="z. B. 60.00"></div>
+   <div><label for="real">Der Endpreis, den du tats&auml;chlich findest (&euro;)</label>
+     <input type="number" id="real" step="0.01" min="0" placeholder="mit allen Geb&uuml;hren"></div>
+  </div>
+  <button class="btn" id="limGo">Vergleichen</button>
+  <div class="out" id="limOut" hidden></div>
+ </div>
+ <div class="card">
+  <h3>Drei Handgriffe, die wirklich helfen</h3>
+  <ul class="tight">
+   <li><strong>Beobachten statt raten.</strong> Denselben Artikel an drei Tagen zu zwei Uhrzeiten
+     notieren. Einen Preis, den man nicht kennt, kann man nicht vergleichen.</li>
+   <li><strong>Gesamtpreis vor dem ersten Klick.</strong> Artikel + Versand + Zahlungsgeb&uuml;hr.</li>
+   <li><strong>Eigene Zahl zuerst.</strong> Ein Preis kann nur dann zu hoch sein, wenn du eine Zahl hast,
+     mit der du ihn vergleichst.</li>
+  </ul>
+ </div>
+</section>
+</main>
+<footer>Erstellt f&uuml;r den Wahlpflichtkurs Wirtschaft, Jahrgangsstufe 9 &middot;
+ Humboldt-Gymnasium Cottbus &middot; Sitzung 11 vom 02.12.2026.
+ Keine externen Inhalte, keine Speicherung, keine Daten&uuml;bertragung.</footer>
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+function r2(x){return Math.round((x+Number.EPSILON)*100)/100}
+function r1(x){return Math.round((x+Number.EPSILON)*10)/10}
+function eur(x){return r2(x).toFixed(2).replace(".",",")+" €"}
+function pct(x){return r1(x).toFixed(1).replace(".",",")+" %"}
+function num(id){var v=parseFloat($(id).value);return isFinite(v)?v:0}
+
+/* ---- Reiter ---- */
+$$('nav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    $$('nav button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    $$('section.panel').forEach(function(x){x.classList.remove('on')});
+    b.setAttribute('aria-selected','true');
+    $('#'+b.getAttribute('aria-controls')).classList.add('on');
+    window.scrollTo(0,0);
+  });
+});
+
+/* ---- 1 Flug-Simulator ---- */
+var BASIS=[[180,129],[90,109],[45,89],[30,119],[14,189],[3,349]];
+var runs=[];
+function simulate(){
+  return BASIS.map(function(p){
+    var f=0.65+Math.random()*0.80;           /* Nachfrage 65 % bis 145 % */
+    return {tage:p[0], preis:r2(p[1]*f)};
+  });
+}
+function flyRun(){
+  var pick=parseInt($('#when').value,10);
+  var res=simulate();
+  var best=res.reduce(function(a,b){return b.preis<a.preis?b:a});
+  var mine=res.filter(function(x){return x.tage===pick})[0];
+  runs.push({pick:pick,mine:mine.preis,best:best.preis,bestTag:best.tage});
+  var h='<p><strong>Dein Preis bei '+pick+' Tagen Vorlauf: <span class="big">'+eur(mine.preis)+
+        '</span></strong></p><table><thead><tr><th>Tage vor Abflug</th><th>Preis</th>'+
+        '<th>Unterschied zu deinem Preis</th></tr></thead><tbody>';
+  res.forEach(function(x){
+    var cls=(x.preis===best.preis?'best':'')+(x.tage===pick?' pick':'');
+    var d=r2(x.preis-mine.preis);
+    h+='<tr class="'+cls.trim()+'"><td>'+x.tage+'</td><td class="num">'+eur(x.preis)+
+       '</td><td class="num">'+(d===0?'–':(d>0?'+':'−')+eur(Math.abs(d)))+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  var mehr=r2(mine.preis-best.preis);
+  h+='<p class="hint">G&uuml;nstigster Zeitpunkt in diesem Durchlauf: <strong>'+best.tage+
+     ' Tage</strong> ('+eur(best.preis)+'). Du hast '+(mehr<=0?'genau richtig gelegen.':
+     '<strong>'+eur(mehr)+'</strong> mehr gezahlt, also '+pct(mehr/best.preis*100)+' Aufschlag.')+'</p>';
+  $('#flyOut').innerHTML=h; $('#flyOut').hidden=false;
+  stats();
+}
+function stats(){
+  if(!runs.length){$('#flyStats').textContent='Noch kein Durchlauf.';return}
+  var tage={},mehr=0;
+  runs.forEach(function(r){tage[r.bestTag]=(tage[r.bestTag]||0)+1;mehr+=r.mine-r.best});
+  var liste=Object.keys(tage).sort(function(a,b){return tage[b]-tage[a]})
+            .map(function(k){return k+' Tage ('+tage[k]+'×)'}).join(', ');
+  $('#flyStats').innerHTML='<dl><dt>Durchl&auml;ufe</dt><dd>'+runs.length+
+    '</dd><dt>g&uuml;nstigster Zeitpunkt war</dt><dd>'+liste+
+    '</dd><dt>insgesamt zu viel gezahlt</dt><dd>'+eur(mehr)+'</dd></dl>'+
+    (Object.keys(tage).length>1?'<p class="hint">Mehr als ein Zeitpunkt war schon der g&uuml;nstigste. '+
+    'Genau das ist der Punkt: Es gibt kein Muster, auf das man sich verlassen kann.</p>':'');
+}
+$('#flyGo').addEventListener('click',flyRun);
+$('#flyReset').addEventListener('click',function(){runs=[];$('#flyOut').hidden=true;stats()});
+
+/* ---- 2 Endpreis-Rechner ---- */
+function tick(){
+  var n=num('#nenn'), p=num('#vvk'), s=num('#sys'), v=num('#ver'), z=num('#zah'), l=num('#lohn');
+  var vvk=r2(n*p/100);
+  var fest=r2(s+v+z);
+  var end=r2(n+vvk+fest);
+  var auf=r2(end-n);
+  var proz=n>0?auf/n*100:0;
+  var anteil=auf>0?fest/auf*100:0;
+  var std=l>0?end/l:0;
+  $('#tickOut').innerHTML='<dl>'+
+    '<dt>beworbener Preis</dt><dd>'+eur(n)+'</dd>'+
+    '<dt>Vorverkaufsgeb&uuml;hr ('+String(p).replace(".",",")+' %)</dt><dd>'+eur(vvk)+'</dd>'+
+    '<dt>feste Geb&uuml;hren zusammen</dt><dd>'+eur(fest)+'</dd>'+
+    '<dt><strong>Endpreis</strong></dt><dd><span class="big">'+eur(end)+'</span></dd>'+
+    '<dt>Aufschlag in Euro</dt><dd>'+eur(auf)+'</dd>'+
+    '<dt>Aufschlag in Prozent</dt><dd>'+pct(proz)+'</dd>'+
+    '<dt>davon feste Geb&uuml;hren</dt><dd>'+pct(anteil)+'</dd>'+
+    '<dt>Arbeitsstunden im Ferienjob</dt><dd>'+r1(std).toFixed(1).replace(".",",")+' h</dd></dl>';
+}
+['#nenn','#vvk','#sys','#ver','#zah','#lohn'].forEach(function(id){
+  $(id).addEventListener('input',tick);
+});
+$('#stufe1').addEventListener('click',function(){$('#nenn').value='59.00';tick()});
+$('#stufe2').addEventListener('click',function(){$('#nenn').value='118.00';tick()});
+tick();
+
+/* ---- 3 Preis-Detektor ---- */
+var FAELLE=[
+ ["Die Mensa verlangt für das Mittagessen das ganze Schuljahr 3,70 €.","F",
+  "Gleicher Preis für alle, über lange Zeit unverändert."],
+ ["Ein Flug kostet 45 Tage vor Abflug 89,00 €, drei Tage vorher 349,00 €.","D",
+  "Der Preis hängt am Zeitpunkt – im selben Moment sehen ihn aber alle gleich."],
+ ["Nachdem du fünf teure Kopfhörer angeklickt hast, zeigt der Shop nur noch Modelle ab 200,00 €.","P",
+  "Dein Klickverhalten steuert, was du siehst. Das ist Personalisierung."],
+ ["Im Konzertvorverkauf sind die günstigen Stehplätze nach zehn Minuten weg; die restlichen kosten mehr.","D",
+  "Eine vorbereitete Preistreppe. Sie greift für alle gleichzeitig."],
+ ["Die Tageskarte im Freibad kostet den ganzen Sommer 4,50 €.","F","Ein klassischer Festpreis."],
+ ["Ein Fahrdienst verdoppelt den Fahrpreis, als nach dem Festival alle gleichzeitig eine Fahrt suchen.","D",
+  "Nachfrage zu einem Zeitpunkt – alle in der Warteschlange sehen denselben Faktor."],
+ ["Der Supermarkt senkt per elektronischem Preisschild den Joghurtpreis eine Stunde vor Ladenschluss.","D",
+  "Uhrzeit und Haltbarkeit steuern den Preis, nicht die Person vor dem Regal."],
+ ["Zwei Freunde suchen im selben Moment dasselbe Hotelzimmer, einer am teuren, einer am günstigen Handy – und sehen verschiedene Preise.","P",
+  "Gleicher Moment, verschiedene Preise: Das Gerät ist ein Datum über die Person."],
+ ["Das Jahresabo der Schülerzeitung kostet jeden Monat 2,00 €.","F","Fester Preis, fester Betrag."],
+ ["Beim zweiten Besuch zeigt der Shop dir denselben Artikel teurer – deiner Freundin im selben Moment nicht.","P",
+  "Der Unterschied liegt zwischen den Personen, nicht zwischen den Zeitpunkten."],
+ ["Die Bahn verkauft Sparpreise aus einem Kontingent; ist es leer, kostet dieselbe Fahrt mehr.","D",
+  "Die Auslastung entscheidet – und sie gilt für alle, die gerade buchen."],
+ ["Der Kinoeintritt kostet dienstags 7,00 € und freitags 11,00 € – für alle gleich.","D",
+  "Zwei feste Preise, aber abhängig vom Wochentag. Die Zeit entscheidet, nicht die Person."]
+];
+var di=0, dok=0, dlocked=false;
+function detShow(){
+  dlocked=false; $('#detFb').className='fb'; $('#detNext').hidden=true;
+  $('#detProg').textContent='Fall '+(di+1)+' von '+FAELLE.length+'  ·  richtig: '+dok;
+  $('#detBar').style.width=Math.round(di/FAELLE.length*100)+'%';
+  $('#detCase').textContent=FAELLE[di][0];
+}
+$$('.choices button').forEach(function(b){
+  b.addEventListener('click',function(){
+    if(dlocked) return; dlocked=true;
+    var a=b.getAttribute('data-a'), c=FAELLE[di];
+    var fb=$('#detFb');
+    if(a===c[1]){dok++;fb.className='fb ok';fb.innerHTML='<strong>Richtig.</strong> '+c[2];}
+    else{fb.className='fb no';fb.innerHTML='<strong>Nicht ganz – richtig ist '+c[1]+'.</strong> '+c[2];}
+    $('#detProg').textContent='Fall '+(di+1)+' von '+FAELLE.length+'  ·  richtig: '+dok;
+    $('#detNext').hidden=false;
+  });
+});
+$('#detNext').addEventListener('click',function(){
+  di++;
+  if(di>=FAELLE.length){
+    $('#detCase').innerHTML='<strong>Fertig.</strong> Du hast '+dok+' von '+FAELLE.length+
+      ' Fällen richtig eingeordnet.';
+    $('#detBar').style.width='100%';
+    $('#detProg').textContent='Durchgang beendet';
+    $('#detFb').className='fb'; $('#detNext').hidden=true;
+  } else detShow();
+});
+$('#detReset').addEventListener('click',function(){di=0;dok=0;detShow()});
+detShow();
+
+/* ---- 4 Mein Preislimit ---- */
+$('#limGo').addEventListener('click',function(){
+  var d=$('#ding').value.trim()||'die Sache';
+  var l=num('#limit'), r=num('#real');
+  var o=$('#limOut'); o.hidden=false;
+  if(l<=0||r<=0){o.innerHTML='<p class="hint">Trage beide Beträge ein.</p>';return}
+  var diff=r2(r-l), p=l>0?diff/l*100:0;
+  var satz = diff<=0
+    ? 'Der Preis liegt <strong>innerhalb</strong> deiner Grenze. Du kannst in Ruhe entscheiden.'
+    : 'Der Preis liegt <strong>'+eur(diff)+'</strong> über deiner Grenze, also '+pct(p)+
+      ' mehr. Entweder du änderst deine Zahl – bewusst und mit Begründung – oder du wartest.';
+  o.innerHTML='<dl><dt>Gegenstand</dt><dd>'+d.replace(/[<>&]/g,'')+'</dd>'+
+    '<dt>meine Grenze</dt><dd>'+eur(l)+'</dd><dt>gefundener Endpreis</dt><dd>'+eur(r)+
+    '</dd><dt>Unterschied</dt><dd>'+(diff>0?'+':'')+eur(diff)+'</dd></dl><p>'+satz+'</p>';
+});
+})();
+</script>
+</body>
+</html>
