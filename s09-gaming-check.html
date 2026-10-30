@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gaming-Check &ndash; WPK Wirtschaft 9</title>
+<style>
+:root{
+  --nacht:#12172B; --karte:#1A2140; --karte2:#232B52; --mint:#3DE8A0; --coral:#FF6B5D;
+  --gold:#FFC94D; --sand:#F5F1E8; --grau:#8A93B2; --linie:#2A3357; --lila:#8F7BFF;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--nacht);color:var(--sand);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-text-size-adjust:100%}
+body{padding:0 0 64px}
+header{padding:22px 18px 14px;border-bottom:1px solid var(--linie)}
+.kick{font-size:11px;letter-spacing:.16em;color:var(--mint);font-weight:700;text-transform:uppercase}
+h1{margin:6px 0 2px;font-size:26px;letter-spacing:-.4px}
+.sub{color:var(--grau);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:12px 18px;border-bottom:1px solid var(--linie);
+  position:sticky;top:0;background:var(--nacht);z-index:5}
+nav button{flex:0 0 auto;background:var(--karte);color:var(--grau);border:1px solid var(--linie);
+  border-radius:999px;padding:9px 15px;font-size:13.5px;font-weight:600;cursor:pointer}
+nav button.on{background:var(--mint);color:var(--nacht);border-color:var(--mint)}
+main{padding:18px;max-width:900px;margin:0 auto}
+section{display:none} section.on{display:block}
+h2{font-size:20px;margin:2px 0 4px}
+.lead{color:var(--grau);font-size:14px;line-height:1.5;margin:0 0 16px}
+.card{background:var(--karte);border-radius:12px;padding:16px;margin:0 0 14px;border-left:4px solid var(--linie)}
+.card.mint{border-left-color:var(--mint)} .card.coral{border-left-color:var(--coral)}
+.card.gold{border-left-color:var(--gold)}
+label{display:block;font-size:12.5px;color:var(--grau);margin:0 0 5px;font-weight:600}
+input[type=number],select{width:100%;background:var(--nacht);color:var(--sand);border:1px solid var(--linie);
+  border-radius:9px;padding:11px 12px;font-size:16px;font-family:ui-monospace,Menlo,Consolas,monospace}
+input:focus,select:focus{outline:2px solid var(--mint);outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap} .row>div{flex:1 1 150px}
+button.act{background:var(--mint);color:var(--nacht);border:0;border-radius:10px;padding:13px 18px;
+  font-size:15px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0}
+button.act.sek{background:var(--karte2);color:var(--sand)}
+button.act.warn{background:var(--coral);color:var(--nacht)}
+.out{margin-top:14px;border-top:1px solid var(--linie);padding-top:14px}
+.zeile{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;
+  border-bottom:1px dotted var(--linie);font-size:14px}
+.zeile:last-child{border-bottom:0}
+.zeile b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px;color:var(--gold);white-space:nowrap}
+.zeile.hl b{color:var(--coral);font-size:19px}
+.hint{font-size:13px;color:var(--grau);line-height:1.5;margin-top:10px}
+.gross{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:34px;color:var(--gold);line-height:1.1}
+.stat{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.stat>div{flex:1 1 110px;background:var(--nacht);border-radius:10px;padding:12px}
+.stat .k{font-size:11.5px;color:var(--grau);letter-spacing:.06em;text-transform:uppercase}
+.stat .v{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;color:var(--gold);margin-top:3px}
+.bar{height:10px;background:var(--nacht);border-radius:6px;overflow:hidden;margin:4px 0 2px}
+.bar>i{display:block;height:100%;background:var(--mint)}
+.pill{display:inline-block;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;margin:0 6px 6px 0}
+.p-blau{background:#2E4A8F;color:#CFE0FF}.p-lila{background:#4A3A8F;color:#DBD0FF}
+.p-rosa{background:#8F3A77;color:#FFD5F2}.p-rot{background:#8F3A3A;color:#FFD5D5}
+.p-gold{background:#8F7320;color:#FFEDB8}
+.log{max-height:190px;overflow:auto;background:var(--nacht);border-radius:10px;padding:10px;margin-top:10px;
+  font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.7}
+.frage{font-size:15.5px;line-height:1.5;margin:0 0 12px}
+.wahl{display:flex;gap:8px;flex-wrap:wrap}
+.wahl button{flex:1 1 120px;background:var(--karte2);color:var(--sand);border:1px solid var(--linie);
+  border-radius:10px;padding:12px 8px;font-size:14px;font-weight:600;cursor:pointer}
+.wahl button.ok{background:var(--mint);color:var(--nacht);border-color:var(--mint)}
+.wahl button.no{background:var(--coral);color:var(--nacht);border-color:var(--coral)}
+.fb{margin-top:12px;font-size:14px;line-height:1.55;color:var(--sand);background:var(--nacht);
+  border-radius:10px;padding:12px;display:none}
+.fb.on{display:block}
+footer{padding:20px 18px;color:#49527A;font-size:11.5px;line-height:1.6;max-width:900px;margin:0 auto}
+.warnbox{background:#2A1E24;border-left:4px solid var(--coral);border-radius:10px;padding:13px;
+  font-size:13.5px;line-height:1.55;margin-top:12px}
+@media (max-width:480px){h1{font-size:22px}.gross{font-size:28px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="kick">WPK Wirtschaft 9 &middot; Sitzung 9</div>
+  <h1>Gaming-Check</h1>
+  <div class="sub">Skins, Lootboxen, Battle Passes &ndash; vier Werkzeuge zum Nachrechnen</div>
+</header>
+
+<nav>
+  <button class="on" data-t="t1">W&auml;hrungs-Rechner</button>
+  <button data-t="t2">Kisten-Simulator</button>
+  <button data-t="t3">Mechanik-Detektor</button>
+  <button data-t="t4">Mein Limit</button>
+</nav>
+
+<main>
+
+<!-- ============ 1 Waehrungs-Rechner ============ -->
+<section id="t1" class="on">
+  <h2>Was kostet das wirklich?</h2>
+  <p class="lead">Spielw&auml;hrung verwischt den Preis. Trage ein, was der Gegenstand kostet &ndash;
+  der Rechner sucht die g&uuml;nstigste Kombination und zeigt, was in Euro wirklich flie&szlig;t.</p>
+
+  <div class="card mint">
+    <div class="row">
+      <div>
+        <label for="w-spiel">Spiel / W&auml;hrung</label>
+        <select id="w-spiel"></select>
+      </div>
+      <div>
+        <label for="w-preis">Preis des Gegenstands (in W&auml;hrung)</label>
+        <input type="number" id="w-preis" value="1500" min="0" step="10">
+      </div>
+      <div>
+        <label for="w-hab">Guthaben, das du schon hast</label>
+        <input type="number" id="w-hab" value="0" min="0" step="10">
+      </div>
+    </div>
+    <div id="w-pakete" class="hint"></div>
+    <button class="act" id="w-go">Berechnen</button>
+    <button class="act sek" id="w-bp">Battle Pass (800)</button>
+    <button class="act sek" id="w-skin">Teurer Skin (2.000)</button>
+    <div class="out" id="w-out"></div>
+  </div>
+</section>
+
+<!-- ============ 2 Kisten-Simulator ============ -->
+<section id="t2">
+  <h2>Kisten-Simulator</h2>
+  <p class="lead">Mit den offengelegten Chancen eines bekannten Shooters. Hier flie&szlig;t kein echtes Geld
+  &ndash; aber die Kosten laufen mit, damit du siehst, was so ein Abend kostet.</p>
+
+  <div class="card coral">
+    <div class="row">
+      <div><label for="k-preis">Preis je &Ouml;ffnung (Schl&uuml;ssel, in $)</label>
+        <input type="number" id="k-preis" value="2.49" min="0" step="0.01"></div>
+      <div><label for="k-budget">Dein gedachtes Budget ($)</label>
+        <input type="number" id="k-budget" value="50" min="0" step="1"></div>
+    </div>
+    <button class="act" id="k-1">1 Kiste &ouml;ffnen</button>
+    <button class="act sek" id="k-10">10 Kisten</button>
+    <button class="act sek" id="k-100">100 Kisten</button>
+    <button class="act warn" id="k-reset">Zur&uuml;cksetzen</button>
+
+    <div class="stat">
+      <div><div class="k">Ge&ouml;ffnet</div><div class="v" id="k-n">0</div></div>
+      <div><div class="k">Ausgegeben</div><div class="v" id="k-eur">0,00 $</div></div>
+      <div><div class="k">Budget &uuml;brig</div><div class="v" id="k-rest">50,00 $</div></div>
+      <div><div class="k">Gold gefunden</div><div class="v" id="k-gold">0</div></div>
+    </div>
+    <div id="k-verteilung"></div>
+    <div class="log" id="k-log">Noch nichts ge&ouml;ffnet.</div>
+    <div class="warnbox" id="k-warn" style="display:none"></div>
+    <div class="hint">Chancen: blau 79,92 % &middot; violett 15,98 % &middot; rosa 3,20 % &middot;
+    rot 0,64 % &middot; gold 0,26 %. Im Schnitt braucht es 385 &Ouml;ffnungen bis zu einem goldenen
+    Gegenstand &ndash; aber jede Kiste wird neu ausgelost und wei&szlig; nichts von den Kisten davor.</div>
+  </div>
+</section>
+
+<!-- ============ 3 Mechanik-Detektor ============ -->
+<section id="t3">
+  <h2>Mechanik-Detektor</h2>
+  <p class="lead">Zw&ouml;lf F&auml;lle. Welche T&uuml;r ist das?
+  <b>D</b> Direktkauf &middot; <b>Z</b> Zufallskauf &middot; <b>P</b> Pass auf Zeit &middot;
+  <b>W</b> Vorteilskauf (Pay-to-Win).</p>
+
+  <div class="card gold">
+    <div class="stat">
+      <div><div class="k">Fall</div><div class="v" id="d-nr">1 / 12</div></div>
+      <div><div class="k">Richtig</div><div class="v" id="d-ok">0</div></div>
+      <div><div class="k">Versuche</div><div class="v" id="d-try">0</div></div>
+    </div>
+    <p class="frage" id="d-frage"></p>
+    <div class="wahl" id="d-wahl">
+      <button data-a="D">D &ndash; Direktkauf</button>
+      <button data-a="Z">Z &ndash; Zufallskauf</button>
+      <button data-a="P">P &ndash; Pass auf Zeit</button>
+      <button data-a="W">W &ndash; Vorteilskauf</button>
+    </div>
+    <div class="fb" id="d-fb"></div>
+    <button class="act sek" id="d-next" style="display:none">Weiter</button>
+    <button class="act warn" id="d-reset">Von vorn</button>
+  </div>
+</section>
+
+<!-- ============ 4 Mein Limit ============ -->
+<section id="t4">
+  <h2>Mein Limit</h2>
+  <p class="lead">Kein Ratschlag, nur Arithmetik: Was bleibt von deinem Monatsgeld, wenn du kaufst,
+  was du kaufen willst? Nichts wird gespeichert.</p>
+
+  <div class="card mint">
+    <div class="row">
+      <div><label for="l-ein">Geld im Monat (&euro;)</label>
+        <input type="number" id="l-ein" value="30" min="0" step="1"></div>
+      <div><label for="l-fix">Feste Ausgaben im Monat (&euro;)</label>
+        <input type="number" id="l-fix" value="8" min="0" step="1"></div>
+      <div><label for="l-spiel">Davon f&uuml;r Spiele geplant (&euro;)</label>
+        <input type="number" id="l-spiel" value="18" min="0" step="1"></div>
+    </div>
+    <button class="act" id="l-go">Rechnen</button>
+    <div class="out" id="l-out"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Unterrichtsmaterial WPK Wirtschaft 9 &middot; Humboldt-Gymnasium Cottbus &middot; Sitzung 9
+  &bdquo;Gaming-&Ouml;konomie&ldquo;.<br>
+  Preise und Chancen sind die zum Stand Oktober 2026 ver&ouml;ffentlichten Werte und k&ouml;nnen sich
+  &auml;ndern. Diese Seite arbeitet vollst&auml;ndig offline, l&auml;dt nichts nach und speichert nichts.
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+function eur(v){return v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+function dol(v){return v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' $'}
+function nz(v,d){return v.toLocaleString('de-DE',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function zeile(k,v,hl){return '<div class="zeile'+(hl?' hl':'')+'"><span>'+k+'</span><b>'+v+'</b></div>'}
+
+/* ---------- Reiter ---------- */
+$$('nav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    $$('nav button').forEach(function(x){x.classList.remove('on')});
+    $$('section').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); $('#'+b.dataset.t).classList.add('on');
+    window.scrollTo(0,0);
+  });
+});
+
+/* ========== 1 Waehrungs-Rechner ========== */
+var SPIELE=[
+ {id:'vb',name:'Fortnite – V-Bucks (Stand 19.03.2026)',einheit:'V-Bucks',
+  pakete:[[50,0.99],[800,8.99],[2400,22.99],[4500,36.99],[12500,89.99]]},
+ {id:'rx',name:'Beispiel A – Pakete ohne Kleinpaket',einheit:'Einheiten',
+  pakete:[[400,4.99],[800,9.99],[1700,19.99],[4500,49.99]]},
+ {id:'gem',name:'Beispiel B – viele krumme Pakete',einheit:'Gems',
+  pakete:[[80,0.99],[500,4.99],[1200,10.99],[2500,21.99],[6500,54.99]]}
+];
+var sel=$('#w-spiel');
+SPIELE.forEach(function(s,i){var o=document.createElement('option');o.value=i;o.textContent=s.name;sel.appendChild(o)});
+function zeigePakete(){
+  var s=SPIELE[+sel.value],h='<b>Pakete:</b> ';
+  h+=s.pakete.map(function(p){
+    return nz(p[0])+' für '+eur(p[1])+' <span style="color:#49527A">('+
+      (p[1]/p[0]*100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' ct/Stück)</span>';
+  }).join(' &middot; ');
+  $('#w-pakete').innerHTML=h;
+}
+sel.addEventListener('change',function(){zeigePakete();rechneW()});
+
+function guenstigste(pakete,noetig){
+  if(noetig<=0)return{kosten:0,menge:0,wahl:[]};
+  var step=pakete.reduce(function(a,p){var x=p[0],y=a;while(y){var t=x%y;x=y;y=t}return x},pakete[0][0]);
+  if(step<1)step=1;
+  var max=noetig+Math.max.apply(null,pakete.map(function(p){return p[0]}));
+  var n=Math.ceil(max/step)+1;
+  var dp=new Float64Array(n),from=new Int32Array(n);
+  for(var i=1;i<n;i++){dp[i]=Infinity;from[i]=-1}
+  for(var i=1;i<n;i++){
+    for(var j=0;j<pakete.length;j++){
+      var sz=Math.round(pakete[j][0]/step);
+      var prev=i-sz; if(prev<0)prev=0;
+      var c=dp[prev]+pakete[j][1];
+      if(c<dp[i]){dp[i]=c;from[i]=j}
+    }
+  }
+  var idx=Math.ceil(noetig/step);
+  var best=idx,bestC=dp[idx];
+  for(var k=idx;k<n;k++){if(dp[k]<bestC-1e-9){bestC=dp[k];best=k}}
+  var wahl=[],cur=best,menge=0;
+  while(cur>0&&from[cur]>=0){
+    var j=from[cur];wahl.push(pakete[j]);menge+=pakete[j][0];
+    cur-=Math.round(pakete[j][0]/step); if(cur<0)cur=0;
+  }
+  return{kosten:bestC,menge:menge,wahl:wahl};
+}
+
+function rechneW(){
+  var s=SPIELE[+sel.value];
+  var preis=Math.max(0,+$('#w-preis').value||0);
+  var hab=Math.max(0,+$('#w-hab').value||0);
+  var noetig=Math.max(0,preis-hab);
+  var r=guenstigste(s.pakete,noetig);
+  var billigste=s.pakete.reduce(function(a,p){return (p[1]/p[0])<(a[1]/a[0])?p:a});
+  var kurs=r.menge?(r.kosten/r.menge):(billigste[1]/billigste[0]);
+  var kleinste=s.pakete.reduce(function(a,p){return p[0]<a[0]?p:a});
+  var echt=preis*kurs;
+  var rest=r.menge-noetig;
+  var zaehl={};
+  r.wahl.forEach(function(p){zaehl[p[0]]=(zaehl[p[0]]||0)+1});
+  var liste=Object.keys(zaehl).sort(function(a,b){return b-a}).map(function(k){
+    return zaehl[k]+' × '+nz(+k);}).join(' + ')||'nichts nötig';
+  var h='';
+  h+=zeile('Du brauchst noch',nz(noetig)+' '+s.einheit);
+  h+=zeile('Günstigste Pakete',liste);
+  h+=zeile('Du bekommst',nz(r.menge)+' '+s.einheit);
+  h+=zeile('Du zahlst',eur(r.kosten),true);
+  h+=zeile('Preis je Einheit in diesem Kauf',(r.menge?(r.kosten/r.menge*100):0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' ct');
+  h+=zeile('Rest, der im Spiel liegen bleibt',nz(rest)+' '+s.einheit+'  ('+eur(rest*kurs)+')');
+  h+=zeile('"Echter" Wert des Gegenstands',eur(echt));
+  h+=zeile('Aufschlag gegenüber dem echten Wert',eur(Math.max(0,r.kosten-echt)));
+  var teuer=(kleinste[1]/kleinste[0])/(billigste[1]/billigste[0]);
+  h+='<div class="hint">Je Einheit kostet das gr\u00f6\u00dfte Paket '+
+     (billigste[1]/billigste[0]*100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+
+     ' ct, das kleinste '+(kleinste[1]/kleinste[0]*100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+
+     ' ct \u2013 das <b>'+teuer.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+
+     '-fache</b>. Wer nur das Fehlende nachkauft, zahlt je Einheit am meisten.</div>';
+  if(rest>0){h+='<div class="warnbox">'+nz(rest)+' '+s.einheit+' bleiben übrig – zu wenig für den nächsten Kauf, '+
+    'zu viel zum Vergessen. Genau dafür sind die Paketgrößen gemacht.</div>'}
+  $('#w-out').innerHTML=h;
+}
+$('#w-go').addEventListener('click',rechneW);
+$('#w-bp').addEventListener('click',function(){$('#w-preis').value=800;rechneW()});
+$('#w-skin').addEventListener('click',function(){$('#w-preis').value=2000;rechneW()});
+['#w-preis','#w-hab'].forEach(function(s){$(s).addEventListener('input',rechneW)});
+
+/* ========== 2 Kisten-Simulator ========== */
+var STUFEN=[
+ {n:'blau – Standard',p:0.7992,c:'p-blau'},
+ {n:'violett – selten',p:0.1598,c:'p-lila'},
+ {n:'rosa – sehr selten',p:0.0320,c:'p-rosa'},
+ {n:'rot – äußerst selten',p:0.0064,c:'p-rot'},
+ {n:'gold – Messer / Handschuhe',p:0.0026,c:'p-gold'}
+];
+var kState={n:0,kosten:0,z:[0,0,0,0,0],log:[]};
+function ziehe(){
+  var r=Math.random(),acc=0;
+  for(var i=0;i<STUFEN.length;i++){acc+=STUFEN[i].p;if(r<acc)return i}
+  return 0;
+}
+function kRender(){
+  var preis=+$('#k-preis').value||0, budget=+$('#k-budget').value||0;
+  $('#k-n').textContent=nz(kState.n);
+  $('#k-eur').textContent=dol(kState.kosten);
+  $('#k-rest').textContent=dol(budget-kState.kosten);
+  $('#k-gold').textContent=nz(kState.z[4]);
+  var h='';
+  for(var i=0;i<STUFEN.length;i++){
+    var anteil=kState.n?kState.z[i]/kState.n*100:0;
+    h+='<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13px">'+
+       '<span class="pill '+STUFEN[i].c+'">'+STUFEN[i].n+'</span>'+
+       '<span style="font-family:ui-monospace,monospace;color:var(--gold)">'+nz(kState.z[i])+
+       ' &middot; '+anteil.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %'+
+       ' <span style="color:#49527A">(erwartet '+(STUFEN[i].p*100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' %)</span></span></div>'+
+       '<div class="bar"><i style="width:'+Math.min(100,anteil)+'%;background:'+
+       (i===4?'var(--gold)':(i>=3?'var(--coral)':'var(--mint)'))+'"></i></div></div>';
+  }
+  $('#k-verteilung').innerHTML=h;
+  $('#k-log').innerHTML=kState.log.length?kState.log.slice(0,40).join('<br>'):'Noch nichts geöffnet.';
+  var w='';
+  if(budget>0&&kState.kosten>budget){w='Das gedachte Budget von '+dol(budget)+' ist aufgebraucht – '+
+    'nach '+nz(kState.n)+' Kisten. '+(kState.z[4]?'':'Ein goldener Gegenstand war nicht dabei.')}
+  else if(kState.n>=385&&kState.z[4]===0){w='385 Kisten geöffnet, kein Gold. Das ist nicht unfair, '+
+    'sondern normal: Auch nach 385 Öffnungen gehen rund 37 von 100 Spielenden leer aus.'}
+  else if(kState.z[4]>0&&kState.n<100){w='Glück gehabt – so fühlt es sich an, wenn es '+
+    'klappt. Im Schnitt braucht es 385 Kisten; genau dieses Gefühl wird verkauft.'}
+  $('#k-warn').style.display=w?'block':'none';
+  $('#k-warn').textContent=w;
+}
+function oeffne(n){
+  var preis=+$('#k-preis').value||0;
+  var funde=[0,0,0,0,0];
+  for(var i=0;i<n;i++){
+    var s=ziehe(); kState.z[s]++; funde[s]++; kState.n++; kState.kosten+=preis;
+    if(s>=3&&n<=10){kState.log.unshift('#'+kState.n+'  '+STUFEN[s].n.toUpperCase()+'  – nach '+dol(kState.kosten))}
+    else if(n<=10){kState.log.unshift('#'+kState.n+'  '+STUFEN[s].n)}
+  }
+  if(n>10){
+    kState.log.unshift(n+' Kisten auf einmal: '+funde.map(function(f,i){
+      return f+' × '+STUFEN[i].n.split(' ')[0]}).join(', ')+'  – '+dol(n*preis));
+  }
+  kRender();
+}
+$('#k-1').addEventListener('click',function(){oeffne(1)});
+$('#k-10').addEventListener('click',function(){oeffne(10)});
+$('#k-100').addEventListener('click',function(){oeffne(100)});
+$('#k-reset').addEventListener('click',function(){kState={n:0,kosten:0,z:[0,0,0,0,0],log:[]};kRender()});
+$('#k-budget').addEventListener('input',kRender);
+
+/* ========== 3 Mechanik-Detektor ========== */
+var FAELLE=[
+ ['Du kaufst einen Skin, den du vorher im Shop gesehen hast, für 1.200 Einheiten.','D',
+  'Preis und Ware sind sichtbar. Reiner Direktkauf – und rein kosmetisch.'],
+ ['Du zahlst 2,49 $ für einen Schlüssel und öffnest eine Kiste.','Z',
+  'Der Preis ist sichtbar, der Inhalt nicht. Der Zufall entscheidet, was du bekommst.'],
+ ['Zu Saisonbeginn kaufst du den Pass und spielst 60 Stufen frei.','P',
+  'Einmal zahlen, dann gegen die Zeit spielen. Wer zu wenig spielt, verliert den Rest.'],
+ ['Du kaufst ein Kartenpaket; was drin ist, siehst du erst beim Öffnen.','Z',
+  'Dasselbe Prinzip wie die Kiste, nur anders verpackt.'],
+ ['Ein Trank macht deine Spielfigur dauerhaft stärker als andere.','W',
+  'Gekaufter Spielvorteil – das ist Pay-to-Win, nicht Dekoration.'],
+ ['Du kaufst eine Lackierung fürs Auto im Rennspiel, der Preis steht dran.','D',
+  'Sichtbarer Preis, sichtbare Ware, kein Spielvorteil.'],
+ ['Nach 30 Tagen verfallen alle Stufen, die du nicht gespielt hast.','P',
+  'Der Zeitdruck ist das Geschäftsmodell: Er bindet deine Spielzeit an den Kauf.'],
+ ['Du zahlst, um in der Warteschlange vorzurücken.','W',
+  'Du kaufst dir einen Vorteil gegenüber anderen – auch das ist Pay-to-Win.'],
+ ['Ein Paket enthält garantiert einen seltenen Gegenstand, welcher, ist offen.','Z',
+  'Die Garantie ändert nichts: Welcher Gegenstand kommt, bleibt Zufall.'],
+ ['Du kaufst ein Emote für 500 Einheiten, abgebildet und beschrieben.','D',
+  'Direktkauf. Die einzige Unschärfe bleibt der Preis in Spielwährung.'],
+ ['Der Pass hat eine zweite, teurere Stufe mit 25 Extra-Stufen sofort.','P',
+  'Immer noch der Pass – die teurere Stufe verkauft dir übersprungene Zeit.'],
+ ['Gegen Geld füllt sich dein Energiebalken sofort wieder auf.','W',
+  'Du kaufst Spielfortschritt. Ohne Zahlung wäre Warten nötig.']
+];
+var dI=0,dOk=0,dTry=0,dDone=false;
+function dRender(){
+  $('#d-nr').textContent=(dI+1)+' / '+FAELLE.length;
+  $('#d-ok').textContent=dOk; $('#d-try').textContent=dTry;
+  $('#d-frage').textContent=FAELLE[dI][0];
+  $('#d-fb').className='fb'; $('#d-next').style.display='none';
+  $$('#d-wahl button').forEach(function(b){b.className=''});
+  dDone=false;
+}
+$$('#d-wahl button').forEach(function(b){
+  b.addEventListener('click',function(){
+    if(dDone)return;
+    dDone=true; dTry++;
+    var richtig=FAELLE[dI][1];
+    if(b.dataset.a===richtig){b.className='ok';dOk++}
+    else{b.className='no';
+      $$('#d-wahl button').forEach(function(x){if(x.dataset.a===richtig)x.className='ok'})}
+    $('#d-fb').innerHTML='<b>'+richtig+'</b> – '+FAELLE[dI][2];
+    $('#d-fb').classList.add('on');
+    $('#d-ok').textContent=dOk; $('#d-try').textContent=dTry;
+    $('#d-next').style.display=(dI<FAELLE.length-1)?'inline-block':'none';
+    if(dI===FAELLE.length-1){
+      $('#d-fb').innerHTML+='<br><br><b>Fertig:</b> '+dOk+' von '+FAELLE.length+' richtig.';
+    }
+  });
+});
+$('#d-next').addEventListener('click',function(){if(dI<FAELLE.length-1){dI++;dRender()}});
+$('#d-reset').addEventListener('click',function(){dI=0;dOk=0;dTry=0;dRender()});
+
+/* ========== 4 Mein Limit ========== */
+function limit(){
+  var ein=Math.max(0,+$('#l-ein').value||0);
+  var fix=Math.max(0,+$('#l-fix').value||0);
+  var sp=Math.max(0,+$('#l-spiel').value||0);
+  var frei=ein-fix;
+  var rest=frei-sp;
+  var anteil=ein?sp/ein*100:0;
+  var h='';
+  h+=zeile('Frei verfügbar (Einnahmen minus Fixkosten)',eur(frei));
+  h+=zeile('Geplant für Spiele',eur(sp));
+  h+=zeile('Bleibt für alles andere',eur(rest),true);
+  h+=zeile('Anteil der Spiele am Monatsgeld',anteil.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %');
+  h+=zeile('Im Jahr wären das',eur(sp*12));
+  h+=zeile('Zum Vergleich: Durchschnitt Jugendliche',eur(7)+' / Monat');
+  h+='<div class="bar" style="height:16px;margin-top:12px"><i style="width:'+
+     Math.min(100,anteil)+'%;background:'+(anteil>50?'var(--coral)':(anteil>25?'var(--gold)':'var(--mint)'))+'"></i></div>';
+  h+='<div class="hint">Der Balken zeigt, welchen Teil deines Monatsgeldes die Spiele bekommen.</div>';
+  if(rest<0){h+='<div class="warnbox">Das Geplante liegt über dem, was da ist: '+eur(-rest)+
+    ' fehlen. Entweder weniger kaufen oder auf den nächsten Monat verschieben.</div>'}
+  else if(anteil>50){h+='<div class="warnbox">Mehr als die Hälfte deines Monatsgeldes ginge in Spiele. '+
+    'Das darf man entscheiden – aber man sollte es wissen.</div>'}
+  $('#l-out').innerHTML=h;
+}
+$('#l-go').addEventListener('click',limit);
+['#l-ein','#l-fix','#l-spiel'].forEach(function(s){$(s).addEventListener('input',limit)});
+
+/* ---------- Start ---------- */
+zeigePakete(); rechneW(); kRender(); dRender(); limit();
+})();
+</script>
+</body>
+</html>
