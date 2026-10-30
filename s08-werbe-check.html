@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Werbe-Check &ndash; Influencer entschl&uuml;sselt</title>
+<style>
+:root{
+  --nacht:#12172B; --nacht2:#1B2340; --nacht3:#232C4E;
+  --mint:#3DE8A0; --coral:#FF6B5D; --gold:#FFC94D;
+  --sand:#F5F1E8; --grau:#8A93B2;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--nacht); color:var(--sand);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.5; padding-bottom:40px;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px}
+header{padding:26px 0 10px}
+.kicker{color:var(--mint);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:30px;margin:8px 0 4px;line-height:1.15}
+.sub{color:var(--grau);font-size:15px;margin:0}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 6px}
+nav button{
+  flex:1 1 auto;min-width:140px;min-height:48px;cursor:pointer;
+  background:var(--nacht2);color:var(--sand);border:1px solid transparent;
+  border-radius:var(--r);padding:10px 14px;font-size:15px;font-weight:600;
+}
+nav button[aria-selected="true"]{background:var(--mint);color:var(--nacht)}
+section[hidden]{display:none}
+section{margin-top:18px}
+h2{font-size:22px;margin:14px 0 6px}
+.lead{color:var(--grau);font-size:15px;margin:0 0 16px}
+.karte{background:var(--nacht2);border-radius:var(--r);padding:16px 18px;margin:12px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* --- Seziertisch --- */
+.post{background:var(--nacht2);border-radius:var(--r);overflow:hidden;max-width:420px;margin:0 auto}
+.post .bar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--nacht3)}
+.post .bar .name{font-weight:700;font-size:15px}
+.post .bar .partner{font-size:12px;color:var(--gold)}
+.bild{display:block;width:100%;height:auto;background:var(--nacht3)}
+.caption{padding:12px 14px;font-size:14.5px}
+.caption p{margin:0 0 8px}
+.tags{color:var(--grau);font-size:13px}
+.hot{
+  cursor:pointer;border:none;border-radius:8px;padding:2px 7px;margin:0 1px;
+  background:rgba(61,232,160,.16);color:var(--mint);font:inherit;font-size:inherit;
+  font-weight:700;line-height:inherit;
+}
+.hot:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hot.aktiv{background:var(--mint);color:var(--nacht)}
+.hotnum{display:inline-block;min-width:19px;height:19px;border-radius:50%;
+  background:var(--mint);color:var(--nacht);font-size:12px;font-weight:800;
+  text-align:center;line-height:19px;margin-right:5px}
+.erklaerung{margin-top:14px;border-left:4px solid var(--mint);background:var(--nacht2);
+  border-radius:0 var(--r) var(--r) 0;padding:14px 16px;min-height:96px}
+.erklaerung h3{margin:0 0 6px;font-size:17px}
+.erklaerung .norm{color:var(--mint);font-size:13px;font-weight:700;margin-top:8px}
+.fortschritt{color:var(--grau);font-size:13px;margin-top:10px}
+
+/* --- Baum --- */
+.frage{font-size:20px;font-weight:700;margin:0 0 4px}
+.hinweis{color:var(--grau);font-size:14px;margin:0 0 14px}
+.wahl{display:flex;flex-wrap:wrap;gap:10px}
+.wahl button{
+  flex:1 1 200px;min-height:56px;cursor:pointer;border-radius:var(--r);
+  border:1.5px solid var(--nacht3);background:var(--nacht2);color:var(--sand);
+  font-size:16px;font-weight:600;padding:12px 14px;text-align:left;
+}
+.wahl button:active{background:var(--nacht3)}
+.ergebnis{border-radius:var(--r);padding:18px;margin-top:14px}
+.ergebnis.ja{background:rgba(255,107,93,.14);border:1.5px solid var(--coral)}
+.ergebnis.nein{background:rgba(61,232,160,.12);border:1.5px solid var(--mint)}
+.ergebnis h3{margin:0 0 6px;font-size:20px}
+.ergebnis.ja h3{color:var(--coral)} .ergebnis.nein h3{color:var(--mint)}
+.pfad{color:var(--grau);font-size:13px;margin-top:10px}
+.neu{margin-top:14px;min-height:48px;padding:10px 18px;border-radius:var(--r);
+  border:none;background:var(--nacht3);color:var(--sand);font-size:15px;font-weight:600;cursor:pointer}
+
+/* --- Check --- */
+.item{background:var(--nacht2);border-radius:var(--r);padding:14px 16px;margin:10px 0}
+.item .txt{font-size:16px;margin:0 0 10px}
+.item .txt em{color:var(--gold);font-style:normal;font-weight:700}
+.knoepfe{display:flex;gap:10px;flex-wrap:wrap}
+.knoepfe button{flex:1 1 150px;min-height:48px;border-radius:10px;border:1.5px solid var(--nacht3);
+  background:var(--nacht3);color:var(--sand);font-size:15px;font-weight:700;cursor:pointer}
+.knoepfe button.richtig{background:var(--mint);color:var(--nacht);border-color:var(--mint)}
+.knoepfe button.falsch{background:var(--coral);color:var(--nacht);border-color:var(--coral)}
+.knoepfe button[disabled]{cursor:default;opacity:.95}
+.feedback{margin-top:10px;font-size:14.5px;color:var(--grau);display:none}
+.feedback.zeigen{display:block}
+.feedback b{color:var(--sand)}
+.punkte{position:sticky;top:0;z-index:5;background:var(--nacht);padding:10px 0;
+  color:var(--grau);font-size:14px;border-bottom:1px solid var(--nacht2)}
+.punkte b{color:var(--mint);font-size:17px}
+
+/* --- Rechner --- */
+.feld{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--nacht3);flex-wrap:wrap}
+.feld label{font-size:15px;flex:1 1 200px}
+.feld input{width:140px;min-height:44px;border-radius:10px;border:1.5px solid var(--nacht3);
+  background:var(--nacht);color:var(--sand);font-size:16px;padding:6px 10px;text-align:right;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.zeile{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:15px}
+.zeile .wert{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--mint);font-weight:700}
+.summe{background:var(--mint);color:var(--nacht);border-radius:var(--r);padding:14px 16px;
+  display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-weight:800;font-size:18px}
+.summe .wert{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px}
+.merk{background:rgba(255,201,77,.12);border:1.5px solid var(--gold);border-radius:var(--r);
+  padding:14px 16px;margin-top:14px;font-size:15px}
+.merk b{color:var(--gold)}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--nacht2);
+  color:var(--grau);font-size:12.5px}
+@media (max-width:520px){h1{font-size:25px}.wrap{padding:0 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">WPK Wirtschaft 9 &middot; Sitzung 8</div>
+  <h1>Der Werbe-Check</h1>
+  <p class="sub">Vier Werkzeuge zur Frage: Ist das Meinung oder ist das bezahlt?</p>
+</header>
+
+<nav id="nav" role="tablist">
+  <button role="tab" aria-selected="true" data-ziel="t1">1 &middot; Post-Seziertisch</button>
+  <button role="tab" aria-selected="false" data-ziel="t2">2 &middot; Entscheidungsbaum</button>
+  <button role="tab" aria-selected="false" data-ziel="t3">3 &middot; Kennzeichnungs-Check</button>
+  <button role="tab" aria-selected="false" data-ziel="t4">4 &middot; Creator-Rechner</button>
+</nav>
+
+<!-- ============================ 1 ============================ -->
+<section id="t1">
+  <h2>Post-Seziertisch</h2>
+  <p class="lead">Sechs Stellen sind markiert. Tippe sie nacheinander an und lies, was dort passiert.</p>
+
+  <div class="post">
+    <div class="bar">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="20" fill="#3DE8A0"></circle>
+        <circle cx="20" cy="16" r="7" fill="#12172B"></circle>
+        <path d="M6 38c2-9 8-13 14-13s12 4 14 13z" fill="#12172B"></path>
+      </svg>
+      <div>
+        <div class="name">nina.moves</div>
+        <div class="partner"><button class="hot" data-h="6">Bezahlte Partnerschaft mit PulseFit</button></div>
+      </div>
+    </div>
+    <svg class="bild" viewBox="0 0 400 230" role="img" aria-label="Skizze einer Sportuhr am Handgelenk">
+      <rect width="400" height="230" fill="#232C4E"></rect>
+      <circle cx="200" cy="112" r="66" fill="#1B2340" stroke="#3DE8A0" stroke-width="3"></circle>
+      <rect x="182" y="26" width="36" height="40" rx="10" fill="#1B2340" stroke="#3DE8A0" stroke-width="3"></rect>
+      <rect x="182" y="158" width="36" height="40" rx="10" fill="#1B2340" stroke="#3DE8A0" stroke-width="3"></rect>
+      <circle cx="200" cy="112" r="46" fill="#12172B"></circle>
+      <path d="M200 112 L200 82" stroke="#FFC94D" stroke-width="4" stroke-linecap="round"></path>
+      <path d="M200 112 L224 124" stroke="#FF6B5D" stroke-width="4" stroke-linecap="round"></path>
+      <circle cx="200" cy="112" r="4" fill="#F5F1E8"></circle>
+      <text x="20" y="214" fill="#8A93B2" font-family="Helvetica" font-size="13">Skizze &ndash; keine echte Marke</text>
+    </svg>
+    <div class="caption">
+      <p><button class="hot" data-h="1">Werbung</button> &ndash; seit drei Wochen laufe ich mit der neuen Uhr von
+        <button class="hot" data-h="2">@pulsefit</button> und der Schlaf-Score ist wirklich gut.</p>
+      <p>Mit dem Code <button class="hot" data-h="3">NINA15</button> bekommt ihr 15 % im Shop.
+        Direkt hier: <button class="hot" data-h="4">pulsefit.example/uhr*</button></p>
+      <p class="tags"><button class="hot" data-h="5">#fitness #morning #routine #run #sport #ad</button></p>
+    </div>
+  </div>
+
+  <div class="erklaerung" id="erkl">
+    <h3>Tippe eine markierte Stelle an</h3>
+    <p id="erklText">Jede der sechs Stellen zeigt etwas anderes: eine richtige Kennzeichnung, eine Abrechnung,
+      einen typischen Fehler.</p>
+    <div class="norm" id="erklNorm"></div>
+  </div>
+  <div class="fortschritt" id="fortschritt">0 von 6 angesehen</div>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section id="t2" hidden>
+  <h2>Entscheidungsbaum</h2>
+  <p class="lead">Denk an einen Beitrag, den du kennst, und beantworte die Fragen.</p>
+  <div class="karte" id="baumKarte">
+    <p class="frage" id="baumFrage"></p>
+    <p class="hinweis" id="baumHinweis"></p>
+    <div class="wahl" id="baumWahl"></div>
+  </div>
+  <div id="baumErgebnis"></div>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section id="t3" hidden>
+  <h2>Kennzeichnungs-Check</h2>
+  <p class="lead">Zw&ouml;lf Formulierungen. Gen&uuml;gt das als Werbekennzeichnung oder nicht?</p>
+  <div class="punkte" id="punkte">Richtig: <b>0</b> von 0 beantworteten &middot; 12 Aufgaben</div>
+  <div id="checkListe"></div>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section id="t4" hidden>
+  <h2>Creator-Rechner</h2>
+  <p class="lead">&Auml;ndere die Zahlen und sieh, was aus einem einzigen Beitrag wird.</p>
+  <div class="karte">
+    <div class="feld"><label for="follower">Follower</label><input id="follower" type="number" inputmode="numeric" value="120000" min="0" step="1000"></div>
+    <div class="feld"><label for="honorar">Honorar f&uuml;r den Beitrag in &euro;</label><input id="honorar" type="number" inputmode="decimal" value="1800" min="0" step="50"></div>
+    <div class="feld"><label for="anzahl">Einl&ouml;sungen des Rabattcodes</label><input id="anzahl" type="number" inputmode="numeric" value="430" min="0" step="10"></div>
+    <div class="feld"><label for="preis">Preis je Bestellung in &euro;</label><input id="preis" type="number" inputmode="decimal" value="49.90" min="0" step="0.1"></div>
+    <div class="feld"><label for="satz">Provision in Prozent</label><input id="satz" type="number" inputmode="decimal" value="6" min="0" max="100" step="0.5"></div>
+    <div class="feld"><label for="sachwert">Wert des PR-Pakets in &euro;</label><input id="sachwert" type="number" inputmode="decimal" value="240" min="0" step="10"></div>
+  </div>
+  <div class="karte">
+    <div class="zeile"><span>Umsatz &uuml;ber den Code</span><span class="wert" id="rUmsatz"></span></div>
+    <div class="zeile"><span>Provision daraus</span><span class="wert" id="rProvision"></span></div>
+    <div class="zeile"><span>Honorar</span><span class="wert" id="rHonorar"></span></div>
+    <div class="zeile"><span>Sachwert PR-Paket</span><span class="wert" id="rSach"></span></div>
+    <div class="zeile"><span>Honorar je 1.000 Follower</span><span class="wert" id="rTkp"></span></div>
+    <div class="summe"><span>Zusammen aus einem Beitrag</span><span class="wert" id="rGesamt"></span></div>
+    <div class="merk" id="rHinweis"></div>
+  </div>
+</section>
+
+<footer>
+  Rechtsstand September 2026. Grundlagen: &sect;&nbsp;5a Abs.&nbsp;4 UWG, &sect;&nbsp;6 Abs.&nbsp;1 Nr.&nbsp;1 DDG,
+  &sect;&nbsp;22 Abs.&nbsp;1 MStV, Art.&nbsp;26 DSA, BGH vom 09.09.2021 (I&nbsp;ZR&nbsp;90/20) sowie der Leitfaden der
+  Medienanstalten &bdquo;Werbekennzeichnung bei Online-Medien&ldquo;, Stand Mai 2025.
+  Namen, Marken und Betr&auml;ge sind erfunden. Diese Seite l&auml;uft vollst&auml;ndig im Browser: kein Internet
+  n&ouml;tig, keine Anmeldung, keine Speicherung.
+</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- Navigation ---------------- */
+var nav = document.getElementById("nav");
+nav.addEventListener("click", function(e){
+  var b = e.target.closest("button[data-ziel]");
+  if(!b) return;
+  Array.prototype.forEach.call(nav.querySelectorAll("button"), function(x){
+    x.setAttribute("aria-selected", String(x === b));
+  });
+  ["t1","t2","t3","t4"].forEach(function(id){
+    document.getElementById(id).hidden = (id !== b.dataset.ziel);
+  });
+  window.scrollTo(0,0);
+});
+
+/* ---------------- 1 Seziertisch ---------------- */
+var HOTSPOTS = {
+  "1": {t:"Die Kennzeichnung sitzt richtig",
+        p:"„Werbung“ steht als erstes Wort der Bildunterschrift: ohne Klick, ohne Aufklappen, in der Sprache des Beitrags. Genau so verlangt es der Leitfaden der Medienanstalten. „Anzeige“ wäre ebenso in Ordnung.",
+        n:"§ 5a Abs. 4 Satz 1 UWG · § 22 Abs. 1 MStV"},
+  "2": {t:"Der Marken-Tag allein sagt wenig",
+        p:"Eine Marke zu nennen oder zu markieren ist für sich genommen noch keine Werbung – solange keine Gegenleistung fliesst und kein Kaufappell dazukommt. Hier fliesst aber Geld, deshalb ist der ganze Beitrag Werbung.",
+        n:"§ 5a Abs. 4 Satz 2 UWG · BGH 09.09.2021 – I ZR 125/20"},
+  "3": {t:"Der Rabattcode ist die Abrechnung",
+        p:"Der Code sieht aus wie ein Geschenk an die Fans, ist aber die Zählmarke: Jede Einlösung bringt Provision. Deshalb muss „Werbung“ oder „Anzeige“ unmittelbar neben dem Code stehen, nicht irgendwo im Text.",
+        n:"Leitfaden der Medienanstalten, Stand Mai 2025"},
+  "4": {t:"Sternchen ohne Erklärung reicht nicht",
+        p:"Bei einem Affiliate-Link gehört in unmittelbare Nähe ein Satz wie: „Die mit * gekennzeichneten Links sind Affiliate-Links. Kommt darüber ein Einkauf zustande, werde ich mit einer Provision beteiligt.“ Hier fehlt er.",
+        n:"Leitfaden der Medienanstalten, Stand Mai 2025"},
+  "5": {t:"„#ad“ am Ende: zweimal falsch",
+        p:"Erstens ist „ad“ kein zulässiger Begriff – Abkürzungen und englische Ausdrücke genügen nicht. Zweitens stimmt der Ort nicht: hinter einer Hashtag-Wolke liest es niemand. Richtig wäre „Werbung“ ganz am Anfang.",
+        n:"§ 5a Abs. 4 Satz 1 UWG · Leitfaden der Medienanstalten"},
+  "6": {t:"Der Schalter der Plattform",
+        p:"Diese Leiste setzt die App, wenn der Creator den Beitrag als bezahlte Partnerschaft markiert. Plattformen müssen diese Funktion anbieten. Sie ist eine zulässige Kennzeichnung – sie ersetzt aber nicht, dass der Hinweis auch wirklich sichtbar ist.",
+        n:"Art. 26 Abs. 2 DSA"}
+};
+var gesehen = {};
+document.querySelectorAll(".hot").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".hot").forEach(function(x){x.classList.remove("aktiv");});
+    b.classList.add("aktiv");
+    var d = HOTSPOTS[b.dataset.h];
+    document.querySelector("#erkl h3").innerHTML =
+      '<span class="hotnum">'+b.dataset.h+'</span>'+d.t;
+    document.getElementById("erklText").textContent = d.p;
+    document.getElementById("erklNorm").textContent = d.n;
+    gesehen[b.dataset.h] = true;
+    var n = Object.keys(gesehen).length;
+    document.getElementById("fortschritt").textContent =
+      n + " von 6 angesehen" + (n === 6 ? " – vollständig." : "");
+  });
+});
+
+/* ---------------- 2 Entscheidungsbaum ---------------- */
+var BAUM = {
+  start: {
+    f:"Geht es um ein fremdes Unternehmen oder um dich selbst?",
+    h:"Eigener Shop, eigenes Merch, eigener Kurs zählen als „du selbst“.",
+    a:[{t:"Um ein fremdes Unternehmen", z:"gegen"},
+       {t:"Um mich selbst (Eigenwerbung)", z:"eigen"}]
+  },
+  eigen: {
+    f:"Ist dein Kanal erkennbar ein kommerzieller Kanal?",
+    h:"Zum Beispiel ein reiner Shop-Kanal, bei dem jeder sofort sieht: Hier wird verkauft.",
+    a:[{t:"Ja, das sieht man sofort", z:"E_nein"},
+       {t:"Nein, der Kanal wirkt privat", z:"E_ja_eigen"}]
+  },
+  gegen: {
+    f:"Hast du eine Gegenleistung bekommen oder ist sie dir versprochen?",
+    h:"Geld, Gratisprodukt, Rabatt, Provision, eine bezahlte Reise – alles zählt.",
+    a:[{t:"Ja", z:"E_ja_gegen"},
+       {t:"Nein, nichts davon", z:"ueberschuss"}]
+  },
+  ueberschuss: {
+    f:"Gibt es trotzdem einen werblichen Überschuss?",
+    h:"Zum Beispiel ein Link in den Shop des Herstellers, ein Kaufappell oder auffällig überschwängliches Lob.",
+    a:[{t:"Ja, so etwas ist dabei", z:"E_ja_ueber"},
+       {t:"Nein, es ist reine Information", z:"E_nein_info"}]
+  }
+};
+var ENDE = {
+  E_ja_gegen:{k:"ja", t:"Kennzeichnen.",
+    p:"Es fliesst eine Gegenleistung, also ist der Beitrag Werbung. „Werbung“ oder „Anzeige“ gehört an den Anfang – lesbar ohne Klick, in der Sprache des Beitrags, auf jedem Story-Slide der Kooperation.",
+    n:"§ 5a Abs. 4 Satz 1 UWG · § 6 Abs. 1 Nr. 1 DDG · § 22 Abs. 1 MStV"},
+  E_ja_ueber:{k:"ja", t:"Kennzeichnen.",
+    p:"Auch ohne Gegenleistung: Wer in den Shop des Herstellers verlinkt oder zum Kauf auffordert, geht über reine Information hinaus. Der BGH nennt das einen werblichen Überschuss.",
+    n:"BGH, Urteil vom 09.09.2021 – I ZR 90/20"},
+  E_ja_eigen:{k:"ja", t:"Kennzeichnen.",
+    p:"Auf einem Kanal, der privat wirkt, erkennt niemand von selbst, dass hier verkauft wird. Dann muss der kommerzielle Zweck kenntlich gemacht werden.",
+    n:"§ 5a Abs. 4 Satz 1 UWG"},
+  E_nein:{k:"nein", t:"Keine gesonderte Kennzeichnung nötig.",
+    p:"Der kommerzielle Zweck ergibt sich unmittelbar aus den Umständen: Auf einem eindeutig kommerziellen Kanal weiß jeder, woran er ist.",
+    n:"§ 5a Abs. 4 Satz 1 UWG · Leitfaden der Medienanstalten"},
+  E_nein_info:{k:"nein", t:"Keine Kennzeichnung – und auch nicht sicherheitshalber.",
+    p:"Ohne Gegenleistung und ohne werblichen Überschuss ist es keine Werbung. Eine Kennzeichnung, die nicht stimmt, ist selbst irreführend: Sie lässt Meinungen wie bezahlte Beiträge aussehen.",
+    n:"§ 5a Abs. 4 Satz 2 UWG · Leitfaden der Medienanstalten"}
+};
+var pfad = [];
+function baumZeigen(id){
+  var k = BAUM[id];
+  document.getElementById("baumKarte").hidden = false;
+  document.getElementById("baumFrage").textContent = k.f;
+  document.getElementById("baumHinweis").textContent = k.h;
+  var w = document.getElementById("baumWahl");
+  w.innerHTML = "";
+  k.a.forEach(function(opt){
+    var b = document.createElement("button");
+    b.textContent = opt.t;
+    b.addEventListener("click", function(){
+      pfad.push(opt.t);
+      if(ENDE[opt.z]) endeZeigen(opt.z); else baumZeigen(opt.z);
+    });
+    w.appendChild(b);
+  });
+  document.getElementById("baumErgebnis").innerHTML = "";
+}
+function endeZeigen(id){
+  var e = ENDE[id];
+  document.getElementById("baumKarte").hidden = true;
+  var d = document.getElementById("baumErgebnis");
+  d.innerHTML = "";
+  var box = document.createElement("div");
+  box.className = "ergebnis " + e.k;
+  box.innerHTML = "<h3>"+e.t+"</h3><p>"+e.p+"</p>"+
+    '<div class="pfad">Rechtsgrundlage: '+e.n+"</div>"+
+    '<div class="pfad">Dein Weg: '+pfad.join(" → ")+"</div>";
+  d.appendChild(box);
+  var b = document.createElement("button");
+  b.className = "neu"; b.textContent = "Noch einen Fall prüfen";
+  b.addEventListener("click", function(){ pfad = []; baumZeigen("start"); });
+  d.appendChild(b);
+}
+baumZeigen("start");
+
+/* ---------------- 3 Kennzeichnungs-Check ---------------- */
+var CHECK = [
+  {t:'Ganz am Anfang der Bildunterschrift steht <em>Werbung</em>.', ok:true,
+   e:"Zulässiger Begriff an der richtigen Stelle: lesbar ohne Klick und ohne Aufklappen."},
+  {t:'In der ersten Zeile steht <em>Anzeige</em>.', ok:true,
+   e:"„Anzeige“ ist neben „Werbung“ der zweite Begriff, den der Leitfaden ausdrücklich nennt."},
+  {t:'Am Ende steht <em>#ad</em>.', ok:false,
+   e:"Abkürzungen und englische Begriffe genügen nicht – und das Ende der Bildunterschrift ist der falsche Ort."},
+  {t:'Im Text steht <em>sponsored by NordWave</em>.', ok:false,
+   e:"„sponsored by“ wird im Leitfaden ausdrücklich als nicht ausreichend genannt."},
+  {t:'Unter dem Foto steht <em>PR-Sample</em>.', ok:false,
+   e:"Auch das steht auf der Liste der unzureichenden Formulierungen. Wer ein Produkt geschenkt bekommt, kennzeichnet mit „Werbung“."},
+  {t:'Über dem Beitrag steht <em>Advertorial</em>.', ok:false,
+   e:"Fachsprache aus der Werbebranche. Wer den Begriff nicht kennt, erkennt die Werbung nicht."},
+  {t:'Oben rechts steht ein kleines <em>AZ</em>.', ok:false,
+   e:"Eine Abkürzung, die niemand zuverlässig auflöst – ausdrücklich nicht ausreichend."},
+  {t:'Die Plattform zeigt oben <em>Bezahlte Werbepartnerschaft</em>.', ok:true,
+   e:"Das plattformeigene Werkzeug mit dieser Formulierung ist zulässig. Plattformen müssen diese Funktion anbieten (Art. 26 Abs. 2 DSA)."},
+  {t:'<em>Werbung</em> steht ganz unten, hinter zwanzig Hashtags.', ok:false,
+   e:"Der Begriff stimmt, der Ort nicht. Die Kennzeichnung muss ohne Suchen und ohne Aufklappen zu sehen sein."},
+  {t:'Bei einer Kooperation über sechs Story-Slides ist nur <em>Slide 3</em> gekennzeichnet.', ok:false,
+   e:"Alle Slides, die zur Kooperation gehören, müssen gekennzeichnet werden – nicht nur der mit der Werbeaussage."},
+  {t:'Unter dem Video steht <em>Danke an @nordwave für das Paket</em>.', ok:false,
+   e:"Eine Danksagung ist keine Kennzeichnung. Das Paket ist eine Gegenleistung, also gehört „Werbung“ an den Anfang."},
+  {t:'Der Beitrag ist auf Deutsch, die Kennzeichnung lautet <em>advertisement</em>.', ok:false,
+   e:"Die Kennzeichnung muss in der Sprache des Beitrags stehen, sonst wird sie überlesen."}
+];
+var beantwortet = 0, richtig = 0;
+var liste = document.getElementById("checkListe");
+CHECK.forEach(function(c, i){
+  var d = document.createElement("div");
+  d.className = "item";
+  d.innerHTML = '<p class="txt"><b>'+(i+1)+'.</b> '+c.t+'</p>'+
+    '<div class="knoepfe"><button data-w="1">Das genügt</button>'+
+    '<button data-w="0">Das genügt nicht</button></div>'+
+    '<div class="feedback"></div>';
+  var fb = d.querySelector(".feedback");
+  d.querySelectorAll(".knoepfe button").forEach(function(b){
+    b.addEventListener("click", function(){
+      if(b.disabled) return;
+      var gewaehlt = b.dataset.w === "1";
+      var stimmt = (gewaehlt === c.ok);
+      d.querySelectorAll(".knoepfe button").forEach(function(x){ x.disabled = true; });
+      b.classList.add(stimmt ? "richtig" : "falsch");
+      if(!stimmt){
+        d.querySelector('.knoepfe button[data-w="'+(c.ok?"1":"0")+'"]').classList.add("richtig");
+      }
+      fb.innerHTML = "<b>"+(stimmt ? "Richtig." : "Nicht ganz.")+"</b> "+c.e;
+      fb.classList.add("zeigen");
+      beantwortet++; if(stimmt) richtig++;
+      document.getElementById("punkte").innerHTML =
+        "Richtig: <b>"+richtig+"</b> von "+beantwortet+" beantworteten &middot; 12 Aufgaben";
+    });
+  });
+  liste.appendChild(d);
+});
+
+/* ---------------- 4 Rechner ---------------- */
+function euro(v){
+  return v.toLocaleString("de-DE", {minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+}
+function zahl(id){
+  var v = parseFloat(document.getElementById(id).value.replace(",", "."));
+  return isFinite(v) && v > 0 ? v : 0;
+}
+function rechnen(){
+  var follower = zahl("follower"), honorar = zahl("honorar"),
+      anzahl = zahl("anzahl"), preis = zahl("preis"),
+      satz = zahl("satz"), sach = zahl("sachwert");
+  var umsatz = anzahl * preis;
+  var provision = umsatz * satz / 100;
+  var gesamt = honorar + provision + sach;
+  var tkp = follower > 0 ? honorar / (follower / 1000) : 0;
+  document.getElementById("rUmsatz").textContent = euro(umsatz);
+  document.getElementById("rProvision").textContent = euro(provision);
+  document.getElementById("rHonorar").textContent = euro(honorar);
+  document.getElementById("rSach").textContent = euro(sach);
+  document.getElementById("rTkp").textContent = euro(tkp);
+  document.getElementById("rGesamt").textContent = euro(gesamt);
+  var teile = [];
+  if(honorar > 0) teile.push("das Honorar");
+  if(provision > 0) teile.push("die Provision aus dem Code");
+  if(sach > 0) teile.push("das PR-Paket");
+  var txt;
+  if(teile.length === 0){
+    txt = "<b>Keine Gegenleistung.</b> Ohne Geld, Provision und Sachwert ist der Beitrag "+
+          "keine Werbung – solange auch kein Link in den Shop und kein Kaufappell dazukommt.";
+  } else {
+    txt = "<b>Kennzeichnungspflichtig.</b> Gegenleistungen sind hier: "+
+          teile.join(", ")+". Jede einzelne davon genügt bereits. Beim Rabattcode muss "+
+          "„Werbung“ oder „Anzeige“ unmittelbar daneben stehen.";
+  }
+  document.getElementById("rHinweis").innerHTML = txt;
+}
+["follower","honorar","anzahl","preis","satz","sachwert"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", rechnen);
+});
+rechnen();
+</script>
+</body>
+</html>
