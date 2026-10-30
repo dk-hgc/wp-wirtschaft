@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Betrugs-Check · WPK Wirtschaft 9 · Sitzung 12</title>
+<style>
+:root{
+  --ink:#1F2933; --soft:#52606D; --faint:#9AA5B1;
+  --coral:#C8463C; --coralbg:#FBEEEC;
+  --teal:#19707F; --tealbg:#E8F2F4;
+  --amber:#B4781A; --amberbg:#FCF3E3;
+  --violet:#5B4B8A; --violetbg:#EFECF6;
+  --green:#2E6B4F; --greenbg:#E9F3ED;
+  --line:#D2DAE0; --soft-line:#E6EBEF; --paper:#F6F8F9;
+  --radius:12px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:#EEF2F4;line-height:1.5;
+     -webkit-text-size-adjust:100%}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px 56px}
+header.top{background:var(--ink);color:#fff;padding:26px 0 22px;margin-bottom:18px}
+header.top .wrap{padding-bottom:0}
+.kicker{color:#8FA3B0;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+h1{margin:8px 0 6px;font-size:clamp(26px,5.4vw,40px);line-height:1.1;letter-spacing:-.01em}
+header.top p{margin:0;color:#C3D0D9;font-size:15px;max-width:60ch}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 20px}
+nav button{flex:1 1 150px;border:1px solid var(--line);background:#fff;color:var(--soft);
+  padding:11px 12px;border-radius:var(--radius);font:inherit;font-size:14px;font-weight:600;
+  cursor:pointer;transition:.12s}
+nav button:hover{border-color:var(--teal);color:var(--teal)}
+nav button[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+nav button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+section.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;
+  margin-bottom:18px}
+section.panel[hidden]{display:none}
+h2{margin:0 0 4px;font-size:21px;letter-spacing:-.01em}
+.lead{margin:0 0 18px;color:var(--soft);font-size:14.5px;max-width:70ch}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--paper)}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px 16px;
+  border-radius:10px;font:inherit;font-size:14.5px;font-weight:600;cursor:pointer;transition:.12s}
+.btn:hover{border-color:var(--ink)}
+.btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.btn.green{border-color:var(--green);color:var(--green)}
+.btn.green:hover{background:var(--greenbg)}
+.btn.amber{border-color:var(--amber);color:var(--amber)}
+.btn.amber:hover{background:var(--amberbg)}
+.btn.coral{border-color:var(--coral);color:var(--coral)}
+.btn.coral:hover{background:var(--coralbg)}
+.btn.ghost{background:transparent;color:var(--soft);font-weight:500}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;padding:4px 9px;border-radius:999px}
+.b-teal{background:var(--tealbg);color:var(--teal)}
+.b-coral{background:var(--coralbg);color:var(--coral)}
+.b-amber{background:var(--amberbg);color:var(--amber)}
+.b-green{background:var(--greenbg);color:var(--green)}
+.b-violet{background:var(--violetbg);color:var(--violet)}
+.fall{font-size:16px;margin:12px 0 16px;line-height:1.55}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  font-size:13px;color:var(--faint);margin-bottom:6px}
+.fb{margin-top:14px;border-radius:var(--radius);padding:14px 16px;font-size:14.5px;line-height:1.55}
+.fb.ok{background:var(--greenbg);border:1px solid var(--green)}
+.fb.no{background:var(--coralbg);border:1px solid var(--coral)}
+.fb strong{display:block;margin-bottom:3px}
+.bar{height:7px;background:var(--soft-line);border-radius:999px;overflow:hidden;margin:4px 0 14px}
+.bar > i{display:block;height:100%;background:var(--teal);width:0;transition:width .25s}
+code,.url{font-family:var(--mono)}
+.urlbox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;
+  text-align:center;font-family:var(--mono);font-size:clamp(14px,3.4vw,20px);word-break:break-word;
+  line-height:2.1}
+.seg{display:inline-block;padding:3px 7px;border-radius:7px;border:1px dashed var(--line);
+  background:#fff;cursor:pointer;margin:0 1px;font:inherit;color:var(--ink);transition:.12s}
+.seg:hover{border-color:var(--teal);background:var(--tealbg)}
+.seg:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.seg.hit{background:var(--greenbg);border:1px solid var(--green);color:var(--green);font-weight:700}
+.seg.miss{background:var(--coralbg);border:1px solid var(--coral);color:var(--coral)}
+.seg.tld{background:var(--greenbg);border:1px solid var(--green);color:var(--green);font-weight:700}
+.dot,.rest{color:var(--faint)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--soft);margin-bottom:5px}
+input[type=number],select{width:100%;padding:10px 11px;border:1px solid var(--line);
+  border-radius:9px;font:inherit;font-size:15px;background:#fff;color:var(--ink)}
+input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:1px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:13px 14px}
+.stat .v{font-size:clamp(19px,4vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.stat .k{font-size:12px;color:var(--faint);margin-top:3px}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps li{counter-increment:s;display:flex;gap:13px;align-items:flex-start;padding:13px 14px;
+  border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px;background:#fff;
+  transition:.12s}
+ol.steps li.done{background:var(--greenbg);border-color:var(--green)}
+ol.steps li .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--violet);color:#fff;
+  font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps li.done .n{background:var(--green)}
+ol.steps li h3{margin:0 0 3px;font-size:15.5px}
+ol.steps li p{margin:0;font-size:14px;color:var(--soft)}
+ol.steps li input{margin-top:5px;width:19px;height:19px;accent-color:var(--green);flex:0 0 auto}
+.note{font-size:12.5px;color:var(--faint);margin-top:14px;line-height:1.6}
+.hinweis{background:var(--amberbg);border:1px solid var(--amber);border-radius:var(--radius);
+  padding:13px 15px;font-size:14px;margin-top:16px}
+footer{text-align:center;color:var(--faint);font-size:12.5px;padding:10px 16px 0}
+@media (max-width:720px){
+  .grid2{grid-template-columns:1fr}
+  .out{grid-template-columns:1fr}
+  section.panel{padding:16px}
+  nav button{flex:1 1 46%}
+}
+@media print{nav,.btn{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="kicker">WPK Wirtschaft · Jahrgangsstufe 9 · Sitzung 12</div>
+  <h1>Betrugs-Check</h1>
+  <p>Vier Werkzeuge zu Fake Shops, Phishing und Abofallen. Läuft offline, speichert nichts und
+     sendet nichts. Was du hier eingibst, verlässt dein iPad nicht.</p>
+</div></header>
+
+<div class="wrap">
+<nav id="nav" role="tablist" aria-label="Werkzeuge"></nav>
+
+<!-- 1 Detektor -->
+<section class="panel" id="p-detektor" role="tabpanel" aria-label="Fakeshop-Detektor">
+  <h2>Fakeshop-Detektor</h2>
+  <p class="lead">Zwölf Situationen. Entscheide jedes Mal: Ist das sicher genug, musst du erst
+     weiterprüfen, oder gehörst du hier weg? Es gibt bewusst alle drei Sorten.</p>
+  <div class="meta"><span id="d-pos">Fall 1 von 12</span><span id="d-score">0 richtig</span></div>
+  <div class="bar"><i id="d-bar"></i></div>
+  <div class="card">
+    <span class="badge b-teal" id="d-kat">Fall</span>
+    <p class="fall" id="d-text"></p>
+    <div class="row">
+      <button class="btn green"  data-a="ok">Sicher genug</button>
+      <button class="btn amber"  data-a="pruefen">Erst weiterprüfen</button>
+      <button class="btn coral"  data-a="weg">Finger weg</button>
+    </div>
+    <div class="fb" id="d-fb" hidden></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="d-next" hidden>Nächster Fall</button>
+      <button class="btn ghost" id="d-reset">Von vorn</button>
+    </div>
+  </div>
+  <div class="hinweis"><strong>Merke:</strong> „Erst weiterprüfen“ ist keine Schwäche, sondern
+     die häufigste richtige Antwort. Gelb im Fakeshop-Finder heißt genau das.</div>
+</section>
+
+<!-- 2 URL-Lupe -->
+<section class="panel" id="p-lupe" role="tabpanel" aria-label="URL-Lupe" hidden>
+  <h2>URL-Lupe</h2>
+  <p class="lead">Klicke in jeder Adresse den Teil an, an dem du erkennst, <em>wem</em> die Seite
+     gehört – den Wer-Bereich. Das ist der vorletzte Teil vor dem ersten einzelnen Schrägstrich.</p>
+  <div class="meta"><span id="l-pos">Adresse 1 von 10</span><span id="l-score">0 richtig</span></div>
+  <div class="bar"><i id="l-bar"></i></div>
+  <div class="urlbox" id="l-url"></div>
+  <div class="fb" id="l-fb" hidden></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn" id="l-next" hidden>Nächste Adresse</button>
+    <button class="btn ghost" id="l-reset">Von vorn</button>
+  </div>
+  <div class="hinweis"><strong>Faustregel:</strong> Lies von rechts. Der letzte Teil (<code>.de</code>,
+     <code>.com</code>, <code>.shop</code>) und der Teil direkt davor gehören zusammen – das ist der
+     Besitzer. Alles, was links davon steht, darf sich jeder ausdenken.</div>
+</section>
+
+<!-- 3 Abo-Rechner -->
+<section class="panel" id="p-abo" role="tabpanel" aria-label="Abo-Rechner" hidden>
+  <h2>Abo-Rechner</h2>
+  <p class="lead">Zwei Abos vergleichen – auf Jahresbasis. Die Voreinstellung ist genau der Fall
+     aus Aufgabe A3 f) bis j).</p>
+  <div class="grid2">
+    <div class="card">
+      <span class="badge b-violet">Variante A</span>
+      <div class="field" style="margin-top:12px">
+        <label for="a-betrag">Betrag je Zahlung (€)</label>
+        <input type="number" id="a-betrag" value="14.99" min="0" step="0.01" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="a-takt">Wie oft wird gezahlt?</label>
+        <select id="a-takt">
+          <option value="52">pro Woche</option>
+          <option value="12" selected>pro Monat</option>
+          <option value="4">pro Quartal</option>
+          <option value="365">pro Tag</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <span class="badge b-coral">Variante B</span>
+      <div class="field" style="margin-top:12px">
+        <label for="b-betrag">Betrag je Zahlung (€)</label>
+        <input type="number" id="b-betrag" value="4.99" min="0" step="0.01" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="b-takt">Wie oft wird gezahlt?</label>
+        <select id="b-takt">
+          <option value="52" selected>pro Woche</option>
+          <option value="12">pro Monat</option>
+          <option value="4">pro Quartal</option>
+          <option value="365">pro Tag</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="field" style="max-width:280px;margin-top:4px">
+    <label for="lohn">Dein Stundenlohn im Ferienjob (€)</label>
+    <input type="number" id="lohn" value="10.00" min="0.01" step="0.01" inputmode="decimal">
+  </div>
+  <div class="out">
+    <div class="stat"><div class="v" id="o-a">–</div><div class="k">Variante A im Jahr</div></div>
+    <div class="stat"><div class="v" id="o-b">–</div><div class="k">Variante B im Jahr</div></div>
+    <div class="stat"><div class="v" id="o-d">–</div><div class="k">Unterschied</div></div>
+  </div>
+  <div class="out" style="margin-top:12px">
+    <div class="stat"><div class="v" id="o-am">–</div><div class="k">A umgerechnet pro Monat</div></div>
+    <div class="stat"><div class="v" id="o-bm">–</div><div class="k">B umgerechnet pro Monat</div></div>
+    <div class="stat"><div class="v" id="o-h">–</div><div class="k">Ferienjob für die teurere Variante</div></div>
+  </div>
+  <div class="fb ok" id="o-satz" style="margin-top:14px"></div>
+  <div class="note">Gerechnet wird mit 52 Wochen, 12 Monaten, 4 Quartalen und 365 Tagen im Jahr.
+     Ein Jahr hat 52 Wochen, aber nur 12 Monate – deshalb kann der kleinere Betrag der teurere sein.</div>
+</section>
+
+<!-- 4 Notfallplan -->
+<section class="panel" id="p-notfall" role="tabpanel" aria-label="Notfallplan" hidden>
+  <h2>Notfallplan</h2>
+  <p class="lead">Es ist trotzdem passiert. Diese fünf Schritte in dieser Reihenfolge – die ersten
+     beiden zählen nach Minuten, nicht nach Tagen.</p>
+  <ol class="steps" id="n-list"></ol>
+  <div class="meta" style="margin-top:4px"><span id="n-score">0 von 5 erledigt</span>
+     <button class="btn ghost" id="n-reset">Haken zurücksetzen</button></div>
+  <div class="hinweis"><strong>Wichtig:</strong> Die Anzeige bei der Polizei ist auch dann sinnvoll,
+     wenn die Aussicht auf Aufklärung gering ist – erst viele Anzeigen machen eine Serie sichtbar.
+     Und: Rede mit einem Erwachsenen. Betrug funktioniert über Scham; Schweigen ist genau das,
+     womit die Täter rechnen.</div>
+</section>
+
+<footer>WPK Wirtschaft 9 · Sitzung 12 · Betrug im Netz · Humboldt-Gymnasium Cottbus</footer>
+</div>
+
+<script>
+"use strict";
+/* ---------------------------------------------------------- Navigation */
+var TABS = [
+  {id:"detektor", label:"Fakeshop-Detektor"},
+  {id:"lupe",     label:"URL-Lupe"},
+  {id:"abo",      label:"Abo-Rechner"},
+  {id:"notfall",  label:"Notfallplan"}
+];
+(function(){
+  var nav = document.getElementById("nav");
+  TABS.forEach(function(t, i){
+    var b = document.createElement("button");
+    b.textContent = t.label;
+    b.setAttribute("role","tab");
+    b.setAttribute("aria-current", i === 0 ? "true" : "false");
+    b.addEventListener("click", function(){
+      TABS.forEach(function(o, j){
+        document.getElementById("p-" + o.id).hidden = (j !== i);
+        nav.children[j].setAttribute("aria-current", j === i ? "true" : "false");
+      });
+    });
+    nav.appendChild(b);
+  });
+})();
+
+function eur(x){
+  return x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
+}
+function pct(x){
+  return x.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %";
+}
+
+/* ---------------------------------------------------------- 1 Detektor */
+var FAELLE = [
+ {t:"Ein großer, bekannter Elektronik-Shop bietet dein Wunschhandy 40 € günstiger an als die "+
+    "Konkurrenz. Zahlbar per Rechnung, PayPal oder Karte.",
+  a:"ok", k:"Preis",
+  e:"40 € Unterschied sind normaler Wettbewerb – kein Fake-Shop-Signal. Entscheidend ist, dass "+
+    "du die Zahlungsart frei wählen kannst. Wer Rechnung anbietet, trägt selbst das Risiko."},
+ {t:"„Alle Markenschuhe minus 70 %“. Beim Bezahlen bleibt nur Überweisung im Voraus. "+
+    "Das Impressum nennt keine Telefonnummer.",
+  a:"weg", k:"Preis + Zahlung + Impressum",
+  e:"Drei Merkmale gleichzeitig: unrealistischer Preis, Vorkasse als einzige Zahlungsart, "+
+    "unvollständiges Impressum. Jedes für sich wäre ein Grund zum Weiterprüfen – alle drei sind "+
+    "eine Entscheidung."},
+ {t:"Die Adresse beginnt mit „https“ und der Browser zeigt ein Schloss. Mehr weißt du über den "+
+    "Shop nicht.",
+  a:"pruefen", k:"Verschlüsselung",
+  e:"„https“ heißt nur: Die Übertragung ist verschlüsselt. Es sagt nichts darüber, wer am anderen "+
+    "Ende sitzt. Zertifikate sind kostenlos, fast jeder Fake Shop hat eines. Also: weiterprüfen."},
+ {t:"Der Shop zeigt ein Gütesiegel. Du klickst darauf – es öffnet sich die Prüfseite des "+
+    "Siegelanbieters mit einem gültigen Eintrag für genau diesen Shop.",
+  a:"ok", k:"Siegel",
+  e:"Genau so prüft man ein Siegel: Es muss anklickbar sein und zur Prüfstelle führen. Ein Bild, "+
+    "das sich nicht anklicken lässt, ist nur ein Bild – und kopiert."},
+ {t:"120 Bewertungen, alle fünf Sterne, alle vom selben Tag, fast gleicher Wortlaut.",
+  a:"weg", k:"Bewertungen",
+  e:"Echte Bewertungen verteilen sich über die Zeit und über die Notenskala. Ein Block gleich "+
+    "formulierter Bestnoten an einem Tag ist gekauft oder erfunden."},
+ {t:"Der Fakeshop-Finder der Verbraucherzentralen zeigt für den Shop „Gelb“.",
+  a:"pruefen", k:"Fakeshop-Finder",
+  e:"Gelb heißt ausdrücklich nicht „Betrug“, sondern: mindestens ein Merkmal passt zu Fake Shops, "+
+    "der Shop steht aber auf keiner Liste. Jetzt selbst weiterprüfen – Impressum, Zahlungsarten, "+
+    "Bewertungen."},
+ {t:"Beim Bezahlen werden PayPal, Karte und Rechnung angezeigt. Nach dem Klick auf „Bestellen“ "+
+    "erscheint nur noch „Vorkasse – Überweisung“.",
+  a:"weg", k:"Zahlungsarten",
+  e:"Der klassische letzte Schritt eines Fake Shops: Die Auswahl ist Dekoration, übrig bleibt der "+
+    "einzige Weg ohne Rückholmöglichkeit. Hier abbrechen – nicht „einmal probieren“."},
+ {t:"„Dein Paket konnte nicht zugestellt werden. Adresse bestätigen unter "+
+    "dhl-paket-service.info“",
+  a:"weg", k:"Phishing",
+  e:"Der Wer-Bereich ist dhl-paket-service.info – nicht dhl.de. Hier geht es nicht um Geld, sondern "+
+    "um deine Daten. Nichts anklicken; den Sendungsstatus in der echten App nachsehen."},
+ {t:"Der Shop ist dir unbekannt, die Preise sind marktüblich, das Impressum ist vollständig und "+
+    "die Telefonnummer wird abgenommen. Kauf auf Rechnung ist möglich.",
+  a:"ok", k:"Unbekannter Shop",
+  e:"Unbekannt ist kein Warnzeichen. Vollständiges Impressum, erreichbare Nummer, normale Preise "+
+    "und Rechnungskauf – damit liegt das Risiko beim Händler, nicht bei dir."},
+ {t:"Eine Instagram-Anzeige führt zu einem Shop mit gutem Preis. Du hast das Impressum noch "+
+    "nicht gelesen.",
+  a:"pruefen", k:"Werbung",
+  e:"Werbung ist kein Beweis für irgendetwas: Die Hälfte der Fakeshops, vor denen die "+
+    "Verbraucherzentralen 2025 gewarnt haben, hat über Google oder Meta geworben. Erst prüfen, "+
+    "dann entscheiden."},
+ {t:"Die Domain des Shops wurde vor drei Wochen registriert. Preise, Impressum und Zahlungsarten "+
+    "sind unauffällig.",
+  a:"pruefen", k:"Alter der Domain",
+  e:"Ein junger Shop kann ein neuer Laden sein – oder eine Kulisse, die in acht Wochen verschwindet. "+
+    "Allein sagt das Alter nichts. Prüfe zusätzlich Bewertungen außerhalb des Shops und zahle "+
+    "nicht im Voraus."},
+ {t:"Der Fakeshop-Finder zeigt „Grün“, der Shop steht auf der geprüften Liste, und du zahlst "+
+    "per Lastschrift.",
+  a:"ok", k:"Alles zusammen",
+  e:"Geprüfter Shop plus sicherer Zahlungsweg: Bei der SEPA-Basislastschrift hast du acht Wochen "+
+    "Rückgaberecht (§ 675x Abs. 4 BGB). Besser abgesichert geht es online kaum."}
+];
+var LABELS = {ok:"Sicher genug", pruefen:"Erst weiterprüfen", weg:"Finger weg"};
+var dI = 0, dOK = 0, dAnswered = false;
+
+function dRender(){
+  var f = FAELLE[dI];
+  document.getElementById("d-pos").textContent  = "Fall " + (dI + 1) + " von " + FAELLE.length;
+  document.getElementById("d-score").textContent = dOK + " richtig";
+  document.getElementById("d-bar").style.width   = (dI / FAELLE.length * 100) + "%";
+  document.getElementById("d-kat").textContent   = f.k;
+  document.getElementById("d-text").textContent  = f.t;
+  var fb = document.getElementById("d-fb");
+  fb.hidden = true; fb.className = "fb";
+  document.getElementById("d-next").hidden = true;
+  dAnswered = false;
+}
+document.querySelectorAll("#p-detektor .btn[data-a]").forEach(function(b){
+  b.addEventListener("click", function(){
+    if (dAnswered) { return; }
+    dAnswered = true;
+    var f = FAELLE[dI], richtig = (b.getAttribute("data-a") === f.a);
+    if (richtig) { dOK++; }
+    var fb = document.getElementById("d-fb");
+    fb.className = "fb " + (richtig ? "ok" : "no");
+    fb.innerHTML = "<strong>" + (richtig ? "Richtig." : "Nicht ganz – richtig wäre: " +
+                   LABELS[f.a] + ".") + "</strong>" + f.e;
+    fb.hidden = false;
+    document.getElementById("d-score").textContent = dOK + " richtig";
+    var next = document.getElementById("d-next");
+    if (dI < FAELLE.length - 1) {
+      next.hidden = false;
+      next.textContent = "Nächster Fall";
+    } else {
+      document.getElementById("d-bar").style.width = "100%";
+      fb.innerHTML += "<br><br><strong>Durchgang beendet: " + dOK + " von " + FAELLE.length +
+        " richtig.</strong>Notiere die Punktzahl auf dem Arbeitsblatt (A5).";
+    }
+  });
+});
+document.getElementById("d-next").addEventListener("click", function(){
+  if (dI < FAELLE.length - 1) { dI++; dRender(); }
+});
+document.getElementById("d-reset").addEventListener("click", function(){
+  dI = 0; dOK = 0; dRender();
+});
+
+/* ---------------------------------------------------------- 2 URL-Lupe */
+var ADRESSEN = [
+ {host:"spotify.com",                        pfad:"/account/login",   echt:true,
+  e:"Der Wer-Bereich steht ganz rechts vor dem Schrägstrich – echt."},
+ {host:"spotify.com.kundencenter-login.de",  pfad:"/abo",             echt:false,
+  e:"„spotify.com“ steht nur davor und ist Teil des Namens. Besitzer ist kundencenter-login.de."},
+ {host:"www.amazon.de",                      pfad:"/gp/orders",       echt:true,
+  e:"„www“ ist nur ein Vorsatz. Der Wer-Bereich ist amazon.de."},
+ {host:"amazon-sicherheit.shop",             pfad:"/de/konto",        echt:false,
+  e:"Mit Amazon hat das nichts zu tun: Der Wer-Bereich heißt amazon-sicherheit.shop."},
+ {host:"login.sparkasse.de",                 pfad:"/portal",          echt:true,
+  e:"„login“ ist ein Vorsatz der Sparkasse selbst. Besitzer: sparkasse.de."},
+ {host:"sparkasse.de.sicher-login.info",     pfad:"/tan",             echt:false,
+  e:"Klassische Falle: Der echte Name steht links und zählt nicht. Besitzer ist sicher-login.info."},
+ {host:"www.verbraucherzentrale.de",         pfad:"/fakeshopfinder",  echt:true,
+  e:"Echt – genau die Seite, auf der du einen Shop prüfen kannst."},
+ {host:"steamcommunity-verify.ru",           pfad:"/login",           echt:false,
+  e:"Steam liegt auf steampowered.com. Hier ist der Besitzer steamcommunity-verify.ru."},
+ {host:"shop.zalando.de",                    pfad:"/damen",           echt:true,
+  e:"„shop“ ist ein Vorsatz von Zalando selbst. Besitzer: zalando.de."},
+ {host:"paypal.com-konto-pruefung.net",      pfad:"/de",              echt:false,
+  e:"Der Trick sitzt im Bindestrich: Die Teile sind paypal / com-konto-pruefung / net. "+
+    "Besitzer ist com-konto-pruefung.net – nicht PayPal."}
+];
+var lI = 0, lOK = 0, lAnswered = false;
+
+function lRender(){
+  var a = ADRESSEN[lI], teile = a.host.split(".");
+  var box = document.getElementById("l-url");
+  box.innerHTML = "";
+  teile.forEach(function(t, i){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "seg"; b.textContent = t;
+    b.setAttribute("aria-label", "Teil " + (i + 1) + ": " + t);
+    b.addEventListener("click", function(){ lPick(i, teile.length); });
+    box.appendChild(b);
+    if (i < teile.length - 1) {
+      var d = document.createElement("span");
+      d.className = "dot"; d.textContent = ".";
+      box.appendChild(d);
+    }
+  });
+  var r = document.createElement("span");
+  r.className = "rest"; r.textContent = a.pfad;
+  box.appendChild(r);
+  document.getElementById("l-pos").textContent   = "Adresse " + (lI + 1) + " von " + ADRESSEN.length;
+  document.getElementById("l-score").textContent = lOK + " richtig";
+  document.getElementById("l-bar").style.width   = (lI / ADRESSEN.length * 100) + "%";
+  var fb = document.getElementById("l-fb");
+  fb.hidden = true; fb.className = "fb";
+  document.getElementById("l-next").hidden = true;
+  lAnswered = false;
+}
+function lPick(i, n){
+  if (lAnswered) { return; }
+  lAnswered = true;
+  var a = ADRESSEN[lI], segs = document.querySelectorAll("#l-url .seg");
+  var richtig = (i === n - 2);
+  if (richtig) { lOK++; }
+  segs[n - 2].classList.add("hit");
+  segs[n - 1].classList.add("tld");
+  if (!richtig) { segs[i].classList.add("miss"); }
+  var wer = a.host.split(".").slice(-2).join(".");
+  var fb = document.getElementById("l-fb");
+  fb.className = "fb " + (richtig ? "ok" : "no");
+  fb.innerHTML = "<strong>" + (richtig ? "Richtig. " : "Daneben. ") + "Der Wer-Bereich ist " + wer +
+                 " – " + (a.echt ? "echt." : "gefälscht.") + "</strong>" + a.e;
+  fb.hidden = false;
+  document.getElementById("l-score").textContent = lOK + " richtig";
+  var next = document.getElementById("l-next");
+  if (lI < ADRESSEN.length - 1) {
+    next.hidden = false;
+  } else {
+    document.getElementById("l-bar").style.width = "100%";
+    fb.innerHTML += "<br><br><strong>Durchgang beendet: " + lOK + " von " + ADRESSEN.length +
+      " richtig.</strong>";
+  }
+}
+document.getElementById("l-next").addEventListener("click", function(){
+  if (lI < ADRESSEN.length - 1) { lI++; lRender(); }
+});
+document.getElementById("l-reset").addEventListener("click", function(){
+  lI = 0; lOK = 0; lRender();
+});
+
+/* ---------------------------------------------------------- 3 Abo-Rechner */
+function num(id, fallback){
+  var v = parseFloat(String(document.getElementById(id).value).replace(",", "."));
+  return (isFinite(v) && v >= 0) ? v : fallback;
+}
+function abo(){
+  var aB = num("a-betrag", 0), aN = parseFloat(document.getElementById("a-takt").value);
+  var bB = num("b-betrag", 0), bN = parseFloat(document.getElementById("b-takt").value);
+  var lohn = num("lohn", 10);
+  if (lohn <= 0) { lohn = 10; }
+  var aJ = aB * aN, bJ = bB * bN;
+  var diff = Math.abs(bJ - aJ);
+  var teurer = (bJ >= aJ) ? "B" : "A";
+  var hoch = Math.max(aJ, bJ), tief = Math.min(aJ, bJ);
+  document.getElementById("o-a").textContent  = eur(aJ);
+  document.getElementById("o-b").textContent  = eur(bJ);
+  document.getElementById("o-d").textContent  = eur(diff);
+  document.getElementById("o-am").textContent = eur(aJ / 12);
+  document.getElementById("o-bm").textContent = eur(bJ / 12);
+  document.getElementById("o-h").textContent  =
+    (hoch / lohn).toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1}) + " h";
+  var s = document.getElementById("o-satz");
+  if (aJ === bJ) {
+    s.innerHTML = "<strong>Gleichstand.</strong>Beide Varianten kosten im Jahr genau dasselbe.";
+    return;
+  }
+  var p = tief > 0 ? (diff / tief * 100) : 0;
+  var kleiner = (aB < bB) ? "A" : (bB < aB ? "B" : null);
+  var satz = "<strong>Variante " + teurer + " ist im Jahr " + eur(diff) +
+             " teurer – das sind " + pct(p) + " mehr.</strong>";
+  if (kleiner && kleiner === teurer) {
+    satz += "Und das, obwohl der einzelne Betrag bei Variante " + teurer + " der kleinere ist. " +
+            "Genau darauf zielt die Preisangabe: Nicht der Preis pro Zahlung entscheidet, " +
+            "sondern der Preis pro Jahr.";
+  } else {
+    satz += "Rechne immer auf ein Jahr hoch, bevor du zustimmst.";
+  }
+  s.innerHTML = satz;
+}
+["a-betrag","b-betrag","lohn"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", abo);
+});
+["a-takt","b-takt"].forEach(function(id){
+  document.getElementById(id).addEventListener("change", abo);
+});
+
+/* ---------------------------------------------------------- 4 Notfallplan */
+var SCHRITTE = [
+ {h:"Zahlung stoppen – sofort",
+  p:"Bei Lastschrift: bei der Bank zurückgeben lassen (acht Wochen, § 675x Abs. 4 BGB). " +
+    "Bei Kreditkarte: Rückbuchung beantragen. Bei PayPal „Waren und Dienstleistungen“: " +
+    "Käuferschutz-Antrag stellen. Bei Überweisung: sofort die Bank anrufen und einen " +
+    "Rückruf versuchen – das klappt nur, solange das Geld noch nicht gebucht ist."},
+ {h:"Zugangsdaten ändern",
+  p:"Wenn du irgendwo Passwort oder TAN eingegeben hast: Passwort sofort ändern – und zwar " +
+    "überall dort, wo du dasselbe Passwort benutzt. Zwei-Faktor-Anmeldung einschalten. " +
+    "Die Bank sperrt Online-Banking und Karten über den Sperr-Notruf 116 116."},
+ {h:"Beweise sichern",
+  p:"Screenshots der Seite, der Bestellbestätigung und der Nachricht; die vollständige " +
+    "Internetadresse notieren; Zahlungsbeleg aufheben. Nichts löschen – auch nicht aus Ärger."},
+ {h:"Anzeige erstatten",
+  p:"Bei jeder Polizeidienststelle oder online über die Internetwache der Polizei Brandenburg. " +
+    "Betrug ist eine Straftat (§ 263 StGB). Auch wenn die Aufklärungsquote niedrig ist: " +
+    "Erst viele Anzeigen machen eine Betrugsserie sichtbar."},
+ {h:"Melden und reden",
+  p:"Den Shop der Verbraucherzentrale melden, damit andere gewarnt werden. Und: Rede mit deinen " +
+    "Eltern oder einer Lehrkraft. Betrug funktioniert über Scham – Schweigen ist genau das, " +
+    "womit die Täter rechnen."}
+];
+(function(){
+  var ul = document.getElementById("n-list");
+  SCHRITTE.forEach(function(s, i){
+    var li = document.createElement("li");
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.id = "nstep" + i;
+    var n = document.createElement("div");
+    n.className = "n"; n.textContent = String(i + 1);
+    var box = document.createElement("div");
+    var h = document.createElement("h3");
+    h.textContent = s.h;
+    var lab = document.createElement("label");
+    lab.setAttribute("for", cb.id);
+    lab.appendChild(h);
+    var p = document.createElement("p");
+    p.textContent = s.p;
+    box.appendChild(lab); box.appendChild(p);
+    li.appendChild(cb); li.appendChild(n); li.appendChild(box);
+    cb.addEventListener("change", function(){
+      li.classList.toggle("done", cb.checked);
+      nCount();
+    });
+    ul.appendChild(li);
+  });
+})();
+function nCount(){
+  var done = 0;
+  SCHRITTE.forEach(function(_, i){
+    if (document.getElementById("nstep" + i).checked) { done++; }
+  });
+  document.getElementById("n-score").textContent = done + " von " + SCHRITTE.length + " erledigt";
+}
+document.getElementById("n-reset").addEventListener("click", function(){
+  SCHRITTE.forEach(function(_, i){
+    var cb = document.getElementById("nstep" + i);
+    cb.checked = false;
+    cb.parentNode.classList.remove("done");
+  });
+  nCount();
+});
+
+/* ---------------------------------------------------------- Start */
+dRender(); lRender(); abo(); nCount();
+</script>
+</body>
+</html>
